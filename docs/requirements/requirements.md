@@ -2,15 +2,41 @@
 
 ## 1. Problem Statement
 
-To be defined.
+Traditional/manual parking management can make it difficult for parking staff to:
+
+- know which parking spaces are available
+- dentify occupied spaces
+- manage vehicles entering and leaving
+- keep track of active parking sessions
+- quickly locate parking information
+- monitor the overall parking situation
 
 ## 2. Proposed Solution
 
-To be defined.
+A visual parking management system that gives staff a real-time overview of the parking facility and provides tools to manage parking operations efficiently.
 
 ## 3. Target Users
 
-To be defined.
+#### Parking Operator
+
+The primary user. They Can:
+
+- view parking availability
+- register vehicles
+- start parking sessions
+- end parking sessions
+- search vehicles
+- locate parking spaces
+- view statistics
+
+#### Administrator
+
+Can additionally:
+
+- manage parking spaces
+- configure parking areas
+- view reports
+- manage system settings
 
 ## 4. Functional Requirements
 
