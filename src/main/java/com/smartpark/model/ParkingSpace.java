@@ -33,10 +33,6 @@ public class ParkingSpace {
         this.status = status;
     }
 
-    public boolean isAvailable() {
-        return status == ParkingSpaceStatus.AVAILABLE;
-    }
-
     //DECLARE METHODS
     //TO STRING
     @Override
@@ -46,5 +42,10 @@ public class ParkingSpace {
                 ", vehicleType = " + vehicleType +
                 ", status = " + status +
                 '}';
+    }
+
+    //IS AVAILABLE
+    public boolean isAvailable() {
+        return status == ParkingSpaceStatus.AVAILABLE;
     }
 }
