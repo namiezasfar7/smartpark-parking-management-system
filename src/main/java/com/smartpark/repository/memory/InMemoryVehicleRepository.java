@@ -11,7 +11,7 @@ import java.util.List;
 public class InMemoryVehicleRepository implements VehicleRepository {
 
     //DECLARE ATTRIBUTES
-    private List<Vehicle> vehicles;
+    private List <Vehicle> vehicles;
 
     //DECLARE CONSTRUCTOR
     public InMemoryVehicleRepository(){
