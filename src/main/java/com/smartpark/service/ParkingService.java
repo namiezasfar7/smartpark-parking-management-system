@@ -35,8 +35,9 @@ public class ParkingService {
     }
 
     //UPDATE PARKING SPACE STATUS
-    public void updateParkingSpaceStatus(String spaceId, ParkingSpaceStatus status){
+    public void updateParkingSpaceStatus(String spaceId, ParkingSpaceStatus status) {
         ParkingSpace parkingSpace = parkingSpaceRepository.findBySpaceId(spaceId);
+
         parkingSpace.setStatus(status);
     }
 }
