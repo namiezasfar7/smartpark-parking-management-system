@@ -1,57 +1,400 @@
 package com.smartpark.ui;
 
 //IMPORTS
+import com.smartpark.ui.components.RoundedButton;
+
 import javax.swing.*;
-import java.awt.BorderLayout;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
 //MAIN FRAME CLASS
 public class MainFrame extends JFrame {
 
     //DECLARE ATTRIBUTES
+    //MAIN PANELS
     private JPanel mainPanel;
     private JPanel sidebarPanel;
+    private JPanel rightPanel;
+    private JPanel headerPanel;
     private JPanel contentPanel;
+
+    //SIDEBAR COMPONENTS
     private JLabel logoLabel;
+
     private JButton dashboardButton;
     private JButton parkingButton;
     private JButton vehicleButton;
     private JButton sessionButton;
     private JButton analyticsButton;
 
+    private JPanel buttonPanel;
+
+    //APPLICATION PANELS
+    private DashboardPanel dashboardPanel;
+    private ParkingPanel parkingPanel;
+    private VehiclePanel vehiclePanel;
+    private SessionPanel sessionPanel;
+    private AnalyticsPanel analyticsPanel;
+
     //DECLARE CONSTRUCTOR
     public MainFrame() {
 
-        //INITIALIZE
+        //FRAME SETTINGS
         setTitle("SmartPark - Parking Management System");
         setSize(1200, 750);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+
         setContentPane(mainPanel);
 
-        //CREATE PANELS
-        DashboardPanel dashboardPanel = new DashboardPanel();
-        ParkingPanel parkingPanel = new ParkingPanel();
-        VehiclePanel vehiclePanel = new VehiclePanel();
-        SessionPanel sessionPanel = new SessionPanel();
-        AnalyticsPanel analyticsPanel = new AnalyticsPanel();
+        //SETUP MAIN LAYOUT
+        setupMainLayout();
 
-        //SHOW DASHBOARD
+        //CREATE APPLICATION PANELS
+        dashboardPanel = new DashboardPanel();
+        parkingPanel = new ParkingPanel();
+        vehiclePanel = new VehiclePanel();
+        sessionPanel = new SessionPanel();
+        analyticsPanel = new AnalyticsPanel();
+
+        //SETUP SIDEBAR
+        setupSidebar();
+
+        //SHOW DASHBOARD FIRST
         showPanel(dashboardPanel);
 
         //BUTTON ACTIONS
-        dashboardButton.addActionListener(e -> showPanel(dashboardPanel));
-        parkingButton.addActionListener(e -> showPanel(parkingPanel));
-        vehicleButton.addActionListener(e -> showPanel(vehiclePanel));
-        sessionButton.addActionListener(e -> showPanel(sessionPanel));
-        analyticsButton.addActionListener(e -> showPanel(analyticsPanel));
+        dashboardButton.addActionListener(e -> {
+            showPanel(dashboardPanel);
+            setSelectedButton(dashboardButton);
+        });
+
+        parkingButton.addActionListener(e -> {
+            showPanel(parkingPanel);
+            setSelectedButton(parkingButton);
+        });
+
+        vehicleButton.addActionListener(e -> {
+            showPanel(vehiclePanel);
+            setSelectedButton(vehicleButton);
+        });
+
+        sessionButton.addActionListener(e -> {
+            showPanel(sessionPanel);
+            setSelectedButton(sessionButton);
+        });
+
+        analyticsButton.addActionListener(e -> {
+            showPanel(analyticsPanel);
+            setSelectedButton(analyticsButton);
+        });
     }
 
-    //DECLARE METHODS
+    //CREATE CUSTOM COMPONENT
+    private void createUIComponents() {
+
+        dashboardButton = new RoundedButton();
+        parkingButton = new RoundedButton();
+        vehicleButton = new RoundedButton();
+        sessionButton = new RoundedButton();
+        analyticsButton = new RoundedButton();
+    }
+
+    //MAIN LAYOUT
+    private void setupMainLayout() {
+
+        //MAIN PANEL
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setBackground(
+                UITheme.BACKGROUND_COLOR
+        );
+
+        //SIDEBAR
+        sidebarPanel.setLayout(new BorderLayout());
+        sidebarPanel.setPreferredSize(
+                new Dimension(250, 0)
+        );
+        sidebarPanel.setBackground(
+                UITheme.SIDEBAR_COLOR
+        );
+
+        //RIGHT SIDE
+        rightPanel.setLayout(new BorderLayout());
+        rightPanel.setBackground(
+                UITheme.BACKGROUND_COLOR
+        );
+
+        //HEADER
+        headerPanel.setLayout(new BorderLayout());
+        headerPanel.setBackground(
+                UITheme.BACKGROUND_COLOR
+        );
+
+        headerPanel.setBorder(
+                new EmptyBorder(
+                        25,
+                        30,
+                        15,
+                        30
+                )
+        );
+
+        //CONTENT
+        contentPanel.setLayout(new BorderLayout());
+        contentPanel.setBackground(
+                UITheme.BACKGROUND_COLOR
+        );
+
+        contentPanel.setBorder(
+                new EmptyBorder(
+                        10,
+                        30,
+                        30,
+                        30
+                )
+        );
+
+        //BUILD RIGHT SIDE
+        rightPanel.removeAll();
+
+        rightPanel.add(
+                headerPanel,
+                BorderLayout.NORTH
+        );
+
+        rightPanel.add(
+                contentPanel,
+                BorderLayout.CENTER
+        );
+
+        //BUILD MAIN FRAME
+        mainPanel.removeAll();
+
+        mainPanel.add(
+                sidebarPanel,
+                BorderLayout.WEST
+        );
+
+        mainPanel.add(
+                rightPanel,
+                BorderLayout.CENTER
+        );
+
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
+    //SIDEBAR
+    private void setupSidebar() {
+
+        sidebarPanel.removeAll();
+
+        //LOGO
+        logoLabel.setText("SmartPark");
+
+        logoLabel.setForeground(
+                UITheme.TEXT_COLOR
+        );
+
+        logoLabel.setFont(
+                UITheme.bold(24)
+        );
+
+        logoLabel.setBorder(
+                new EmptyBorder(
+                        25,
+                        25,
+                        25,
+                        25
+                )
+        );
+
+        sidebarPanel.add(
+                logoLabel,
+                BorderLayout.NORTH
+        );
+
+        //BUTTON PANEL
+        buttonPanel = new JPanel();
+
+        buttonPanel.setLayout(
+                new BoxLayout(
+                        buttonPanel,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+        buttonPanel.setBackground(
+                UITheme.SIDEBAR_COLOR
+        );
+
+        buttonPanel.setBorder(
+                new EmptyBorder(
+                        10,
+                        20,
+                        20,
+                        20
+                )
+        );
+
+        //STYLE BUTTONS
+        styleButton(dashboardButton);
+        styleButton(parkingButton);
+        styleButton(vehicleButton);
+        styleButton(sessionButton);
+        styleButton(analyticsButton);
+
+        //ADD BUTTONS
+        buttonPanel.add(
+                dashboardButton
+        );
+
+        buttonPanel.add(
+                Box.createVerticalStrut(12)
+        );
+
+        buttonPanel.add(
+                parkingButton
+        );
+
+        buttonPanel.add(
+                Box.createVerticalStrut(12)
+        );
+
+        buttonPanel.add(
+                vehicleButton
+        );
+
+        buttonPanel.add(
+                Box.createVerticalStrut(12)
+        );
+
+        buttonPanel.add(
+                sessionButton
+        );
+
+        buttonPanel.add(
+                Box.createVerticalStrut(12)
+        );
+
+        buttonPanel.add(
+                analyticsButton
+        );
+
+
+        //ADD BUTTON PANEL TO SIDEBAR
+        sidebarPanel.add(
+                buttonPanel,
+                BorderLayout.CENTER
+        );
+
+
+        //DASHBOARD SELECTED INITIALLY
+        setSelectedButton(
+                dashboardButton
+        );
+
+        sidebarPanel.revalidate();
+        sidebarPanel.repaint();
+    }
+
+    //BUTTON STYLE
+    private void styleButton(JButton button) {
+
+        button.setForeground(
+                UITheme.TEXT_COLOR
+        );
+
+        button.setFont(
+                UITheme.regular(15)
+        );
+
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+
+        button.setAlignmentX(
+                Component.CENTER_ALIGNMENT
+        );
+
+        button.setMaximumSize(
+                new Dimension(
+                        Integer.MAX_VALUE,
+                        48
+                )
+        );
+
+        button.setPreferredSize(
+                new Dimension(
+                        210,
+                        48
+                )
+        );
+
+        button.setCursor(
+                new Cursor(
+                        Cursor.HAND_CURSOR
+                )
+        );
+
+        button.setBorder(
+                new EmptyBorder(
+                        10,
+                        20,
+                        10,
+                        20
+                )
+        );
+    }
+
+    //SELECTED BUTTON
+    private void setSelectedButton(
+            JButton selectedButton
+    ) {
+
+        JButton[] buttons = {
+                dashboardButton,
+                parkingButton,
+                vehicleButton,
+                sessionButton,
+                analyticsButton
+        };
+
+        for (JButton button : buttons) {
+
+            if (button instanceof RoundedButton) {
+
+                ((RoundedButton) button)
+                        .setButtonColor(
+                                UITheme.BUTTON_COLOR
+                        );
+            }
+        }
+
+        if (selectedButton instanceof RoundedButton) {
+
+            ((RoundedButton) selectedButton)
+                    .setButtonColor(
+                            UITheme.BUTTON_SELECTED_COLOR
+                    );
+        }
+
+        selectedButton.repaint();
+    }
+
     //SHOW PANEL
     private void showPanel(JPanel panel) {
+
         contentPanel.removeAll();
-        contentPanel.setLayout(new BorderLayout());
-        contentPanel.add(panel, BorderLayout.CENTER);
+
+        contentPanel.setLayout(
+                new BorderLayout()
+        );
+
+        contentPanel.add(
+                panel,
+                BorderLayout.CENTER
+        );
+
         contentPanel.revalidate();
         contentPanel.repaint();
     }
