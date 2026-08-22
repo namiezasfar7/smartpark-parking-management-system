@@ -41,6 +41,13 @@ public class MainFrame extends JFrame {
 
         //FRAME SETTINGS
         setTitle("SmartPark - Parking Management System");
+
+        setIconImage(
+                Toolkit.getDefaultToolkit().getImage(
+                        getClass().getResource("/icons/smartpark-logo.png")
+                )
+        );
+
         setSize(1200, 750);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);

@@ -7,7 +7,7 @@ import java.awt.*;
 public final class UITheme {
 
     //DECLARE ATTRIBUTES
-    //COLORS
+    //COLORS - COMMON
     public static final Color BACKGROUND_COLOR = new Color(15, 17, 23);
     public static final Color SIDEBAR_COLOR = new Color(21, 25, 34);
     public static final Color CARD_COLOR = new Color(21, 25, 34);
@@ -16,6 +16,12 @@ public final class UITheme {
     public static final Color BORDER_COLOR = new Color(42, 51, 69);
     public static final Color TEXT_COLOR = new Color(255, 255, 255);
     public static final Color SECONDARY_TEXT_COLOR = new Color(156, 163, 175);
+
+    //COLORS - DASHBOARD
+    public static final Color CARD_TOTAL = new Color(37, 99, 235);
+    public static final Color CARD_OCCUPIED = new Color(220, 76, 76);
+    public static final Color CARD_AVAILABLE = new Color(34, 197, 94);
+    public static final Color CARD_SESSIONS = new Color(139, 92, 246);
 
     //FONT
     public static final String FONT_NAME =
