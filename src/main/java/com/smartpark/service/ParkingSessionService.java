@@ -26,6 +26,10 @@ public class ParkingSessionService {
     //DECLARE METHODS
     //START PARKING SESSION
     public void startSession(ParkingSession session) {
+
+        ParkingSpace parkingSpace = session.getParkingSpace();
+
+        parkingSpace.setStatus(ParkingSpaceStatus.OCCUPIED);
         parkingSessionRepository.save(session);
     }
 
