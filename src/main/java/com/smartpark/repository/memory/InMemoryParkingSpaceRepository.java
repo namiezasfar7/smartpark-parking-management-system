@@ -1,49 +1,91 @@
 package com.smartpark.repository.memory;
 
-//IMPORTS
+// IMPORTS
 import com.smartpark.model.ParkingSpace;
 import com.smartpark.repository.ParkingSpaceRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//IN MEMORY PARKING SPACE REPOSITORY CLASS
-public class InMemoryParkingSpaceRepository implements ParkingSpaceRepository {
+// IN MEMORY PARKING SPACE REPOSITORY
+public class InMemoryParkingSpaceRepository
+        implements ParkingSpaceRepository {
 
-    //DECLARE ATTRIBUTES
-    private List <ParkingSpace> parkingSpaces;
+    private final List<ParkingSpace> parkingSpaces;
 
-    //DECLARE CONSTRUCTOR
-    public InMemoryParkingSpaceRepository(){
-        this.parkingSpaces = new ArrayList<>();
+
+    // CONSTRUCTOR
+    public InMemoryParkingSpaceRepository() {
+
+        parkingSpaces =
+                new ArrayList<>();
     }
 
-    //DECLARE METHODS
-    //SAVE PARKING SPACE
+
+    // SAVE PARKING SPACE
     @Override
-    public void save(ParkingSpace parkingSpace) {
-        parkingSpaces.add(parkingSpace);
+    public void save(
+            ParkingSpace parkingSpace
+    ) {
+
+        if (parkingSpace == null) {
+            return;
+        }
+
+
+        // PREVENT DUPLICATE SPACE IDs
+        ParkingSpace existing =
+                findBySpaceId(
+                        parkingSpace.getSpaceId()
+                );
+
+
+        if (existing == null) {
+
+            parkingSpaces.add(
+                    parkingSpace
+            );
+
+        } else {
+
+            existing.setStatus(
+                    parkingSpace.getStatus()
+            );
+        }
     }
 
-    //FIND PARKING SPACE
+
+    // FIND PARKING SPACE
     @Override
-    public ParkingSpace findBySpaceId(String spaceId){
+    public ParkingSpace findBySpaceId(
+            String spaceId
+    ) {
 
-        //LOOP UNTIL CONDITION IS TRUE
-        for(ParkingSpace parkingSpace : parkingSpaces){
+        if (spaceId == null) {
+            return null;
+        }
 
-            //CHECK CONDITION
-            if (parkingSpace.getSpaceId().equals(spaceId)) {
+
+        for (ParkingSpace parkingSpace :
+                parkingSpaces) {
+
+            if (spaceId.equals(
+                    parkingSpace.getSpaceId()
+            )) {
+
                 return parkingSpace;
             }
         }
 
+
         return null;
     }
 
-    //GET ALL PARKING SPACES
+
+    // GET ALL PARKING SPACES
     @Override
-    public List <ParkingSpace> findAll() {
+    public List<ParkingSpace> findAll() {
+
         return parkingSpaces;
     }
 }

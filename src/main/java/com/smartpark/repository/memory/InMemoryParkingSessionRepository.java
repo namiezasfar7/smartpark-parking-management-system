@@ -1,49 +1,84 @@
 package com.smartpark.repository.memory;
 
-//IMPORTS
+// IMPORTS
 import com.smartpark.model.ParkingSession;
 import com.smartpark.repository.ParkingSessionRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//IN MEMORY PARKING SESSION REPOSITORY CLASS
-public class InMemoryParkingSessionRepository implements ParkingSessionRepository {
+// IN MEMORY PARKING SESSION REPOSITORY
+public class InMemoryParkingSessionRepository
+        implements ParkingSessionRepository {
 
-    //DECLARE ATTRIBUTES
-    private List <ParkingSession> parkingSessions;
+    private final List<ParkingSession> parkingSessions;
 
-    //DECLARE CONSTRUCTOR
-    public InMemoryParkingSessionRepository(){
-        this.parkingSessions = new ArrayList<>();
+
+    // CONSTRUCTOR
+    public InMemoryParkingSessionRepository() {
+
+        parkingSessions =
+                new ArrayList<>();
     }
 
-    //DECLARE METHODS
-    //SAVE PARKING SESSION
+
+    // SAVE SESSION
     @Override
-    public void save(ParkingSession parkingSession) {
-        parkingSessions.add(parkingSession);
+    public void save(
+            ParkingSession parkingSession
+    ) {
+
+        if (parkingSession == null) {
+            return;
+        }
+
+
+        ParkingSession existing =
+                findBySessionId(
+                        parkingSession.getSessionId()
+                );
+
+
+        if (existing == null) {
+
+            parkingSessions.add(
+                    parkingSession
+            );
+        }
     }
 
-    //FIND PARKING SESSION
+
+    // FIND SESSION
     @Override
-    public ParkingSession findBySessionId(String sessionId){
+    public ParkingSession findBySessionId(
+            String sessionId
+    ) {
 
-        //LOOP UNTIL CONDITION IS TRUE
-        for(ParkingSession parkingSession : parkingSessions){
+        if (sessionId == null) {
+            return null;
+        }
 
-            //CHECK CONDITION
-            if (parkingSession.getSessionId().equals(sessionId)) {
+
+        for (ParkingSession parkingSession :
+                parkingSessions) {
+
+            if (sessionId.equals(
+                    parkingSession.getSessionId()
+            )) {
+
                 return parkingSession;
             }
         }
 
+
         return null;
     }
 
-    //GET ALL PARKING SESSIONS
+
+    // GET ALL SESSIONS
     @Override
-    public List <ParkingSession> findAll() {
+    public List<ParkingSession> findAll() {
+
         return parkingSessions;
     }
 }

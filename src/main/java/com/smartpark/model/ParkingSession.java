@@ -1,9 +1,9 @@
 package com.smartpark.model;
 
-//PARKING SESSION CLASS
+// PARKING SESSION CLASS
 public class ParkingSession {
 
-    //DECLARE ATTRIBUTES
+    // DECLARE ATTRIBUTES
     private String sessionId;
     private Vehicle vehicle;
     private ParkingSpace parkingSpace;
@@ -11,8 +11,14 @@ public class ParkingSession {
     private String exitTime;
     private ParkingSessionStatus status;
 
-    //DECLARE CONSTRUCTOR
-    public ParkingSession(String sessionId, Vehicle vehicle, ParkingSpace parkingSpace, String entryTime) {
+    // DECLARE CONSTRUCTOR
+    public ParkingSession(
+            String sessionId,
+            Vehicle vehicle,
+            ParkingSpace parkingSpace,
+            String entryTime
+    ) {
+
         this.sessionId = sessionId;
         this.vehicle = vehicle;
         this.parkingSpace = parkingSpace;
@@ -20,7 +26,8 @@ public class ParkingSession {
         this.status = ParkingSessionStatus.ACTIVE;
     }
 
-    //DECLARE GETTERS
+    // DECLARE GETTERS
+
     public String getSessionId() {
         return sessionId;
     }
@@ -45,7 +52,8 @@ public class ParkingSession {
         return status;
     }
 
-    //DECLARE SETTERS
+    // DECLARE SETTERS
+
     public void setEntryTime(String entryTime) {
         this.entryTime = entryTime;
     }
@@ -58,10 +66,10 @@ public class ParkingSession {
         this.status = status;
     }
 
-    //DECLARE METHODS
-    //TO STRING
+    // TO STRING
     @Override
     public String toString() {
+
         return "ParkingSession{" +
                 "sessionId = '" + sessionId + '\'' +
                 ", vehicle = " + vehicle +
@@ -72,8 +80,9 @@ public class ParkingSession {
                 '}';
     }
 
-    //COMPLETE SESSION
-    public void completeSession(){
+    // COMPLETE SESSION
+    public void completeSession() {
+
         status = ParkingSessionStatus.COMPLETED;
     }
 }

@@ -1,66 +1,50 @@
 package com.smartpark.ui;
 
-//IMPORTS
+import com.smartpark.controller.ParkingController;
+import com.smartpark.model.ParkingSpace;
+import com.smartpark.model.ParkingSpaceStatus;
 import com.smartpark.ui.components.RoundedPanelBorder;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-//PARKING PANEL CLASS
 public class ParkingPanel extends JPanel {
 
-    //DECLARE ATTRIBUTES
-    //MAIN PANEL
+    //=========================================================
+    // ATTRIBUTES
+    //=========================================================
+
+    private final ParkingController parkingController;
+
     private JPanel parkingPanel;
 
-    //HEADER
     private JLabel parkingLabel;
 
-    //ZONE CONTROLS
     private JLabel zoneLabel;
-    private JComboBox zoneComboBox;
+    private JComboBox<String> zoneComboBox;
 
-    //PARKING GRID
     private JPanel parkingGridPanel;
-
-    //PARKING SPACES
-    private JPanel space01;
-    private JPanel space02;
-    private JPanel space03;
-    private JPanel space04;
-    private JPanel space05;
-    private JPanel space06;
-    private JPanel space07;
-    private JPanel space08;
-
-    //SPACE LABELS
-    private JLabel parkingSpace01Label;
-    private JLabel parkingSpace02Label;
-    private JLabel parkingSpace03Label;
-    private JLabel parkingSpace04Label;
-    private JLabel parkingSpace05Label;
-    private JLabel parkingSpace06Label;
-    private JLabel parkingSpace07Label;
-    private JLabel parkingSpace08Label;
-
-    //STATUS LABELS
-    private JLabel parkingSpace01StatusLabel;
-    private JLabel parkingSpace02StatusLabel;
-    private JLabel parkingSpace03StatusLabel;
-    private JLabel parkingSpace04StatusLabel;
-    private JLabel parkingSpace05StatusLabel;
-    private JLabel parkingSpace06StatusLabel;
-    private JLabel parkingSpace07StatusLabel;
-    private JLabel parkingSpace08StatusLabel;
-
-    //WORKSPACE
     private JPanel workspacePanel;
 
-    //DECLARE CONSTRUCTOR
-    public ParkingPanel() {
+    private final Map<String, JPanel> spacePanels =
+            new HashMap<>();
 
-        //ROOT PANEL
+
+    //=========================================================
+    // CONSTRUCTOR
+    //=========================================================
+
+    public ParkingPanel(
+            ParkingController parkingController
+    ) {
+
+        this.parkingController =
+                parkingController;
+
         setLayout(
                 new BorderLayout()
         );
@@ -69,23 +53,20 @@ public class ParkingPanel extends JPanel {
                 UITheme.BACKGROUND_COLOR
         );
 
-        //ADD DESIGNER PANEL
-        add(
-                parkingPanel,
-                BorderLayout.CENTER
-        );
-
-        //SETUP PARKING
         setupParking();
     }
 
-    //SETUP PARKING
+
+    //=========================================================
+    // SETUP PARKING
+    //=========================================================
+
     private void setupParking() {
 
-        //MAIN PARKING PANEL
-        parkingPanel.setLayout(
-                new BorderLayout()
-        );
+        parkingPanel =
+                new JPanel(
+                        new BorderLayout()
+                );
 
         parkingPanel.setBackground(
                 UITheme.BACKGROUND_COLOR
@@ -100,7 +81,11 @@ public class ParkingPanel extends JPanel {
                 )
         );
 
-        //HEADER
+
+        //=====================================================
+        // HEADER
+        //=====================================================
+
         JPanel headerPanel =
                 new JPanel(
                         new BorderLayout()
@@ -119,10 +104,11 @@ public class ParkingPanel extends JPanel {
                 )
         );
 
-        //PARKING TITLE
-        parkingLabel.setText(
-                "Parking"
-        );
+
+        parkingLabel =
+                new JLabel(
+                        "Parking"
+                );
 
         parkingLabel.setForeground(
                 UITheme.TEXT_COLOR
@@ -132,13 +118,16 @@ public class ParkingPanel extends JPanel {
                 UITheme.bold(28)
         );
 
-
         headerPanel.add(
                 parkingLabel,
                 BorderLayout.WEST
         );
 
-        //ZONE CONTROL
+
+        //=====================================================
+        // ZONE CONTROL
+        //=====================================================
+
         JPanel zonePanel =
                 new JPanel(
                         new FlowLayout(
@@ -152,10 +141,11 @@ public class ParkingPanel extends JPanel {
                 UITheme.BACKGROUND_COLOR
         );
 
-        //ZONE LABEL
-        zoneLabel.setText(
-                "Zone"
-        );
+
+        zoneLabel =
+                new JLabel(
+                        "Zone"
+                );
 
         zoneLabel.setForeground(
                 UITheme.SECONDARY_TEXT_COLOR
@@ -165,7 +155,14 @@ public class ParkingPanel extends JPanel {
                 UITheme.regular(14)
         );
 
-        //ZONE COMBO BOX
+
+        zoneComboBox =
+                new JComboBox<>(
+                        new String[]{
+                                "All Zones"
+                        }
+                );
+
         zoneComboBox.setFont(
                 UITheme.regular(14)
         );
@@ -187,6 +184,7 @@ public class ParkingPanel extends JPanel {
                 )
         );
 
+
         zonePanel.add(
                 zoneLabel
         );
@@ -200,10 +198,15 @@ public class ParkingPanel extends JPanel {
                 BorderLayout.EAST
         );
 
-        //PARKING GRID
-        parkingGridPanel.setLayout(
-                new BorderLayout()
-        );
+
+        //=====================================================
+        // PARKING GRID
+        //=====================================================
+
+        parkingGridPanel =
+                new JPanel(
+                        new BorderLayout()
+                );
 
         parkingGridPanel.setBackground(
                 UITheme.BACKGROUND_COLOR
@@ -218,126 +221,19 @@ public class ParkingPanel extends JPanel {
                 )
         );
 
-        //GRID WORKSPACE
-        workspacePanel.removeAll();
 
-        workspacePanel.setLayout(
-                new GridLayout(
-                        2,
-                        4,
-                        16,
-                        16
-                )
-        );
+        workspacePanel =
+                new JPanel(
+                        new GridLayout(
+                                0,
+                                4,
+                                16,
+                                16
+                        )
+                );
 
         workspacePanel.setBackground(
                 UITheme.BACKGROUND_COLOR
-        );
-
-        //STYLE PARKING SPACES
-        setupParkingSpace(
-                space01,
-                parkingSpace01Label,
-                parkingSpace01StatusLabel,
-                "S01",
-                "AVAILABLE",
-                UITheme.PARKING_AVAILABLE
-        );
-
-        setupParkingSpace(
-                space02,
-                parkingSpace02Label,
-                parkingSpace02StatusLabel,
-                "S02",
-                "AVAILABLE",
-                UITheme.PARKING_AVAILABLE
-        );
-
-        setupParkingSpace(
-                space03,
-                parkingSpace03Label,
-                parkingSpace03StatusLabel,
-                "S03",
-                "AVAILABLE",
-                UITheme.PARKING_AVAILABLE
-        );
-
-        setupParkingSpace(
-                space04,
-                parkingSpace04Label,
-                parkingSpace04StatusLabel,
-                "S04",
-                "AVAILABLE",
-                UITheme.PARKING_AVAILABLE
-        );
-
-        setupParkingSpace(
-                space05,
-                parkingSpace05Label,
-                parkingSpace05StatusLabel,
-                "S05",
-                "AVAILABLE",
-                UITheme.PARKING_AVAILABLE
-        );
-
-        setupParkingSpace(
-                space06,
-                parkingSpace06Label,
-                parkingSpace06StatusLabel,
-                "S06",
-                "AVAILABLE",
-                UITheme.PARKING_AVAILABLE
-        );
-
-        setupParkingSpace(
-                space07,
-                parkingSpace07Label,
-                parkingSpace07StatusLabel,
-                "S07",
-                "AVAILABLE",
-                UITheme.PARKING_AVAILABLE
-        );
-
-        setupParkingSpace(
-                space08,
-                parkingSpace08Label,
-                parkingSpace08StatusLabel,
-                "S08",
-                "AVAILABLE",
-                UITheme.PARKING_AVAILABLE
-        );
-
-        //ADD SPACES
-        workspacePanel.add(
-                space01
-        );
-
-        workspacePanel.add(
-                space02
-        );
-
-        workspacePanel.add(
-                space03
-        );
-
-        workspacePanel.add(
-                space04
-        );
-
-        workspacePanel.add(
-                space05
-        );
-
-        workspacePanel.add(
-                space06
-        );
-
-        workspacePanel.add(
-                space07
-        );
-
-        workspacePanel.add(
-                space08
         );
 
 
@@ -346,17 +242,22 @@ public class ParkingPanel extends JPanel {
                 BorderLayout.CENTER
         );
 
-        //LEGEND
+
         JPanel legendPanel =
                 createLegendPanel();
 
-        parkingGridPanel.add(
-                legendPanel,
-                BorderLayout.SOUTH
-        );
+        if (legendPanel != null) {
 
-        //BUILD PARKING PAGE
-        parkingPanel.removeAll();
+            parkingGridPanel.add(
+                    legendPanel,
+                    BorderLayout.SOUTH
+            );
+        }
+
+
+        //=====================================================
+        // BUILD PAGE
+        //=====================================================
 
         parkingPanel.add(
                 headerPanel,
@@ -369,39 +270,162 @@ public class ParkingPanel extends JPanel {
         );
 
 
-        parkingPanel.revalidate();
-        parkingPanel.repaint();
-    }
-
-    //PARKING SPACE STYLE
-    private void setupParkingSpace(
-            JPanel space,
-            JLabel spaceLabel,
-            JLabel statusLabel,
-            String spaceNumber,
-            String status,
-            Color statusColor
-    ) {
-
-        //CARD LAYOUT
-        space.setLayout(
-                new BorderLayout()
+        add(
+                parkingPanel,
+                BorderLayout.CENTER
         );
 
-        //CARD COLOR
-        space.setBackground(
+
+        refreshParkingSpaces();
+    }
+
+
+    //=========================================================
+    // REFRESH PARKING SPACES
+    //=========================================================
+
+    public void refreshParkingSpaces() {
+
+        if (workspacePanel == null) {
+            return;
+        }
+
+        workspacePanel.removeAll();
+
+        spacePanels.clear();
+
+        List<ParkingSpace> parkingSpaces = null;
+
+        if (parkingController != null) {
+
+            parkingSpaces =
+                    parkingController
+                            .getAllParkingSpaces();
+        }
+
+
+        if (parkingSpaces == null ||
+                parkingSpaces.isEmpty()) {
+
+            workspacePanel.setLayout(
+                    new BorderLayout()
+            );
+
+            JLabel emptyLabel =
+                    new JLabel(
+                            "No parking spaces found.",
+                            SwingConstants.CENTER
+                    );
+
+            emptyLabel.setForeground(
+                    UITheme.SECONDARY_TEXT_COLOR
+            );
+
+            emptyLabel.setFont(
+                    UITheme.bold(16)
+            );
+
+            workspacePanel.add(
+                    emptyLabel,
+                    BorderLayout.CENTER
+            );
+
+        } else {
+
+            workspacePanel.setLayout(
+                    new GridLayout(
+                            0,
+                            4,
+                            16,
+                            16
+                    )
+            );
+
+
+            for (ParkingSpace parkingSpace :
+                    parkingSpaces) {
+
+                if (parkingSpace == null) {
+                    continue;
+                }
+
+                String spaceId =
+                        parkingSpace.getSpaceId();
+
+                if (spaceId == null ||
+                        spaceId.trim().isEmpty()) {
+
+                    spaceId = "Unknown";
+                }
+
+
+                JPanel card =
+                        createParkingSpaceCard(
+                                spaceId
+                        );
+
+                if (card == null) {
+                    continue;
+                }
+
+
+                spacePanels.put(
+                        spaceId,
+                        card
+                );
+
+                updateSpaceCard(
+                        parkingSpace,
+                        card
+                );
+
+                workspacePanel.add(
+                        card
+                );
+            }
+        }
+
+
+        workspacePanel.revalidate();
+        workspacePanel.repaint();
+
+        parkingGridPanel.revalidate();
+        parkingGridPanel.repaint();
+
+        revalidate();
+        repaint();
+    }
+
+
+    //=========================================================
+    // CREATE PARKING SPACE CARD
+    //=========================================================
+
+    private JPanel createParkingSpaceCard(
+            String spaceId
+    ) {
+
+        JPanel card =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        card.setBackground(
                 UITheme.PARKING_CARD_COLOR
         );
 
-        //ROUNDED BORDER
-        space.setBorder(
+        card.setBorder(
                 new RoundedPanelBorder(
                         UITheme.BORDER_COLOR,
                         18
                 )
         );
 
-        //TOP AREA
+
+        //=====================================================
+        // TOP
+        //=====================================================
+
         JPanel topPanel =
                 new JPanel(
                         new BorderLayout()
@@ -418,10 +442,11 @@ public class ParkingPanel extends JPanel {
                 )
         );
 
-        //SPACE NUMBER
-        spaceLabel.setText(
-                spaceNumber
-        );
+
+        JLabel spaceLabel =
+                new JLabel(
+                        spaceId
+                );
 
         spaceLabel.setForeground(
                 UITheme.TEXT_COLOR
@@ -431,14 +456,17 @@ public class ParkingPanel extends JPanel {
                 UITheme.bold(18)
         );
 
+
         topPanel.add(
                 spaceLabel,
                 BorderLayout.WEST
         );
 
-        //STATUS INDICATOR
+
         JPanel indicatorPanel =
                 new JPanel();
+
+        indicatorPanel.setOpaque(true);
 
         indicatorPanel.setPreferredSize(
                 new Dimension(
@@ -447,19 +475,17 @@ public class ParkingPanel extends JPanel {
                 )
         );
 
-        indicatorPanel.setBackground(
-                statusColor
-        );
-
-        indicatorPanel.setOpaque(true);
-
 
         topPanel.add(
                 indicatorPanel,
                 BorderLayout.EAST
         );
 
-        //STATUS AREA
+
+        //=====================================================
+        // STATUS
+        //=====================================================
+
         JPanel statusPanel =
                 new JPanel(
                         new BorderLayout()
@@ -476,45 +502,189 @@ public class ParkingPanel extends JPanel {
                 )
         );
 
-        //STATUS
-        statusLabel.setText(
-                status
-        );
 
-        statusLabel.setForeground(
-                statusColor
-        );
+        JLabel statusLabel =
+                new JLabel(
+                        "UNKNOWN"
+                );
 
         statusLabel.setFont(
                 UITheme.bold(14)
         );
+
 
         statusPanel.add(
                 statusLabel,
                 BorderLayout.WEST
         );
 
-        //ADD TO CARD
-        space.add(
+
+        card.add(
                 topPanel,
                 BorderLayout.NORTH
         );
 
-        space.add(
+        card.add(
                 statusPanel,
                 BorderLayout.SOUTH
         );
 
-        //PREFERRED SIZE
-        space.setPreferredSize(
+
+        card.putClientProperty(
+                "statusLabel",
+                statusLabel
+        );
+
+        card.putClientProperty(
+                "indicator",
+                indicatorPanel
+        );
+
+
+        card.setPreferredSize(
                 new Dimension(
                         200,
                         150
                 )
         );
+
+        return card;
     }
 
-    //LEGEND
+
+    //=========================================================
+    // UPDATE SPACE CARD
+    //=========================================================
+
+    private void updateSpaceCard(
+            ParkingSpace parkingSpace,
+            JPanel card
+    ) {
+
+        if (card == null) {
+            return;
+        }
+
+        if (parkingSpace == null) {
+
+            updateCardAppearance(
+                    card,
+                    "NOT FOUND",
+                    UITheme.SECONDARY_TEXT_COLOR
+            );
+
+            return;
+        }
+
+
+        ParkingSpaceStatus status =
+                parkingSpace.getStatus();
+
+
+        Color statusColor =
+                getStatusColor(status);
+
+
+        String statusText =
+                status == null
+                        ? "UNKNOWN"
+                        : status.toString();
+
+
+        updateCardAppearance(
+                card,
+                statusText,
+                statusColor
+        );
+    }
+
+
+    //=========================================================
+    // UPDATE CARD APPEARANCE
+    //=========================================================
+
+    private void updateCardAppearance(
+            JPanel card,
+            String status,
+            Color color
+    ) {
+
+        if (card == null) {
+            return;
+        }
+
+        JLabel statusLabel =
+                (JLabel) card.getClientProperty(
+                        "statusLabel"
+                );
+
+        JPanel indicator =
+                (JPanel) card.getClientProperty(
+                        "indicator"
+                );
+
+
+        if (statusLabel != null) {
+
+            statusLabel.setText(
+                    status == null
+                            ? "UNKNOWN"
+                            : status
+            );
+
+            statusLabel.setForeground(
+                    color
+            );
+        }
+
+
+        if (indicator != null) {
+
+            indicator.setBackground(
+                    color
+            );
+        }
+
+
+        card.repaint();
+    }
+
+
+    //=========================================================
+    // STATUS COLOR
+    //=========================================================
+
+    private Color getStatusColor(
+            ParkingSpaceStatus status
+    ) {
+
+        if (status == null) {
+
+            return UITheme.SECONDARY_TEXT_COLOR;
+        }
+
+
+        switch (status) {
+
+            case AVAILABLE:
+                return UITheme.PARKING_AVAILABLE;
+
+            case OCCUPIED:
+                return UITheme.PARKING_OCCUPIED;
+
+            case OUT_OF_SERVICE:
+                return UITheme.PARKING_MAINTENANCE;
+
+            default:
+                return UITheme.SECONDARY_TEXT_COLOR;
+        }
+    }
+
+
+    //=========================================================
+    // LEGEND
+    //=========================================================
+
     private JPanel createLegendPanel() {
 
         JPanel legendPanel =
@@ -530,7 +700,7 @@ public class ParkingPanel extends JPanel {
                 UITheme.BACKGROUND_COLOR
         );
 
-        //AVAILABLE
+
         legendPanel.add(
                 createLegendItem(
                         "Available",
@@ -538,7 +708,6 @@ public class ParkingPanel extends JPanel {
                 )
         );
 
-        //OCCUPIED
         legendPanel.add(
                 createLegendItem(
                         "Occupied",
@@ -546,7 +715,6 @@ public class ParkingPanel extends JPanel {
                 )
         );
 
-        //RESERVED
         legendPanel.add(
                 createLegendItem(
                         "Reserved",
@@ -554,10 +722,15 @@ public class ParkingPanel extends JPanel {
                 )
         );
 
+
         return legendPanel;
     }
 
-    //LEGEND ITEM
+
+    //=========================================================
+    // LEGEND ITEM
+    //=========================================================
+
     private JPanel createLegendItem(
             String text,
             Color color
@@ -576,7 +749,7 @@ public class ParkingPanel extends JPanel {
                 UITheme.BACKGROUND_COLOR
         );
 
-        //COLOR INDICATOR
+
         JPanel indicator =
                 new JPanel();
 
@@ -591,7 +764,7 @@ public class ParkingPanel extends JPanel {
                 color
         );
 
-        //TEXT
+
         JLabel label =
                 new JLabel(
                         text
@@ -604,6 +777,7 @@ public class ParkingPanel extends JPanel {
         label.setFont(
                 UITheme.regular(13)
         );
+
 
         itemPanel.add(
                 indicator

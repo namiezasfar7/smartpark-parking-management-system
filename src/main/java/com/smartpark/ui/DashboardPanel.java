@@ -1,9 +1,11 @@
 package com.smartpark.ui;
 
 //IMPORTS
+import com.smartpark.controller.DashboardController;
+import com.smartpark.ui.components.RoundedPanelBorder;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import com.smartpark.ui.components.RoundedPanelBorder;
 import java.awt.*;
 
 //DASHBOARD PANEL CLASS
@@ -32,8 +34,40 @@ public class DashboardPanel extends JPanel {
 
     private JPanel workspacePanel;
 
+    //CONTROLLER
+    private DashboardController dashboardController;
+
     //DECLARE CONSTRUCTOR
-    public DashboardPanel() {
+    public DashboardPanel(
+            DashboardController dashboardController
+    ) {
+
+        this.dashboardController =
+                dashboardController;
+
+        //INITIALIZE COMPONENTS
+        dashboardPanel = new JPanel();
+
+        dashboardLabel = new JLabel();
+
+        spacesCard = new JPanel();
+        availableCard = new JPanel();
+        occupiedCard = new JPanel();
+        sessionCard = new JPanel();
+
+        spacesTitleLabel = new JLabel();
+        spacesValueLabel = new JLabel();
+
+        availableTitleLabel = new JLabel();
+        availableValueLabel = new JLabel();
+
+        occupiedTitleLabel = new JLabel();
+        occupiedValueLabel = new JLabel();
+
+        sessionTitleLabel = new JLabel();
+        sessionValueLabel = new JLabel();
+
+        workspacePanel = new JPanel();
 
         //ROOT PANEL
         setLayout(
@@ -44,7 +78,7 @@ public class DashboardPanel extends JPanel {
                 UITheme.BACKGROUND_COLOR
         );
 
-        //ADD DESIGNER PANEL
+        //ADD DASHBOARD PANEL
         add(
                 dashboardPanel,
                 BorderLayout.CENTER
@@ -68,10 +102,10 @@ public class DashboardPanel extends JPanel {
 
         dashboardPanel.setBorder(
                 new EmptyBorder(
-                        5,
-                        5,
-                        5,
-                        5
+                        15,
+                        15,
+                        15,
+                        15
                 )
         );
 
@@ -92,7 +126,7 @@ public class DashboardPanel extends JPanel {
                 new EmptyBorder(
                         0,
                         0,
-                        20,
+                        25,
                         0
                 )
         );
@@ -104,8 +138,8 @@ public class DashboardPanel extends JPanel {
                 new GridLayout(
                         2,
                         2,
-                        18,
-                        18
+                        24,
+                        24
                 )
         );
 
@@ -117,10 +151,23 @@ public class DashboardPanel extends JPanel {
                 new EmptyBorder(
                         5,
                         0,
-                        0,
+                        5,
                         0
                 )
         );
+
+        //GET DATA FROM CONTROLLER
+        int totalSpaces =
+                dashboardController.getTotalSpaces();
+
+        int occupiedSpaces =
+                dashboardController.getOccupiedSpaces();
+
+        int availableSpaces =
+                dashboardController.getAvailableSpaces();
+
+        int activeSessions =
+                dashboardController.getActiveSessions();
 
         //STYLE CARDS
         setupCard(
@@ -128,7 +175,7 @@ public class DashboardPanel extends JPanel {
                 spacesTitleLabel,
                 spacesValueLabel,
                 "Total Spaces",
-                "25",
+                String.valueOf(totalSpaces),
                 UITheme.CARD_TOTAL
         );
 
@@ -137,7 +184,7 @@ public class DashboardPanel extends JPanel {
                 occupiedTitleLabel,
                 occupiedValueLabel,
                 "Occupied Spaces",
-                "7",
+                String.valueOf(occupiedSpaces),
                 UITheme.CARD_OCCUPIED
         );
 
@@ -146,7 +193,7 @@ public class DashboardPanel extends JPanel {
                 availableTitleLabel,
                 availableValueLabel,
                 "Available Spaces",
-                "18",
+                String.valueOf(availableSpaces),
                 UITheme.CARD_AVAILABLE
         );
 
@@ -155,7 +202,7 @@ public class DashboardPanel extends JPanel {
                 sessionTitleLabel,
                 sessionValueLabel,
                 "Active Sessions",
-                "7",
+                String.valueOf(activeSessions),
                 UITheme.CARD_SESSIONS
         );
 
@@ -235,10 +282,10 @@ public class DashboardPanel extends JPanel {
 
         titleLabel.setBorder(
                 new EmptyBorder(
-                        22,
-                        24,
-                        10,
-                        24
+                        28,
+                        30,
+                        14,
+                        30
                 )
         );
 
@@ -257,10 +304,10 @@ public class DashboardPanel extends JPanel {
 
         valueLabel.setBorder(
                 new EmptyBorder(
-                        10,
-                        24,
-                        22,
-                        24
+                        14,
+                        30,
+                        28,
+                        30
                 )
         );
 
@@ -278,8 +325,8 @@ public class DashboardPanel extends JPanel {
         //CARD SIZE
         card.setPreferredSize(
                 new Dimension(
-                        300,
-                        180
+                        320,
+                        190
                 )
         );
     }

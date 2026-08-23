@@ -1,20 +1,22 @@
 package com.smartpark.ui;
 
-//IMPORTS
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
+
 import java.awt.*;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 
-//ANALYTICS PANEL CLASS
 public class AnalyticsPanel extends JPanel {
 
-    //DECLARE ATTRIBUTES
+    //=========================================================
+    // ATTRIBUTES
+    //=========================================================
+
     private JPanel analyticsPanel;
     private JLabel analyticsLabel;
     private JPanel workspacePanel;
@@ -32,19 +34,36 @@ public class AnalyticsPanel extends JPanel {
     private DonutChartPanel statusChartPanel;
 
 
-    //CONSTRUCTOR
+    //=========================================================
+    // CONSTRUCTOR
+    //=========================================================
+
     public AnalyticsPanel() {
 
-        setLayout(new BorderLayout());
-        setBackground(UITheme.BACKGROUND_COLOR);
+        setLayout(
+                new BorderLayout()
+        );
 
-        analyticsPanel = new JPanel(new BorderLayout());
-        analyticsPanel.setBackground(UITheme.BACKGROUND_COLOR);
+        setBackground(
+                UITheme.BACKGROUND_COLOR
+        );
+
+
+        analyticsPanel =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        analyticsPanel.setBackground(
+                UITheme.BACKGROUND_COLOR
+        );
+
 
         add(
                 analyticsPanel,
                 BorderLayout.CENTER
         );
+
 
         setupAnalyticsPanel();
     }
@@ -66,9 +85,14 @@ public class AnalyticsPanel extends JPanel {
         );
 
 
-        //TITLE
+        //=====================================================
+        // TITLE
+        //=====================================================
+
         analyticsLabel =
-                new JLabel("Analytics");
+                new JLabel(
+                        "Analytics"
+                );
 
         analyticsLabel.setForeground(
                 UITheme.TEXT_COLOR
@@ -87,15 +111,20 @@ public class AnalyticsPanel extends JPanel {
                 )
         );
 
+
         analyticsPanel.add(
                 analyticsLabel,
                 BorderLayout.NORTH
         );
 
 
-        //WORKSPACE
+        //=====================================================
+        // WORKSPACE
+        //=====================================================
+
         workspacePanel =
                 new JPanel();
+
 
         workspacePanel.setLayout(
                 new BoxLayout(
@@ -114,40 +143,52 @@ public class AnalyticsPanel extends JPanel {
         setupStatisticsTable();
 
 
-        //WORKSPACE SCROLL PANE
+        //=====================================================
+        // WORKSPACE SCROLL
+        //=====================================================
+
         JScrollPane workspaceScrollPane =
                 new JScrollPane(
                         workspacePanel
                 );
 
-        workspaceScrollPane.setBorder(null);
+        workspaceScrollPane.setBorder(
+                null
+        );
 
         workspaceScrollPane.setBackground(
                 UITheme.BACKGROUND_COLOR
         );
 
-        workspaceScrollPane.getViewport().setBackground(
-                UITheme.BACKGROUND_COLOR
-        );
+        workspaceScrollPane.getViewport()
+                .setBackground(
+                        UITheme.BACKGROUND_COLOR
+                );
 
         workspaceScrollPane.setHorizontalScrollBarPolicy(
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+                ScrollPaneConstants
+                        .HORIZONTAL_SCROLLBAR_NEVER
         );
 
         workspaceScrollPane.setVerticalScrollBarPolicy(
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
+                ScrollPaneConstants
+                        .VERTICAL_SCROLLBAR_AS_NEEDED
         );
 
         workspaceScrollPane.getVerticalScrollBar()
-                .setUnitIncrement(16);
+                .setUnitIncrement(
+                        16
+                );
 
 
-        //=========================================================
-        // THEMED SCROLLBAR
-        //=========================================================
+        //=====================================================
+        // SCROLLBAR
+        //=====================================================
 
         JScrollBar verticalScrollBar =
-                workspaceScrollPane.getVerticalScrollBar();
+                workspaceScrollPane
+                        .getVerticalScrollBar();
+
 
         verticalScrollBar.setBackground(
                 UITheme.BACKGROUND_COLOR
@@ -163,6 +204,7 @@ public class AnalyticsPanel extends JPanel {
                         0
                 )
         );
+
 
         verticalScrollBar.setUI(
                 new BasicScrollBarUI() {
@@ -264,6 +306,7 @@ public class AnalyticsPanel extends JPanel {
                             return;
                         }
 
+
                         Graphics2D g2 =
                                 (Graphics2D) g.create();
 
@@ -276,14 +319,29 @@ public class AnalyticsPanel extends JPanel {
                                 UITheme.BUTTON_COLOR
                         );
 
+
+                        int width =
+                                Math.max(
+                                        1,
+                                        thumbBounds.width - 4
+                                );
+
+                        int height =
+                                Math.max(
+                                        1,
+                                        thumbBounds.height - 4
+                                );
+
+
                         g2.fillRoundRect(
                                 thumbBounds.x + 2,
                                 thumbBounds.y + 2,
-                                thumbBounds.width - 4,
-                                thumbBounds.height - 4,
+                                width,
+                                height,
                                 6,
                                 6
                         );
+
 
                         g2.dispose();
                     }
@@ -381,6 +439,7 @@ public class AnalyticsPanel extends JPanel {
                 cardsPanel
         );
 
+
         workspacePanel.add(
                 Box.createRigidArea(
                         new Dimension(
@@ -392,7 +451,10 @@ public class AnalyticsPanel extends JPanel {
     }
 
 
-    //CREATE STATISTIC CARD
+    //=========================================================
+    // STATISTIC CARD
+    //=========================================================
+
     private JPanel createStatisticCard(
             String title,
             String value,
@@ -402,6 +464,7 @@ public class AnalyticsPanel extends JPanel {
         JPanel card =
                 new JPanel();
 
+
         card.setLayout(
                 new BoxLayout(
                         card,
@@ -409,7 +472,9 @@ public class AnalyticsPanel extends JPanel {
                 )
         );
 
-        card.setBackground(color);
+        card.setBackground(
+                color
+        );
 
         card.setBorder(
                 new EmptyBorder(
@@ -459,7 +524,10 @@ public class AnalyticsPanel extends JPanel {
         );
 
 
-        card.add(titleLabel);
+        card.add(
+                titleLabel
+        );
+
 
         card.add(
                 Box.createRigidArea(
@@ -470,7 +538,10 @@ public class AnalyticsPanel extends JPanel {
                 )
         );
 
-        card.add(valueLabel);
+
+        card.add(
+                valueLabel
+        );
 
 
         return card;
@@ -492,6 +563,7 @@ public class AnalyticsPanel extends JPanel {
                                 0
                         )
                 );
+
 
         chartsPanel.setBackground(
                 UITheme.BACKGROUND_COLOR
@@ -523,34 +595,50 @@ public class AnalyticsPanel extends JPanel {
         );
 
 
-        //LINE CHART
+        //=====================================================
+        // LINE CHART
+        //=====================================================
+
         JPanel sessionsContainer =
                 createChartContainer(
                         "Sessions Over Time"
                 );
 
+
         sessionsChartPanel =
                 new LineChartPanel();
 
-        sessionsContainer.add(
-                sessionsChartPanel,
-                BorderLayout.CENTER
-        );
+
+        if (sessionsChartPanel != null) {
+
+            sessionsContainer.add(
+                    sessionsChartPanel,
+                    BorderLayout.CENTER
+            );
+        }
 
 
-        //DONUT CHART
+        //=====================================================
+        // DONUT CHART
+        //=====================================================
+
         JPanel statusContainer =
                 createChartContainer(
                         "Session Status"
                 );
 
+
         statusChartPanel =
                 new DonutChartPanel();
 
-        statusContainer.add(
-                statusChartPanel,
-                BorderLayout.CENTER
-        );
+
+        if (statusChartPanel != null) {
+
+            statusContainer.add(
+                    statusChartPanel,
+                    BorderLayout.CENTER
+            );
+        }
 
 
         chartsPanel.add(
@@ -566,6 +654,7 @@ public class AnalyticsPanel extends JPanel {
                 chartsPanel
         );
 
+
         workspacePanel.add(
                 Box.createRigidArea(
                         new Dimension(
@@ -577,7 +666,10 @@ public class AnalyticsPanel extends JPanel {
     }
 
 
-    //CREATE CHART CONTAINER
+    //=========================================================
+    // CHART CONTAINER
+    //=========================================================
+
     private JPanel createChartContainer(
             String title
     ) {
@@ -586,6 +678,7 @@ public class AnalyticsPanel extends JPanel {
                 new JPanel(
                         new BorderLayout()
                 );
+
 
         panel.setBackground(
                 UITheme.CARD_COLOR
@@ -606,6 +699,7 @@ public class AnalyticsPanel extends JPanel {
                 )
         );
 
+
         panel.setMinimumSize(
                 new Dimension(
                         0,
@@ -615,7 +709,9 @@ public class AnalyticsPanel extends JPanel {
 
 
         JLabel titleLabel =
-                new JLabel(title);
+                new JLabel(
+                        title
+                );
 
         titleLabel.setForeground(
                 UITheme.TEXT_COLOR
@@ -640,6 +736,7 @@ public class AnalyticsPanel extends JPanel {
                 BorderLayout.NORTH
         );
 
+
         return panel;
     }
 
@@ -658,9 +755,11 @@ public class AnalyticsPanel extends JPanel {
                         )
                 );
 
+
         statisticsPanel.setBackground(
                 UITheme.CARD_COLOR
         );
+
 
         statisticsPanel.setBorder(
                 BorderFactory.createCompoundBorder(
@@ -676,6 +775,7 @@ public class AnalyticsPanel extends JPanel {
                         )
                 )
         );
+
 
         statisticsPanel.setPreferredSize(
                 new Dimension(
@@ -708,6 +808,7 @@ public class AnalyticsPanel extends JPanel {
                         "Session Statistics"
                 );
 
+
         statisticsLabel.setForeground(
                 UITheme.TEXT_COLOR
         );
@@ -717,7 +818,10 @@ public class AnalyticsPanel extends JPanel {
         );
 
 
-        //TABLE DATA
+        //=====================================================
+        // TABLE DATA
+        //=====================================================
+
         String[] columns = {
                 "Registration",
                 "Parking Space",
@@ -726,6 +830,7 @@ public class AnalyticsPanel extends JPanel {
                 "Duration",
                 "Status"
         };
+
 
         Object[][] data = {
                 {
@@ -769,6 +874,7 @@ public class AnalyticsPanel extends JPanel {
                         columns
                 );
 
+
         statisticsTable.setBackground(
                 UITheme.CARD_COLOR
         );
@@ -781,7 +887,9 @@ public class AnalyticsPanel extends JPanel {
                 UITheme.regular(13)
         );
 
-        statisticsTable.setRowHeight(34);
+        statisticsTable.setRowHeight(
+                34
+        );
 
         statisticsTable.setGridColor(
                 UITheme.BORDER_COLOR
@@ -795,14 +903,22 @@ public class AnalyticsPanel extends JPanel {
                 UITheme.TEXT_COLOR
         );
 
-        statisticsTable.setShowVerticalLines(false);
+        statisticsTable.setShowVerticalLines(
+                false
+        );
 
-        statisticsTable.setFillsViewportHeight(true);
+        statisticsTable.setFillsViewportHeight(
+                true
+        );
 
 
-        //HEADER
+        //=====================================================
+        // HEADER
+        //=====================================================
+
         JTableHeader header =
                 statisticsTable.getTableHeader();
+
 
         header.setBackground(
                 UITheme.BUTTON_COLOR
@@ -827,6 +943,7 @@ public class AnalyticsPanel extends JPanel {
         DefaultTableCellRenderer headerRenderer =
                 new DefaultTableCellRenderer();
 
+
         headerRenderer.setBackground(
                 UITheme.BUTTON_COLOR
         );
@@ -843,13 +960,19 @@ public class AnalyticsPanel extends JPanel {
                 SwingConstants.CENTER
         );
 
+
         header.setDefaultRenderer(
                 headerRenderer
         );
 
 
+        //=====================================================
+        // CELL RENDERER
+        //=====================================================
+
         DefaultTableCellRenderer cellRenderer =
                 new DefaultTableCellRenderer();
+
 
         cellRenderer.setBackground(
                 UITheme.CARD_COLOR
@@ -867,24 +990,31 @@ public class AnalyticsPanel extends JPanel {
                 SwingConstants.CENTER
         );
 
+
         statisticsTable.setDefaultRenderer(
                 Object.class,
                 cellRenderer
         );
 
 
+        //=====================================================
+        // SCROLL PANE
+        //=====================================================
+
         statisticsScrollPane =
                 new JScrollPane(
                         statisticsTable
                 );
 
+
         statisticsScrollPane.setBackground(
                 UITheme.CARD_COLOR
         );
 
-        statisticsScrollPane.getViewport().setBackground(
-                UITheme.CARD_COLOR
-        );
+        statisticsScrollPane.getViewport()
+                .setBackground(
+                        UITheme.CARD_COLOR
+                );
 
         statisticsScrollPane.setBorder(
                 new LineBorder(
@@ -898,6 +1028,7 @@ public class AnalyticsPanel extends JPanel {
                 statisticsLabel,
                 BorderLayout.NORTH
         );
+
 
         statisticsPanel.add(
                 statisticsScrollPane,
@@ -918,8 +1049,15 @@ public class AnalyticsPanel extends JPanel {
     private class LineChartPanel extends JPanel {
 
         private final int[] values = {
-                5, 8, 6, 11, 9, 14, 17
+                5,
+                8,
+                6,
+                11,
+                9,
+                14,
+                17
         };
+
 
         private final String[] labels = {
                 "Mon",
@@ -938,7 +1076,16 @@ public class AnalyticsPanel extends JPanel {
                     UITheme.CARD_COLOR
             );
 
-            setOpaque(true);
+            setOpaque(
+                    true
+            );
+
+            setPreferredSize(
+                    new Dimension(
+                            0,
+                            220
+                    )
+            );
 
             setMinimumSize(
                     new Dimension(
@@ -954,10 +1101,14 @@ public class AnalyticsPanel extends JPanel {
                 Graphics g
         ) {
 
-            super.paintComponent(g);
+            super.paintComponent(
+                    g
+            );
+
 
             Graphics2D g2 =
                     (Graphics2D) g.create();
+
 
             g2.setRenderingHint(
                     RenderingHints.KEY_ANTIALIASING,
@@ -965,39 +1116,55 @@ public class AnalyticsPanel extends JPanel {
             );
 
 
-            int width = getWidth();
-            int height = getHeight();
+            int width =
+                    getWidth();
+
+            int height =
+                    getHeight();
+
 
             int left = 40;
             int right = 15;
             int top = 15;
             int bottom = 35;
 
+
             int chartWidth =
-                    width - left - right;
+                    width -
+                            left -
+                            right;
+
 
             int chartHeight =
-                    height - top - bottom;
+                    height -
+                            top -
+                            bottom;
 
 
             if (chartWidth <= 0 ||
                     chartHeight <= 0) {
 
                 g2.dispose();
+
                 return;
             }
 
 
-            //GRID
+            //=================================================
+            // GRID
+            //=================================================
+
             g2.setColor(
                     UITheme.BORDER_COLOR
             );
+
 
             for (int i = 0; i <= 4; i++) {
 
                 int y =
                         top +
                                 chartHeight * i / 4;
+
 
                 g2.drawLine(
                         left,
@@ -1011,10 +1178,14 @@ public class AnalyticsPanel extends JPanel {
             int maxValue = 20;
 
 
-            //LINE
+            //=================================================
+            // LINE
+            //=================================================
+
             g2.setColor(
                     UITheme.TEXT_COLOR
             );
+
 
             g2.setStroke(
                     new BasicStroke(
@@ -1029,12 +1200,28 @@ public class AnalyticsPanel extends JPanel {
             int previousY = 0;
 
 
-            for (int i = 0; i < values.length; i++) {
+            for (int i = 0;
+                 i < values.length;
+                 i++) {
 
-                int x =
-                        left +
-                                chartWidth * i /
-                                        (values.length - 1);
+
+                int x;
+
+
+                if (values.length == 1) {
+
+                    x =
+                            left +
+                                    chartWidth / 2;
+
+                } else {
+
+                    x =
+                            left +
+                                    chartWidth * i /
+                                            (values.length - 1);
+                }
+
 
                 int y =
                         top +
@@ -1045,6 +1232,10 @@ public class AnalyticsPanel extends JPanel {
 
 
                 if (i > 0) {
+
+                    g2.setColor(
+                            UITheme.TEXT_COLOR
+                    );
 
                     g2.drawLine(
                             previousX,
@@ -1059,6 +1250,7 @@ public class AnalyticsPanel extends JPanel {
                         UITheme.BUTTON_SELECTED_COLOR
                 );
 
+
                 g2.fill(
                         new Ellipse2D.Double(
                                 x - 5,
@@ -1068,39 +1260,58 @@ public class AnalyticsPanel extends JPanel {
                         )
                 );
 
+
                 previousX = x;
                 previousY = y;
-
-                g2.setColor(
-                        UITheme.TEXT_COLOR
-                );
             }
 
 
-            //LABELS
+            //=================================================
+            // LABELS
+            //=================================================
+
             g2.setColor(
                     UITheme.SECONDARY_TEXT_COLOR
             );
+
 
             g2.setFont(
                     UITheme.regular(12)
             );
 
+
             FontMetrics fm =
                     g2.getFontMetrics();
 
 
-            for (int i = 0; i < labels.length; i++) {
+            for (int i = 0;
+                 i < labels.length;
+                 i++) {
 
-                int x =
-                        left +
-                                chartWidth * i /
-                                        (labels.length - 1);
+
+                int x;
+
+
+                if (labels.length == 1) {
+
+                    x =
+                            left +
+                                    chartWidth / 2;
+
+                } else {
+
+                    x =
+                            left +
+                                    chartWidth * i /
+                                            (labels.length - 1);
+                }
+
 
                 int textWidth =
                         fm.stringWidth(
                                 labels[i]
                         );
+
 
                 g2.drawString(
                         labels[i],
@@ -1132,7 +1343,16 @@ public class AnalyticsPanel extends JPanel {
                     UITheme.CARD_COLOR
             );
 
-            setOpaque(true);
+            setOpaque(
+                    true
+            );
+
+            setPreferredSize(
+                    new Dimension(
+                            0,
+                            220
+                    )
+            );
 
             setMinimumSize(
                     new Dimension(
@@ -1148,10 +1368,14 @@ public class AnalyticsPanel extends JPanel {
                 Graphics g
         ) {
 
-            super.paintComponent(g);
+            super.paintComponent(
+                    g
+            );
+
 
             Graphics2D g2 =
                     (Graphics2D) g.create();
+
 
             g2.setRenderingHint(
                     RenderingHints.KEY_ANTIALIASING,
@@ -1165,43 +1389,84 @@ public class AnalyticsPanel extends JPanel {
                             other;
 
 
-            int width = getWidth();
-            int height = getHeight();
+            if (total <= 0) {
+
+                g2.dispose();
+
+                return;
+            }
+
+
+            int width =
+                    getWidth();
+
+            int height =
+                    getHeight();
 
 
             int diameter =
                     Math.min(
-                            Math.min(
-                                    height - 20,
-                                    175
-                            ),
                             Math.max(
                                     130,
-                                    width / 2
+                                    height - 20
+                            ),
+                            175
+                    );
+
+
+            diameter =
+                    Math.min(
+                            diameter,
+                            Math.max(
+                                    120,
+                                    width - 160
                             )
+                    );
+
+
+            diameter =
+                    Math.max(
+                            100,
+                            diameter
                     );
 
 
             int x = 20;
 
+
             int y =
-                    (height - diameter) / 2;
+                    Math.max(
+                            0,
+                            (height - diameter) / 2
+                    );
 
 
             double completedAngle =
-                    360.0 * completed / total;
+                    360.0 *
+                            completed /
+                            total;
+
 
             double activeAngle =
-                    360.0 * active / total;
+                    360.0 *
+                            active /
+                            total;
+
 
             double otherAngle =
-                    360.0 * other / total;
+                    360.0 *
+                            other /
+                            total;
 
 
-            //COMPLETED
+            //=================================================
+            // COMPLETED
+            //=================================================
+
             g2.setColor(
                     UITheme.CARD_AVAILABLE
             );
+
 
             g2.fill(
                     new Arc2D.Double(
@@ -1216,10 +1481,14 @@ public class AnalyticsPanel extends JPanel {
             );
 
 
-            //ACTIVE
+            //=================================================
+            // ACTIVE
+            //=================================================
+
             g2.setColor(
                     UITheme.CARD_OCCUPIED
             );
+
 
             g2.fill(
                     new Arc2D.Double(
@@ -1234,10 +1503,14 @@ public class AnalyticsPanel extends JPanel {
             );
 
 
-            //OTHER
+            //=================================================
+            // OTHER
+            //=================================================
+
             g2.setColor(
                     UITheme.CARD_SESSIONS
             );
+
 
             g2.fill(
                     new Arc2D.Double(
@@ -1254,13 +1527,18 @@ public class AnalyticsPanel extends JPanel {
             );
 
 
-            //CENTER HOLE
+            //=================================================
+            // CENTER HOLE
+            //=================================================
+
             int holeSize =
                     diameter / 2;
+
 
             int holeX =
                     x +
                             (diameter - holeSize) / 2;
+
 
             int holeY =
                     y +
@@ -1271,6 +1549,7 @@ public class AnalyticsPanel extends JPanel {
                     UITheme.CARD_COLOR
             );
 
+
             g2.fillOval(
                     holeX,
                     holeY,
@@ -1279,14 +1558,25 @@ public class AnalyticsPanel extends JPanel {
             );
 
 
-            //LEGEND
-            int legendX =
-                    x + diameter + 25;
+            //=================================================
+            // LEGEND
+            //=================================================
 
-            //If screen is narrower, put legend closer
+            int legendX =
+                    x +
+                            diameter +
+                            25;
+
+
             if (legendX + 130 > width) {
-                legendX = x + diameter - 5;
+
+                legendX =
+                        Math.max(
+                                10,
+                                width - 130
+                        );
             }
+
 
             int legendY = 45;
 
@@ -1299,6 +1589,7 @@ public class AnalyticsPanel extends JPanel {
                     "Completed  96"
             );
 
+
             drawLegend(
                     g2,
                     legendX,
@@ -1306,6 +1597,7 @@ public class AnalyticsPanel extends JPanel {
                     UITheme.CARD_OCCUPIED,
                     "Active  12"
             );
+
 
             drawLegend(
                     g2,
@@ -1328,7 +1620,10 @@ public class AnalyticsPanel extends JPanel {
                 String text
         ) {
 
-            g2.setColor(color);
+            g2.setColor(
+                    color
+            );
+
 
             g2.fillRoundRect(
                     x,
@@ -1339,13 +1634,16 @@ public class AnalyticsPanel extends JPanel {
                     4
             );
 
+
             g2.setColor(
                     UITheme.TEXT_COLOR
             );
 
+
             g2.setFont(
                     UITheme.regular(12)
             );
+
 
             g2.drawString(
                     text,
