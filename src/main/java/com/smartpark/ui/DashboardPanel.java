@@ -38,12 +38,9 @@ public class DashboardPanel extends JPanel {
     private DashboardController dashboardController;
 
     //DECLARE CONSTRUCTOR
-    public DashboardPanel(
-            DashboardController dashboardController
-    ) {
+    public DashboardPanel(DashboardController dashboardController) {
 
-        this.dashboardController =
-                dashboardController;
+        this.dashboardController = dashboardController;
 
         //INITIALIZE COMPONENTS
         dashboardPanel = new JPanel();
@@ -70,19 +67,12 @@ public class DashboardPanel extends JPanel {
         workspacePanel = new JPanel();
 
         //ROOT PANEL
-        setLayout(
-                new BorderLayout()
-        );
+        setLayout(new BorderLayout());
 
-        setBackground(
-                UITheme.BACKGROUND_COLOR
-        );
+        setBackground(UITheme.BACKGROUND_COLOR);
 
         //ADD DASHBOARD PANEL
-        add(
-                dashboardPanel,
-                BorderLayout.CENTER
-        );
+        add(dashboardPanel, BorderLayout.CENTER);
 
         //SETUP DASHBOARD
         setupDashboard();
@@ -92,82 +82,35 @@ public class DashboardPanel extends JPanel {
     private void setupDashboard() {
 
         //MAIN DASHBOARD PANEL
-        dashboardPanel.setLayout(
-                new BorderLayout()
-        );
+        dashboardPanel.setLayout(new BorderLayout());
 
-        dashboardPanel.setBackground(
-                UITheme.BACKGROUND_COLOR
-        );
+        dashboardPanel.setBackground(UITheme.BACKGROUND_COLOR);
 
-        dashboardPanel.setBorder(
-                new EmptyBorder(
-                        15,
-                        15,
-                        15,
-                        15
-                )
-        );
+        dashboardPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
         //DASHBOARD TITLE
-        dashboardLabel.setText(
-                "Dashboard"
-        );
+        dashboardLabel.setText("Dashboard");
 
-        dashboardLabel.setForeground(
-                UITheme.TEXT_COLOR
-        );
+        dashboardLabel.setForeground(UITheme.TEXT_COLOR);
 
-        dashboardLabel.setFont(
-                UITheme.bold(28)
-        );
+        dashboardLabel.setFont(UITheme.bold(28));
 
-        dashboardLabel.setBorder(
-                new EmptyBorder(
-                        0,
-                        0,
-                        25,
-                        0
-                )
-        );
+        dashboardLabel.setBorder(new EmptyBorder(0, 0, 25, 0));
 
         //WORKSPACE
         workspacePanel.removeAll();
 
-        workspacePanel.setLayout(
-                new GridLayout(
-                        2,
-                        2,
-                        24,
-                        24
-                )
-        );
+        workspacePanel.setLayout(new GridLayout(2, 2, 24, 24));
 
-        workspacePanel.setBackground(
-                UITheme.BACKGROUND_COLOR
-        );
+        workspacePanel.setBackground(UITheme.BACKGROUND_COLOR);
 
-        workspacePanel.setBorder(
-                new EmptyBorder(
-                        5,
-                        0,
-                        5,
-                        0
-                )
-        );
+        workspacePanel.setBorder(new EmptyBorder(5, 0, 5, 0));
 
         //GET DATA FROM CONTROLLER
-        int totalSpaces =
-                dashboardController.getTotalSpaces();
-
-        int occupiedSpaces =
-                dashboardController.getOccupiedSpaces();
-
-        int availableSpaces =
-                dashboardController.getAvailableSpaces();
-
-        int activeSessions =
-                dashboardController.getActiveSessions();
+        int totalSpaces = dashboardController.getTotalSpaces();
+        int occupiedSpaces = dashboardController.getOccupiedSpaces();
+        int availableSpaces = dashboardController.getAvailableSpaces();
+        int activeSessions = dashboardController.getActiveSessions();
 
         //STYLE CARDS
         setupCard(
@@ -207,34 +150,17 @@ public class DashboardPanel extends JPanel {
         );
 
         //ADD CARDS
-        workspacePanel.add(
-                spacesCard
-        );
-
-        workspacePanel.add(
-                occupiedCard
-        );
-
-        workspacePanel.add(
-                availableCard
-        );
-
-        workspacePanel.add(
-                sessionCard
-        );
+        workspacePanel.add(spacesCard);
+        workspacePanel.add(occupiedCard);
+        workspacePanel.add(availableCard);
+        workspacePanel.add(sessionCard);
 
         //BUILD DASHBOARD
         dashboardPanel.removeAll();
 
-        dashboardPanel.add(
-                dashboardLabel,
-                BorderLayout.NORTH
-        );
+        dashboardPanel.add(dashboardLabel, BorderLayout.NORTH);
 
-        dashboardPanel.add(
-                workspacePanel,
-                BorderLayout.CENTER
-        );
+        dashboardPanel.add(workspacePanel, BorderLayout.CENTER);
 
         dashboardPanel.revalidate();
         dashboardPanel.repaint();
@@ -251,83 +177,32 @@ public class DashboardPanel extends JPanel {
     ) {
 
         //CARD
-        card.setOpaque(
-                false
-        );
+        card.setOpaque(false);
 
-        card.setLayout(
-                new BorderLayout()
-        );
+        card.setLayout(new BorderLayout());
 
         //ROUNDED CARD BACKGROUND
-        card.setBorder(
-                new RoundedPanelBorder(
-                        cardColor,
-                        24
-                )
-        );
+        card.setBorder(new RoundedPanelBorder(cardColor, 24));
 
         //TITLE
-        titleLabel.setText(
-                title
-        );
+        titleLabel.setText(title);
+        titleLabel.setForeground(UITheme.TEXT_COLOR);
+        titleLabel.setFont(UITheme.regular(15));
 
-        titleLabel.setForeground(
-                UITheme.TEXT_COLOR
-        );
-
-        titleLabel.setFont(
-                UITheme.regular(15)
-        );
-
-        titleLabel.setBorder(
-                new EmptyBorder(
-                        28,
-                        30,
-                        14,
-                        30
-                )
-        );
+        titleLabel.setBorder(new EmptyBorder(28, 30, 14, 30));
 
         //VALUE
-        valueLabel.setText(
-                value
-        );
+        valueLabel.setText(value);
+        valueLabel.setForeground(UITheme.TEXT_COLOR);
+        valueLabel.setFont(UITheme.bold(32));
 
-        valueLabel.setForeground(
-                UITheme.TEXT_COLOR
-        );
-
-        valueLabel.setFont(
-                UITheme.bold(32)
-        );
-
-        valueLabel.setBorder(
-                new EmptyBorder(
-                        14,
-                        30,
-                        28,
-                        30
-                )
-        );
+        valueLabel.setBorder(new EmptyBorder(14, 30, 28, 30));
 
         //ADD COMPONENTS
-        card.add(
-                titleLabel,
-                BorderLayout.NORTH
-        );
-
-        card.add(
-                valueLabel,
-                BorderLayout.SOUTH
-        );
+        card.add(titleLabel, BorderLayout.NORTH);
+        card.add(valueLabel, BorderLayout.SOUTH);
 
         //CARD SIZE
-        card.setPreferredSize(
-                new Dimension(
-                        320,
-                        190
-                )
-        );
+        card.setPreferredSize(new Dimension(320, 190));
     }
 }

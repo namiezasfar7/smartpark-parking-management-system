@@ -35,36 +35,16 @@ public final class UITheme {
     public static final String FONT_NAME = "Poppins";
 
     //FONT METHODS
-    public static Font font(
-            float size,
-            int style
-    ) {
-
-        return new Font(
-                FONT_NAME,
-                style,
-                (int) size
-        );
+    public static Font font(float size, int style) {
+        return new Font(FONT_NAME, style, (int) size);
     }
 
-    public static Font regular(
-            float size
-    ) {
-
-        return font(
-                size,
-                Font.PLAIN
-        );
+    public static Font regular(float size) {
+        return font(size, Font.PLAIN);
     }
 
-    public static Font bold(
-            float size
-    ) {
-
-        return font(
-                size,
-                Font.BOLD
-        );
+    public static Font bold(float size) {
+        return font(size, Font.BOLD);
     }
 
     //PREVENT INSTANTIATION

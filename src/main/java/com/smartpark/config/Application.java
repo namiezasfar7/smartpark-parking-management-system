@@ -26,19 +26,19 @@ import com.smartpark.service.VehicleService;
 public class Application {
 
     //DECLARE ATTRIBUTES
-    //DECLARE REPOSITORIES
+    //REPOSITORIES
     private final VehicleRepository vehicleRepository;
     private final ParkingSpaceRepository parkingSpaceRepository;
     private final ParkingZoneRepository parkingZoneRepository;
     private final ParkingSessionRepository parkingSessionRepository;
 
-    //DECLARE SERVICES
+    //SERVICES
     private final VehicleService vehicleService;
     private final ParkingService parkingService;
     private final ParkingSessionService parkingSessionService;
     private final AnalyticsService analyticsService;
 
-    //DECLARE CONTROLLERS
+    //CONTROLLERS
     private final VehicleController vehicleController;
     private final ParkingController parkingController;
     private final ParkingSessionController parkingSessionController;
@@ -48,64 +48,25 @@ public class Application {
     public Application() {
 
         //CREATE REPOSITORIES
-        vehicleRepository =
-                new InMemoryVehicleRepository();
-
-        parkingSpaceRepository =
-                new InMemoryParkingSpaceRepository();
-
-        parkingZoneRepository =
-                new InMemoryParkingZoneRepository();
-
-        parkingSessionRepository =
-                new InMemoryParkingSessionRepository();
+        vehicleRepository = new InMemoryVehicleRepository();
+        parkingSpaceRepository = new InMemoryParkingSpaceRepository();
+        parkingZoneRepository = new InMemoryParkingZoneRepository();
+        parkingSessionRepository = new InMemoryParkingSessionRepository();
 
         //CREATE SERVICES
-        vehicleService =
-                new VehicleService(
-                        vehicleRepository
-                );
-
-        parkingService =
-                new ParkingService(
-                        parkingSpaceRepository
-                );
-
-        parkingSessionService =
-                new ParkingSessionService(
-                        parkingSessionRepository,
-                        parkingSpaceRepository
-                );
-
-        analyticsService =
-                new AnalyticsService(
-                        parkingSpaceRepository,
-                        parkingSessionRepository
-                );
+        vehicleService = new VehicleService(vehicleRepository);
+        parkingService = new ParkingService(parkingSpaceRepository);
+        parkingSessionService = new ParkingSessionService(parkingSessionRepository, parkingSpaceRepository);
+        analyticsService = new AnalyticsService(parkingSpaceRepository, parkingSessionRepository);
 
         //CREATE CONTROLLERS
-        vehicleController =
-                new VehicleController(
-                        vehicleService
-                );
-
-        parkingController =
-                new ParkingController(
-                        parkingService
-                );
-
-        parkingSessionController =
-                new ParkingSessionController(
-                        parkingSessionService
-                );
-
-        dashboardController =
-                new DashboardController(
-                        analyticsService
-                );
+        vehicleController = new VehicleController(vehicleService);
+        parkingController = new ParkingController(parkingService);
+        parkingSessionController = new ParkingSessionController(parkingSessionService);
+        dashboardController = new DashboardController(analyticsService);
     }
 
-    //GETTERS - CONTROLLERS
+    //DECLARE GETTERS - CONTROLLERS
     public VehicleController getVehicleController() {
         return vehicleController;
     }

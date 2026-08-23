@@ -1,6 +1,6 @@
 package com.smartpark;
 
-// IMPORTS
+//IMPORTS
 import com.smartpark.controller.DashboardController;
 import com.smartpark.controller.ParkingController;
 import com.smartpark.controller.ParkingSessionController;
@@ -26,95 +26,37 @@ import com.smartpark.ui.MainFrame;
 
 import javax.swing.SwingUtilities;
 
-
-// MAIN CLASS
+//MAIN CLASS
 public class Main {
 
     public static void main(String[] args) {
 
         SwingUtilities.invokeLater(() -> {
 
-            //==================================================
-            // CREATE REPOSITORIES
-            //==================================================
+            //CREATE REPOSITORIES
+            VehicleRepository vehicleRepository = new InMemoryVehicleRepository();
+            ParkingSpaceRepository parkingSpaceRepository = new InMemoryParkingSpaceRepository();
+            ParkingSessionRepository parkingSessionRepository = new InMemoryParkingSessionRepository();
 
-            VehicleRepository vehicleRepository =
-                    new InMemoryVehicleRepository();
+            //CREATE INITIAL PARKING SPACES
+            createInitialParkingSpaces(parkingSpaceRepository);
 
-            ParkingSpaceRepository parkingSpaceRepository =
-                    new InMemoryParkingSpaceRepository();
+            //CREATE SERVICES
+            VehicleService vehicleService = new VehicleService(vehicleRepository);
+            ParkingService parkingService = new ParkingService(parkingSpaceRepository);
+            ParkingSessionService parkingSessionService = new ParkingSessionService(parkingSessionRepository,
+                                                                                    parkingSpaceRepository);
+            AnalyticsService analyticsService = new AnalyticsService(parkingSpaceRepository,
+                                                                     parkingSessionRepository);
 
-            ParkingSessionRepository parkingSessionRepository =
-                    new InMemoryParkingSessionRepository();
+            //CREATE CONTROLLERS
+            VehicleController vehicleController = new VehicleController(vehicleService);
+            ParkingController parkingController = new ParkingController(parkingService);
+            ParkingSessionController parkingSessionController = new ParkingSessionController(parkingSessionService);
+            DashboardController dashboardController = new DashboardController(analyticsService);
 
-
-            //==================================================
-            // CREATE INITIAL PARKING SPACES
-            //==================================================
-
-            createInitialParkingSpaces(
-                    parkingSpaceRepository
-            );
-
-
-            //==================================================
-            // CREATE SERVICES
-            //==================================================
-
-            VehicleService vehicleService =
-                    new VehicleService(
-                            vehicleRepository
-                    );
-
-            ParkingService parkingService =
-                    new ParkingService(
-                            parkingSpaceRepository
-                    );
-
-            ParkingSessionService parkingSessionService =
-                    new ParkingSessionService(
-                            parkingSessionRepository,
-                            parkingSpaceRepository
-                    );
-
-            AnalyticsService analyticsService =
-                    new AnalyticsService(
-                            parkingSpaceRepository,
-                            parkingSessionRepository
-                    );
-
-
-            //==================================================
-            // CREATE CONTROLLERS
-            //==================================================
-
-            VehicleController vehicleController =
-                    new VehicleController(
-                            vehicleService
-                    );
-
-            ParkingController parkingController =
-                    new ParkingController(
-                            parkingService
-                    );
-
-            ParkingSessionController parkingSessionController =
-                    new ParkingSessionController(
-                            parkingSessionService
-                    );
-
-            DashboardController dashboardController =
-                    new DashboardController(
-                            analyticsService
-                    );
-
-
-            //==================================================
-            // CREATE MAIN FRAME
-            //==================================================
-
-            MainFrame mainFrame =
-                    new MainFrame(
+            //CREATE MAIN FRAME
+            MainFrame mainFrame = new MainFrame(
                             vehicleController,
                             parkingController,
                             parkingSessionController,
@@ -122,78 +64,21 @@ public class Main {
                             analyticsService
                     );
 
-
-            //==================================================
-            // SHOW APPLICATION
-            //==================================================
-
+            //SHOW APPLICATION
             mainFrame.setVisible(true);
         });
     }
 
+    //CREATE INITIAL PARKING SPACES
+    private static void createInitialParkingSpaces(ParkingSpaceRepository repository) {
 
-    //=========================================================
-    // CREATE INITIAL PARKING SPACES
-    //=========================================================
-
-    private static void createInitialParkingSpaces(
-            ParkingSpaceRepository repository
-    ) {
-
-        repository.save(
-                new ParkingSpace(
-                        "P-001",
-                        VehicleType.CAR
-                )
-        );
-
-        repository.save(
-                new ParkingSpace(
-                        "P-002",
-                        VehicleType.CAR
-                )
-        );
-
-        repository.save(
-                new ParkingSpace(
-                        "P-003",
-                        VehicleType.CAR
-                )
-        );
-
-        repository.save(
-                new ParkingSpace(
-                        "P-004",
-                        VehicleType.CAR
-                )
-        );
-
-        repository.save(
-                new ParkingSpace(
-                        "P-005",
-                        VehicleType.CAR
-                )
-        );
-
-        repository.save(
-                new ParkingSpace(
-                        "P-006",
-                        VehicleType.CAR
-                )
-        );
-
-        repository.save(
-                new ParkingSpace(
-                        "P-007",
-                        VehicleType.CAR
-                )
-        );
-
-        repository.save(
-                new ParkingSpace(
-                        "P-008",
-                        VehicleType.CAR
-                )
-        );
+        repository.save(new ParkingSpace("P-001", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-002", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-003", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-004", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-005", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-006", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-007", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-008", VehicleType.CAR));
     }
 }

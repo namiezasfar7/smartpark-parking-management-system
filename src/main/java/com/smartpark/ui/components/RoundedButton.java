@@ -11,16 +11,13 @@ public class RoundedButton extends JButton {
 
     //DECLARE ATTRIBUTES
     //BUTTON COLOR
-    private Color normalColor =
-            UITheme.BUTTON_COLOR;
+    private Color normalColor = UITheme.BUTTON_COLOR;
 
     //HOVER COLOR
-    private final Color hoverColor =
-            UITheme.BUTTON_SELECTED_COLOR;
+    private final Color hoverColor = UITheme.BUTTON_SELECTED_COLOR;
 
     //BORDER COLOR
-    private final Color borderColor =
-            UITheme.BORDER_COLOR;
+    private final Color borderColor = UITheme.BORDER_COLOR;
 
     //DECLARE CONSTRUCTOR
     public RoundedButton() {
@@ -28,14 +25,10 @@ public class RoundedButton extends JButton {
         super();
 
         //FONT
-        setFont(
-                UITheme.regular(16)
-        );
+        setFont(UITheme.regular(16));
 
         //TEXT COLOR
-        setForeground(
-                UITheme.TEXT_COLOR
-        );
+        setForeground(UITheme.TEXT_COLOR);
 
         //BUTTON SETTINGS
         setFocusPainted(false);
@@ -43,83 +36,46 @@ public class RoundedButton extends JButton {
         setContentAreaFilled(false);
         setOpaque(false);
 
-        setCursor(
-                new Cursor(
-                        Cursor.HAND_CURSOR
-                )
-        );
+        //SET CURSOR
+        setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        setHorizontalAlignment(
-                SwingConstants.CENTER
-        );
+        //ALIGN CENTER
+        setHorizontalAlignment(SwingConstants.CENTER);
     }
 
-    //SET BUTTON COLOR
-    public void setButtonColor(
-            Color color
-    ) {
+    //DECLARE SETTERS
+    public void setButtonColor(Color color) {
 
         normalColor = color;
-
         repaint();
     }
 
+    //DECLARE METHODS
     //PAINT BUTTON
     @Override
-    protected void paintComponent(
-            Graphics g
-    ) {
+    protected void paintComponent(Graphics g) {
 
-        Graphics2D g2 =
-                (Graphics2D) g.create();
+        Graphics2D g2 = (Graphics2D) g.create();
 
-        g2.setRenderingHint(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON
-        );
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         //BACKGROUND COLOR
         if (getModel().isRollover()) {
 
-            g2.setColor(
-                    hoverColor
-            );
+            g2.setColor(hoverColor);
+        }
+        else {
 
-        } else {
-
-            g2.setColor(
-                    normalColor
-            );
+            g2.setColor(normalColor);
         }
 
         //ROUNDED BACKGROUND
-        g2.fillRoundRect(
-                0,
-                0,
-                getWidth(),
-                getHeight(),
-                18,
-                18
-        );
+        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 18, 18);
 
         //BORDER
-        g2.setColor(
-                borderColor
-        );
-
-        g2.setStroke(
-                new BasicStroke(1)
-        );
-
-        g2.drawRoundRect(
-                0,
-                0,
-                getWidth() - 1,
-                getHeight() - 1,
-                18,
-                18
-        );
-
+        g2.setColor(borderColor);
+        g2.setStroke(new BasicStroke(1));
+        g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 18, 18);
         g2.dispose();
 
         //DRAW BUTTON TEXT

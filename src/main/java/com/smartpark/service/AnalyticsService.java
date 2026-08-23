@@ -1,6 +1,6 @@
 package com.smartpark.service;
 
-// IMPORTS
+//IMPORTS
 import com.smartpark.model.ParkingSession;
 import com.smartpark.model.ParkingSessionStatus;
 import com.smartpark.model.ParkingSpace;
@@ -17,69 +17,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-// ANALYTICS SERVICE CLASS
+//ANALYTICS SERVICE CLASS
 public class AnalyticsService {
 
-    //=========================================================
-    // DECLARE ATTRIBUTES
-    //=========================================================
-
+    //DECLARE ATTRIBUTES
     private final ParkingSpaceRepository parkingSpaceRepository;
     private final ParkingSessionRepository parkingSessionRepository;
 
+    //DATE/TIME FORMATTER
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    //=========================================================
-    // DATE/TIME FORMATTER
-    //=========================================================
-
-    private static final DateTimeFormatter DATE_TIME_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-
-    //=========================================================
-    // CONSTRUCTOR
-    //=========================================================
-
-    public AnalyticsService(
-            ParkingSpaceRepository parkingSpaceRepository,
-            ParkingSessionRepository parkingSessionRepository
-    ) {
-
-        this.parkingSpaceRepository =
-                parkingSpaceRepository;
-
-        this.parkingSessionRepository =
-                parkingSessionRepository;
+    //DECLARE CONSTRUCTOR
+    public AnalyticsService(ParkingSpaceRepository parkingSpaceRepository, ParkingSessionRepository parkingSessionRepository) {
+        this.parkingSpaceRepository = parkingSpaceRepository;
+        this.parkingSessionRepository = parkingSessionRepository;
     }
 
-
-    //=========================================================
-    // TOTAL SPACES
-    //=========================================================
-
+    //DECLARE GETTERS
+    //TOTAL SPACES
     public int getTotalSpaces() {
-
-        return parkingSpaceRepository
-                .findAll()
-                .size();
+        return parkingSpaceRepository.findAll().size();
     }
 
-
-    //=========================================================
-    // AVAILABLE SPACES
-    //=========================================================
-
+    //AVAILABLE SPACES
     public int getAvailableSpaces() {
 
+        //DECLARE TEMPORARY VARIABLE
         int count = 0;
 
-        for (ParkingSpace parkingSpace :
-                parkingSpaceRepository.findAll()) {
-
-            if (parkingSpace != null &&
-                    parkingSpace.getStatus()
-                            == ParkingSpaceStatus.AVAILABLE) {
-
+        //LOOP UNTIL CONDITION IS TRUE
+        for(ParkingSpace parkingSpace : parkingSpaceRepository.findAll()) {
+            //CHECK CONDITION
+            if (parkingSpace != null && parkingSpace.getStatus() == ParkingSpaceStatus.AVAILABLE) {
                 count++;
             }
         }
@@ -87,22 +56,16 @@ public class AnalyticsService {
         return count;
     }
 
-
-    //=========================================================
-    // OCCUPIED SPACES
-    //=========================================================
-
+    //OCCUPIED SPACES
     public int getOccupiedSpaces() {
 
+        //DECLARE TEMPORARY VARIABLE
         int count = 0;
 
-        for (ParkingSpace parkingSpace :
-                parkingSpaceRepository.findAll()) {
-
-            if (parkingSpace != null &&
-                    parkingSpace.getStatus()
-                            == ParkingSpaceStatus.OCCUPIED) {
-
+        //LOOP UNTIL CONDITION IS TRUE
+        for (ParkingSpace parkingSpace : parkingSpaceRepository.findAll()) {
+            //CHECK CONDITION
+            if (parkingSpace != null && parkingSpace.getStatus() == ParkingSpaceStatus.OCCUPIED) {
                 count++;
             }
         }
@@ -110,22 +73,16 @@ public class AnalyticsService {
         return count;
     }
 
-
-    //=========================================================
-    // OUT OF SERVICE SPACES
-    //=========================================================
-
+    //OUT OF SERVICE SPACES
     public int getOutOfServiceSpaces() {
 
+        //DECLARE TEMPORARY VARIABLE
         int count = 0;
 
-        for (ParkingSpace parkingSpace :
-                parkingSpaceRepository.findAll()) {
-
-            if (parkingSpace != null &&
-                    parkingSpace.getStatus()
-                            == ParkingSpaceStatus.OUT_OF_SERVICE) {
-
+        //LOOP UNTIL CONDITION IS TRUE
+        for (ParkingSpace parkingSpace : parkingSpaceRepository.findAll()) {
+            //CHECK CONDITION
+            if (parkingSpace != null && parkingSpace.getStatus() == ParkingSpaceStatus.OUT_OF_SERVICE) {
                 count++;
             }
         }
@@ -133,34 +90,21 @@ public class AnalyticsService {
         return count;
     }
 
-
-    //=========================================================
-    // TOTAL SESSIONS
-    //=========================================================
-
+    //TOTAL SESSIONS
     public int getTotalSessions() {
-
-        return parkingSessionRepository
-                .findAll()
-                .size();
+        return parkingSessionRepository.findAll().size();
     }
 
-
-    //=========================================================
-    // ACTIVE SESSIONS
-    //=========================================================
-
+    //ACTIVE SESSIONS
     public int getActiveSessions() {
 
+        //DECLARE TEMPORARY VARIABLE
         int count = 0;
 
-        for (ParkingSession session :
-                parkingSessionRepository.findAll()) {
-
-            if (session != null &&
-                    session.getStatus()
-                            == ParkingSessionStatus.ACTIVE) {
-
+        //LOOP UNTIL CONDITION IS TRUE
+        for (ParkingSession session : parkingSessionRepository.findAll()) {
+            //CHECK CONDITION
+            if (session != null && session.getStatus() == ParkingSessionStatus.ACTIVE) {
                 count++;
             }
         }
@@ -168,22 +112,16 @@ public class AnalyticsService {
         return count;
     }
 
-
-    //=========================================================
-    // COMPLETED SESSIONS
-    //=========================================================
-
+    //COMPLETED SESSIONS
     public int getCompletedSessions() {
 
+        //DECLARE TEMPORARY VARIABLE
         int count = 0;
 
-        for (ParkingSession session :
-                parkingSessionRepository.findAll()) {
-
-            if (session != null &&
-                    session.getStatus()
-                            == ParkingSessionStatus.COMPLETED) {
-
+        //LOOP UNTIL CONDITION IS TRUE
+        for (ParkingSession session : parkingSessionRepository.findAll()) {
+            //CHECK CONDITION
+            if (session != null && session.getStatus() == ParkingSessionStatus.COMPLETED) {
                 count++;
             }
         }
@@ -191,252 +129,160 @@ public class AnalyticsService {
         return count;
     }
 
-
-    //=========================================================
-    // OTHER SESSIONS
-    //=========================================================
-
+    //OTHER SESSIONS
     public int getOtherSessions() {
-
-        return Math.max(
-                0,
-                getTotalSessions()
-                        - getCompletedSessions()
-                        - getActiveSessions()
-        );
+        return Math.max(0, getTotalSessions() - getCompletedSessions() - getActiveSessions());
     }
 
-
-    //=========================================================
-    // AVERAGE DURATION IN MINUTES
-    //=========================================================
-
+    //AVERAGE DURATION IN MINUTES
     public long getAverageDurationMinutes() {
 
+        //DECLARE VARIABLES
         long totalMinutes = 0;
         int completedCount = 0;
 
+        //LOOP UNTIL CONDITION IS TRUE
+        for (ParkingSession session : parkingSessionRepository.findAll()) {
 
-        for (ParkingSession session :
-                parkingSessionRepository.findAll()) {
-
+            //CHECK CONDITION
             if (session == null) {
                 continue;
             }
 
-
-            if (session.getStatus()
-                    != ParkingSessionStatus.COMPLETED) {
-
+            //CHECK CONDITION
+            if (session.getStatus() != ParkingSessionStatus.COMPLETED) {
                 continue;
             }
 
+            String entryTime = session.getEntryTime();
+            String exitTime = session.getExitTime();
 
-            String entryTime =
-                    session.getEntryTime();
-
-            String exitTime =
-                    session.getExitTime();
-
-
-            if (entryTime == null ||
-                    exitTime == null) {
-
+            //CHECK CONDITION
+            if (entryTime == null || exitTime == null) {
                 continue;
             }
 
+            LocalDateTime entryDateTime = parseDateTime(entryTime);
+            LocalDateTime exitDateTime = parseDateTime(exitTime);
 
-            LocalDateTime entryDateTime =
-                    parseDateTime(entryTime);
-
-            LocalDateTime exitDateTime =
-                    parseDateTime(exitTime);
-
-
-            if (entryDateTime == null ||
-                    exitDateTime == null) {
-
+            //CHECK CONDITION
+            if (entryDateTime == null || exitDateTime == null) {
                 continue;
             }
 
+            long minutes = Duration.between(entryDateTime, exitDateTime).toMinutes();
 
-            long minutes =
-                    Duration.between(
-                            entryDateTime,
-                            exitDateTime
-                    ).toMinutes();
-
-
+            //CHECK CONDITION
             if (minutes >= 0) {
-
                 totalMinutes += minutes;
-
                 completedCount++;
             }
         }
 
-
+        //CHECK CONDITION
         if (completedCount == 0) {
             return 0;
         }
 
-
         return totalMinutes / completedCount;
     }
 
-
-    //=========================================================
-    // FORMATTED AVERAGE DURATION
-    //=========================================================
-
+    //FORMATTED AVERAGE DURATION
     public String getAverageDurationFormatted() {
 
-        long minutes =
-                getAverageDurationMinutes();
+        //DECLARE ATTRIBUTES
+        long minutes = getAverageDurationMinutes();
+        long hours = minutes / 60;
+        long remainingMinutes = minutes % 60;
 
-
-        long hours =
-                minutes / 60;
-
-
-        long remainingMinutes =
-                minutes % 60;
-
-
+        //CHECK CONDITION
         if (hours > 0) {
-
-            return hours + "h " +
-                    remainingMinutes + "m";
+            return hours + "h " + remainingMinutes + "m";
         }
-
 
         return remainingMinutes + "m";
     }
 
-
-    //=========================================================
-    // GET ALL SESSIONS
-    //=========================================================
-
-    public List<ParkingSession> getAllSessions() {
-
-        return new ArrayList<>(
-                parkingSessionRepository.findAll()
-        );
+    //GET ALL SESSIONS
+    public List <ParkingSession> getAllSessions() {
+        return new ArrayList<>(parkingSessionRepository.findAll());
     }
 
+    //GET SESSIONS FOR A PARTICULAR DATE
+    public int getSessionsForDate(LocalDate date) {
 
-    //=========================================================
-    // GET SESSIONS FOR A PARTICULAR DATE
-    //=========================================================
-
-    public int getSessionsForDate(
-            LocalDate date
-    ) {
-
+        //CHECK CONDITION
         if (date == null) {
             return 0;
         }
 
-
+        //DECLARE TEMPORARY VARIABLE
         int count = 0;
 
-
-        for (ParkingSession session :
-                parkingSessionRepository.findAll()) {
-
+        //LOOP UNTIL CONDITION IS TRUE
+        for (ParkingSession session : parkingSessionRepository.findAll()) {
+            //CHECK CONDITION
             if (session == null) {
                 continue;
             }
 
+            String entryTime = session.getEntryTime();
 
-            String entryTime =
-                    session.getEntryTime();
-
-
+            //CHECK CONDITION
             if (entryTime == null) {
                 continue;
             }
 
+            LocalDateTime entryDateTime = parseDateTime(entryTime);
 
-            LocalDateTime entryDateTime =
-                    parseDateTime(entryTime);
-
-
+            //CHECK CONDITION
             if (entryDateTime == null) {
                 continue;
             }
 
-
-            if (entryDateTime.toLocalDate()
-                    .equals(date)) {
-
+            //CHECK CONDITION
+            if (entryDateTime.toLocalDate().equals(date)) {
                 count++;
             }
         }
 
-
         return count;
     }
 
-
-    //=========================================================
-    // GET LAST 7 DAYS
-    //=========================================================
-
+    //GET LAST 7 DAYS
     public int[] getLastSevenDaysCounts() {
 
-        int[] values =
-                new int[7];
+        //DECLARE ARRAY
+        int[] values = new int[7];
 
+        //DECLARE ATTRIBUTE
+        LocalDate today = LocalDate.now();
 
-        LocalDate today =
-                LocalDate.now();
-
-
+        //LOOP UNTIL CONDITION IS TRUE
         for (int i = 0; i < 7; i++) {
 
-            LocalDate date =
-                    today.minusDays(
-                            6 - i
-                    );
+            LocalDate date = today.minusDays(6 - i);
 
-
-            values[i] =
-                    getSessionsForDate(
-                            date
-                    );
+            values[i] = getSessionsForDate(date);
         }
-
 
         return values;
     }
 
+    //PARSE DATE/TIME STRING
+    private LocalDateTime parseDateTime(String dateTime) {
 
-    //=========================================================
-    // PARSE DATE/TIME STRING
-    //=========================================================
-
-    private LocalDateTime parseDateTime(
-            String dateTime
-    ) {
-
-        if (dateTime == null ||
-                dateTime.trim().isEmpty()) {
-
+        //CHECK CONDITION
+        if (dateTime == null || dateTime.trim().isEmpty()) {
             return null;
         }
 
-
+        //CHECK CONDITION
         try {
+            return LocalDateTime.parse(dateTime.trim(), DATE_TIME_FORMATTER);
 
-            return LocalDateTime.parse(
-                    dateTime.trim(),
-                    DATE_TIME_FORMATTER
-            );
-
-        } catch (DateTimeParseException e) {
-
+        }
+        catch (DateTimeParseException e) {
             return null;
         }
     }
