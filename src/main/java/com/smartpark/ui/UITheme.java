@@ -23,9 +23,16 @@ public final class UITheme {
     public static final Color CARD_AVAILABLE = new Color(34, 197, 94);
     public static final Color CARD_SESSIONS = new Color(139, 92, 246);
 
+    //COLORS - PARKING
+    public static final Color PARKING_AVAILABLE = new Color(34, 197, 94);
+    public static final Color PARKING_OCCUPIED = new Color(220, 76, 76);
+    public static final Color PARKING_RESERVED = new Color(245, 158, 11);
+    public static final Color PARKING_MAINTENANCE = new Color(139, 92, 246);
+    public static final Color PARKING_CARD_COLOR = new Color(21, 25, 34);
+    public static final Color PARKING_HOVER_COLOR = new Color(30, 41, 59);
+
     //FONT
-    public static final String FONT_NAME =
-            "Poppins";
+    public static final String FONT_NAME = "Poppins";
 
     //FONT METHODS
     public static Font font(

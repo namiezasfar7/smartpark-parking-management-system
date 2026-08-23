@@ -257,6 +257,9 @@
             <properties>
               <model>
                 <item value="Ground Floor"/>
+                <item value="Level 01"/>
+                <item value="Level 02"/>
+                <item value="Level 03"/>
               </model>
             </properties>
           </component>
