@@ -1,94 +1,244 @@
 package com.smartpark.ui;
 
-//IMPORTS
+// IMPORTS
 import com.smartpark.controller.DashboardController;
 import com.smartpark.controller.ParkingController;
 import com.smartpark.controller.ParkingSessionController;
 import com.smartpark.controller.VehicleController;
-import com.smartpark.repository.ParkingSessionRepository;
-import com.smartpark.repository.ParkingSpaceRepository;
-import com.smartpark.repository.VehicleRepository;
-import com.smartpark.repository.memory.InMemoryParkingSessionRepository;
-import com.smartpark.repository.memory.InMemoryParkingSpaceRepository;
-import com.smartpark.repository.memory.InMemoryVehicleRepository;
 import com.smartpark.service.AnalyticsService;
-import com.smartpark.service.ParkingService;
-import com.smartpark.service.ParkingSessionService;
-import com.smartpark.service.VehicleService;
-import com.smartpark.ui.components.RoundedButton;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-//MAIN FRAME CLASS
+
+// MAIN FRAME CLASS
 public class MainFrame extends JFrame {
 
     //=========================================================
-    // DECLARE ATTRIBUTES
+    // CONTROLLERS / SERVICES
     //=========================================================
 
-    //MAIN PANELS
+    private final VehicleController vehicleController;
+    private final ParkingController parkingController;
+    private final ParkingSessionController parkingSessionController;
+    private final DashboardController dashboardController;
+    private final AnalyticsService analyticsService;
+
+
+    //=========================================================
+    // MAIN PANELS
+    //=========================================================
+
     private JPanel mainPanel;
     private JPanel sidebarPanel;
-    private JPanel rightPanel;
-    private JPanel headerPanel;
     private JPanel contentPanel;
 
-    //SIDEBAR COMPONENTS
-    private JLabel logoLabel;
 
-    private JButton dashboardButton;
-    private JButton parkingButton;
-    private JButton vehicleButton;
-    private JButton sessionButton;
-    private JButton analyticsButton;
+    //=========================================================
+    // CARD LAYOUT
+    //=========================================================
 
-    private JPanel buttonPanel;
+    private CardLayout cardLayout;
 
-    //APPLICATION PANELS
+
+    //=========================================================
+    // PAGE PANELS
+    //=========================================================
+
     private DashboardPanel dashboardPanel;
     private ParkingPanel parkingPanel;
     private VehiclePanel vehiclePanel;
     private SessionPanel sessionPanel;
     private AnalyticsPanel analyticsPanel;
 
-    //CONTROLLERS
-    private VehicleController vehicleController;
-    private ParkingController parkingController;
-    private ParkingSessionController parkingSessionController;
-    private DashboardController dashboardController;
+
+    //=========================================================
+    // NAVIGATION BUTTONS
+    //=========================================================
+
+    private JButton dashboardButton;
+    private JButton parkingButton;
+    private JButton vehiclesButton;
+    private JButton sessionsButton;
+    private JButton analyticsButton;
+
+
+    //=========================================================
+    // PAGE NAMES
+    //=========================================================
+
+    private static final String DASHBOARD_PAGE = "DASHBOARD";
+    private static final String PARKING_PAGE = "PARKING";
+    private static final String VEHICLES_PAGE = "VEHICLES";
+    private static final String SESSIONS_PAGE = "SESSIONS";
+    private static final String ANALYTICS_PAGE = "ANALYTICS";
 
 
     //=========================================================
     // CONSTRUCTOR
     //=========================================================
 
-    public MainFrame() {
+    public MainFrame(
+            VehicleController vehicleController,
+            ParkingController parkingController,
+            ParkingSessionController parkingSessionController,
+            DashboardController dashboardController,
+            AnalyticsService analyticsService
+    ) {
 
-        //FRAME SETTINGS
+        this.vehicleController =
+                vehicleController;
+
+        this.parkingController =
+                parkingController;
+
+        this.parkingSessionController =
+                parkingSessionController;
+
+        this.dashboardController =
+                dashboardController;
+
+        this.analyticsService =
+                analyticsService;
+
+
+        //=========================================================
+        // FRAME SETTINGS
+        //=========================================================
+
         setTitle(
                 "SmartPark - Parking Management System"
-        );
-
-        setIconImage(
-                Toolkit.getDefaultToolkit().getImage(
-                        getClass().getResource(
-                                "/icons/smartpark-logo.png"
-                        )
-                )
-        );
-
-        setSize(
-                1200,
-                750
         );
 
         setDefaultCloseOperation(
                 JFrame.EXIT_ON_CLOSE
         );
 
+        // STARTUP WINDOW SIZE
+        setSize(
+                1200,
+                750
+        );
+
+        setMinimumSize(
+                new Dimension(
+                        1200,
+                        750
+                )
+        );
+
+        // CENTER WINDOW ON SCREEN
         setLocationRelativeTo(null);
+
+        setBackground(
+                UITheme.BACKGROUND_COLOR
+        );
+
+
+        //=====================================================
+        // CREATE UI
+        //=====================================================
+
+        setupMainFrame();
+    }
+
+
+    //=========================================================
+    // SETUP MAIN FRAME
+    //=========================================================
+
+    private void setupMainFrame() {
+
+        //=====================================================
+        // MAIN PANEL
+        //=====================================================
+
+        mainPanel =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        mainPanel.setBackground(
+                UITheme.BACKGROUND_COLOR
+        );
+
+
+        //=====================================================
+        // SIDEBAR
+        //=====================================================
+
+        sidebarPanel =
+                createSidebar();
+
+        mainPanel.add(
+                sidebarPanel,
+                BorderLayout.WEST
+        );
+
+
+        //=====================================================
+        // CONTENT AREA
+        //=====================================================
+
+        cardLayout =
+                new CardLayout();
+
+        contentPanel =
+                new JPanel(
+                        cardLayout
+                );
+
+        contentPanel.setBackground(
+                UITheme.BACKGROUND_COLOR
+        );
+
+
+        //=====================================================
+        // CREATE PAGE PANELS
+        //=====================================================
+
+        createPagePanels();
+
+
+        //=====================================================
+        // ADD PAGE PANELS
+        //=====================================================
+
+        contentPanel.add(
+                dashboardPanel,
+                DASHBOARD_PAGE
+        );
+
+        contentPanel.add(
+                parkingPanel,
+                PARKING_PAGE
+        );
+
+        contentPanel.add(
+                vehiclePanel,
+                VEHICLES_PAGE
+        );
+
+        contentPanel.add(
+                sessionPanel,
+                SESSIONS_PAGE
+        );
+
+        contentPanel.add(
+                analyticsPanel,
+                ANALYTICS_PAGE
+        );
+
+
+        //=====================================================
+        // ADD CONTENT
+        //=====================================================
+
+        mainPanel.add(
+                contentPanel,
+                BorderLayout.CENTER
+        );
 
 
         //=====================================================
@@ -101,518 +251,329 @@ public class MainFrame extends JFrame {
 
 
         //=====================================================
-        // SETUP MAIN LAYOUT
+        // SHOW DEFAULT PAGE
         //=====================================================
 
-        setupMainLayout();
+        showPage(
+                DASHBOARD_PAGE
+        );
+    }
 
+
+    //=========================================================
+    // CREATE PAGE PANELS
+    //=========================================================
+
+    private void createPagePanels() {
 
         //=====================================================
-        // CREATE APPLICATION DEPENDENCIES
-        //=====================================================
-
-        setupControllers();
-
-
-        //=====================================================
-        // CREATE APPLICATION PANELS
+        // DASHBOARD
         //=====================================================
 
         dashboardPanel =
-                new DashboardPanel();
+                new DashboardPanel(
+                        dashboardController
+                );
+
+
+        //=====================================================
+        // PARKING
+        //=====================================================
 
         parkingPanel =
-                new ParkingPanel();
+                new ParkingPanel(
+                        parkingController
+                );
+
+
+        //=====================================================
+        // VEHICLES
+        //=====================================================
 
         vehiclePanel =
                 new VehiclePanel(
                         vehicleController
                 );
 
-        sessionPanel =
-                new SessionPanel();
 
+        //=====================================================
+        // SESSIONS
+        //=====================================================
+
+        sessionPanel =
+                new SessionPanel(
+                        vehicleController,
+                        parkingController,
+                        parkingSessionController
+                );
+
+
+        //=====================================================
+        // ANALYTICS
+        //=====================================================
+
+        /*
+         * Keep this as new AnalyticsPanel() if your current
+         * AnalyticsPanel does not require AnalyticsService
+         * in its constructor.
+         */
         analyticsPanel =
                 new AnalyticsPanel();
-
-
-        //=====================================================
-        // SETUP SIDEBAR
-        //=====================================================
-
-        setupSidebar();
-
-
-        //=====================================================
-        // SHOW DASHBOARD FIRST
-        //=====================================================
-
-        showPanel(
-                dashboardPanel
-        );
-
-
-        //=====================================================
-        // BUTTON ACTIONS
-        //=====================================================
-
-        dashboardButton.addActionListener(
-                e -> {
-
-                    showPanel(
-                            dashboardPanel
-                    );
-
-                    setSelectedButton(
-                            dashboardButton
-                    );
-                }
-        );
-
-
-        parkingButton.addActionListener(
-                e -> {
-
-                    showPanel(
-                            parkingPanel
-                    );
-
-                    setSelectedButton(
-                            parkingButton
-                    );
-                }
-        );
-
-
-        vehicleButton.addActionListener(
-                e -> {
-
-                    showPanel(
-                            vehiclePanel
-                    );
-
-                    setSelectedButton(
-                            vehicleButton
-                    );
-                }
-        );
-
-
-        sessionButton.addActionListener(
-                e -> {
-
-                    showPanel(
-                            sessionPanel
-                    );
-
-                    setSelectedButton(
-                            sessionButton
-                    );
-                }
-        );
-
-
-        analyticsButton.addActionListener(
-                e -> {
-
-                    showPanel(
-                            analyticsPanel
-                    );
-
-                    setSelectedButton(
-                            analyticsButton
-                    );
-                }
-        );
     }
 
 
     //=========================================================
-    // CREATE CONTROLLERS
+    // CREATE SIDEBAR
     //=========================================================
 
-    private void setupControllers() {
+    private JPanel createSidebar() {
 
-        //=====================================================
-        // VEHICLE
-        //=====================================================
-
-        VehicleRepository vehicleRepository =
-                new InMemoryVehicleRepository();
-
-        VehicleService vehicleService =
-                new VehicleService(
-                        vehicleRepository
+        JPanel sidebar =
+                new JPanel(
+                        new BorderLayout()
                 );
 
-        vehicleController =
-                new VehicleController(
-                        vehicleService
-                );
-
-
-        //=====================================================
-        // PARKING SPACE
-        //=====================================================
-
-        ParkingSpaceRepository parkingSpaceRepository =
-                new InMemoryParkingSpaceRepository();
-
-        ParkingService parkingService =
-                new ParkingService(
-                        parkingSpaceRepository
-                );
-
-        parkingController =
-                new ParkingController(
-                        parkingService
-                );
-
-
-        //=====================================================
-        // PARKING SESSION
-        //=====================================================
-
-        ParkingSessionRepository parkingSessionRepository =
-                new InMemoryParkingSessionRepository();
-
-        ParkingSessionService parkingSessionService =
-                new ParkingSessionService(
-                        parkingSessionRepository,
-                        parkingSpaceRepository
-                );
-
-        parkingSessionController =
-                new ParkingSessionController(
-                        parkingSessionService
-                );
-
-
-        //=====================================================
-        // DASHBOARD / ANALYTICS
-        //=====================================================
-
-        AnalyticsService analyticsService =
-                new AnalyticsService(
-                        parkingSpaceRepository,
-                        parkingSessionRepository
-                );
-
-        dashboardController =
-                new DashboardController(
-                        analyticsService
-                );
-    }
-
-
-    //=========================================================
-    // CREATE CUSTOM COMPONENTS
-    //=========================================================
-
-    private void createUIComponents() {
-
-        dashboardButton =
-                new RoundedButton();
-
-        parkingButton =
-                new RoundedButton();
-
-        vehicleButton =
-                new RoundedButton();
-
-        sessionButton =
-                new RoundedButton();
-
-        analyticsButton =
-                new RoundedButton();
-    }
-
-
-    //=========================================================
-    // MAIN LAYOUT
-    //=========================================================
-
-    private void setupMainLayout() {
-
-        //MAIN PANEL
-        mainPanel.setLayout(
-                new BorderLayout()
+        sidebar.setBackground(
+                UITheme.SIDEBAR_COLOR
         );
 
-        mainPanel.setBackground(
-                UITheme.BACKGROUND_COLOR
-        );
-
-
-        //SIDEBAR
-        sidebarPanel.setLayout(
-                new BorderLayout()
-        );
-
-        sidebarPanel.setPreferredSize(
+        sidebar.setPreferredSize(
                 new Dimension(
-                        250,
+                        315,
                         0
                 )
         );
 
-        sidebarPanel.setBackground(
+
+        //=====================================================
+        // SIDEBAR CONTENT
+        //=====================================================
+
+        JPanel sidebarContent =
+                new JPanel();
+
+        sidebarContent.setLayout(
+                new BoxLayout(
+                        sidebarContent,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+        sidebarContent.setBackground(
                 UITheme.SIDEBAR_COLOR
         );
 
-
-        //RIGHT SIDE
-        rightPanel.setLayout(
-                new BorderLayout()
-        );
-
-        rightPanel.setBackground(
-                UITheme.BACKGROUND_COLOR
-        );
-
-
-        //HEADER
-        headerPanel.setLayout(
-                new BorderLayout()
-        );
-
-        headerPanel.setBackground(
-                UITheme.BACKGROUND_COLOR
-        );
-
-        headerPanel.setBorder(
+        sidebarContent.setBorder(
                 new EmptyBorder(
+                        35,
+                        29,
                         25,
-                        30,
-                        15,
-                        30
+                        29
                 )
         );
 
 
-        //CONTENT
-        contentPanel.setLayout(
-                new BorderLayout()
-        );
+        //=====================================================
+        // LOGO
+        //=====================================================
 
-        contentPanel.setBackground(
-                UITheme.BACKGROUND_COLOR
-        );
-
-        contentPanel.setBorder(
-                new EmptyBorder(
-                        10,
-                        30,
-                        30,
-                        30
-                )
-        );
-
-
-        //BUILD RIGHT SIDE
-        rightPanel.removeAll();
-
-        rightPanel.add(
-                headerPanel,
-                BorderLayout.NORTH
-        );
-
-        rightPanel.add(
-                contentPanel,
-                BorderLayout.CENTER
-        );
-
-
-        //BUILD MAIN FRAME
-        mainPanel.removeAll();
-
-        mainPanel.add(
-                sidebarPanel,
-                BorderLayout.WEST
-        );
-
-        mainPanel.add(
-                rightPanel,
-                BorderLayout.CENTER
-        );
-
-
-        mainPanel.revalidate();
-        mainPanel.repaint();
-    }
-
-
-    //=========================================================
-    // SIDEBAR
-    //=========================================================
-
-    private void setupSidebar() {
-
-        sidebarPanel.removeAll();
-
-
-        //LOGO
-        logoLabel.setText(
-                "SmartPark"
-        );
+        JLabel logoLabel =
+                new JLabel(
+                        "SmartPark"
+                );
 
         logoLabel.setForeground(
                 UITheme.TEXT_COLOR
         );
 
         logoLabel.setFont(
-                UITheme.bold(24)
+                UITheme.bold(30)
         );
 
-        logoLabel.setBorder(
-                new EmptyBorder(
-                        25,
-                        25,
-                        25,
-                        25
+        logoLabel.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
+
+        sidebarContent.add(
+                logoLabel
+        );
+
+
+        sidebarContent.add(
+                Box.createRigidArea(
+                        new Dimension(
+                                0,
+                                50
+                        )
                 )
         );
 
 
-        sidebarPanel.add(
-                logoLabel,
+        //=====================================================
+        // CREATE NAVIGATION BUTTONS
+        //=====================================================
+
+        dashboardButton =
+                createNavigationButton(
+                        "Dashboard"
+                );
+
+        parkingButton =
+                createNavigationButton(
+                        "Parking"
+                );
+
+        vehiclesButton =
+                createNavigationButton(
+                        "Vehicles"
+                );
+
+        sessionsButton =
+                createNavigationButton(
+                        "Sessions"
+                );
+
+        analyticsButton =
+                createNavigationButton(
+                        "Analytics"
+                );
+
+
+        //=====================================================
+        // ACTION LISTENERS
+        //=====================================================
+
+        dashboardButton.addActionListener(
+                e -> showPage(
+                        DASHBOARD_PAGE
+                )
+        );
+
+        parkingButton.addActionListener(
+                e -> showPage(
+                        PARKING_PAGE
+                )
+        );
+
+        vehiclesButton.addActionListener(
+                e -> showPage(
+                        VEHICLES_PAGE
+                )
+        );
+
+        sessionsButton.addActionListener(
+                e -> showPage(
+                        SESSIONS_PAGE
+                )
+        );
+
+        analyticsButton.addActionListener(
+                e -> showPage(
+                        ANALYTICS_PAGE
+                )
+        );
+
+
+        //=====================================================
+        // ADD NAVIGATION BUTTONS
+        //=====================================================
+
+        sidebarContent.add(
+                dashboardButton
+        );
+
+        sidebarContent.add(
+                Box.createRigidArea(
+                        new Dimension(
+                                0,
+                                14
+                        )
+                )
+        );
+
+        sidebarContent.add(
+                parkingButton
+        );
+
+        sidebarContent.add(
+                Box.createRigidArea(
+                        new Dimension(
+                                0,
+                                14
+                        )
+                )
+        );
+
+        sidebarContent.add(
+                vehiclesButton
+        );
+
+        sidebarContent.add(
+                Box.createRigidArea(
+                        new Dimension(
+                                0,
+                                14
+                        )
+                )
+        );
+
+        sidebarContent.add(
+                sessionsButton
+        );
+
+        sidebarContent.add(
+                Box.createRigidArea(
+                        new Dimension(
+                                0,
+                                14
+                        )
+                )
+        );
+
+        sidebarContent.add(
+                analyticsButton
+        );
+
+
+        //=====================================================
+        // ADD SIDEBAR CONTENT
+        //=====================================================
+
+        sidebar.add(
+                sidebarContent,
                 BorderLayout.NORTH
         );
 
 
-        //BUTTON PANEL
-        buttonPanel =
-                new JPanel();
-
-        buttonPanel.setLayout(
-                new BoxLayout(
-                        buttonPanel,
-                        BoxLayout.Y_AXIS
-                )
-        );
-
-        buttonPanel.setBackground(
-                UITheme.SIDEBAR_COLOR
-        );
-
-        buttonPanel.setBorder(
-                new EmptyBorder(
-                        10,
-                        20,
-                        20,
-                        20
-                )
-        );
-
-
-        //STYLE BUTTONS
-        styleButton(
-                dashboardButton
-        );
-
-        styleButton(
-                parkingButton
-        );
-
-        styleButton(
-                vehicleButton
-        );
-
-        styleButton(
-                sessionButton
-        );
-
-        styleButton(
-                analyticsButton
-        );
-
-
-        //ADD DASHBOARD
-        buttonPanel.add(
-                dashboardButton
-        );
-
-        buttonPanel.add(
-                Box.createVerticalStrut(
-                        12
-                )
-        );
-
-
-        //ADD PARKING
-        buttonPanel.add(
-                parkingButton
-        );
-
-        buttonPanel.add(
-                Box.createVerticalStrut(
-                        12
-                )
-        );
-
-
-        //ADD VEHICLES
-        buttonPanel.add(
-                vehicleButton
-        );
-
-        buttonPanel.add(
-                Box.createVerticalStrut(
-                        12
-                )
-        );
-
-
-        //ADD SESSIONS
-        buttonPanel.add(
-                sessionButton
-        );
-
-        buttonPanel.add(
-                Box.createVerticalStrut(
-                        12
-                )
-        );
-
-
-        //ADD ANALYTICS
-        buttonPanel.add(
-                analyticsButton
-        );
-
-
-        //ADD BUTTON PANEL
-        sidebarPanel.add(
-                buttonPanel,
-                BorderLayout.CENTER
-        );
-
-
-        //DASHBOARD SELECTED INITIALLY
-        setSelectedButton(
-                dashboardButton
-        );
-
-
-        sidebarPanel.revalidate();
-        sidebarPanel.repaint();
+        return sidebar;
     }
 
 
     //=========================================================
-    // BUTTON STYLE
+    // CREATE ROUNDED NAVIGATION BUTTON
     //=========================================================
 
-    private void styleButton(
-            JButton button
+    private JButton createNavigationButton(
+            String text
     ) {
+
+        RoundedNavigationButton button =
+                new RoundedNavigationButton(
+                        text
+                );
+
+
+        button.setFont(
+                UITheme.regular(16)
+        );
 
         button.setForeground(
                 UITheme.TEXT_COLOR
         );
 
-        button.setFont(
-                UITheme.regular(15)
+        button.setBackground(
+                UITheme.BUTTON_COLOR
         );
 
         button.setFocusPainted(
@@ -623,38 +584,212 @@ public class MainFrame extends JFrame {
                 false
         );
 
+        button.setContentAreaFilled(
+                false
+        );
+
+        button.setOpaque(
+                false
+        );
+
         button.setAlignmentX(
-                Component.CENTER_ALIGNMENT
+                Component.LEFT_ALIGNMENT
+        );
+
+        button.setPreferredSize(
+                new Dimension(
+                        260,
+                        58
+                )
+        );
+
+        button.setMinimumSize(
+                new Dimension(
+                        260,
+                        58
+                )
         );
 
         button.setMaximumSize(
                 new Dimension(
                         Integer.MAX_VALUE,
-                        48
-                )
-        );
-
-        button.setPreferredSize(
-                new Dimension(
-                        210,
-                        48
+                        58
                 )
         );
 
         button.setCursor(
-                new Cursor(
+                Cursor.getPredefinedCursor(
                         Cursor.HAND_CURSOR
                 )
         );
 
-        button.setBorder(
-                new EmptyBorder(
-                        10,
-                        20,
-                        10,
-                        20
-                )
+
+        return button;
+    }
+
+
+    //=========================================================
+    // SHOW PAGE
+    //=========================================================
+
+    private void showPage(
+            String page
+    ) {
+
+        //=====================================================
+        // REFRESH PARKING
+        //=====================================================
+
+        if (PARKING_PAGE.equals(page)) {
+
+            if (parkingPanel != null) {
+
+                parkingPanel.refreshParkingSpaces();
+            }
+        }
+
+
+        //=====================================================
+        // REFRESH SESSIONS
+        //=====================================================
+
+        if (SESSIONS_PAGE.equals(page)) {
+
+            if (sessionPanel != null) {
+
+                sessionPanel.refresh();
+            }
+        }
+
+
+        //=====================================================
+        // SHOW PAGE
+        //=====================================================
+
+        cardLayout.show(
+                contentPanel,
+                page
         );
+
+
+        //=====================================================
+        // RESET BUTTONS
+        //=====================================================
+
+        resetNavigationButtons();
+
+
+        //=====================================================
+        // SELECT ACTIVE BUTTON
+        //=====================================================
+
+        switch (page) {
+
+            case DASHBOARD_PAGE:
+
+                setSelectedButton(
+                        dashboardButton
+                );
+
+                break;
+
+
+            case PARKING_PAGE:
+
+                setSelectedButton(
+                        parkingButton
+                );
+
+                break;
+
+
+            case VEHICLES_PAGE:
+
+                setSelectedButton(
+                        vehiclesButton
+                );
+
+                break;
+
+
+            case SESSIONS_PAGE:
+
+                setSelectedButton(
+                        sessionsButton
+                );
+
+                break;
+
+
+            case ANALYTICS_PAGE:
+
+                setSelectedButton(
+                        analyticsButton
+                );
+
+                break;
+
+
+            default:
+
+                break;
+        }
+
+
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
+
+    //=========================================================
+    // RESET NAVIGATION BUTTONS
+    //=========================================================
+
+    private void resetNavigationButtons() {
+
+        setNormalButton(
+                dashboardButton
+        );
+
+        setNormalButton(
+                parkingButton
+        );
+
+        setNormalButton(
+                vehiclesButton
+        );
+
+        setNormalButton(
+                sessionsButton
+        );
+
+        setNormalButton(
+                analyticsButton
+        );
+    }
+
+
+    //=========================================================
+    // NORMAL BUTTON
+    //=========================================================
+
+    private void setNormalButton(
+            JButton button
+    ) {
+
+        if (button == null) {
+            return;
+        }
+
+        button.setBackground(
+                UITheme.BUTTON_COLOR
+        );
+
+        button.setForeground(
+                UITheme.TEXT_COLOR
+        );
+
+        button.repaint();
     }
 
 
@@ -663,76 +798,224 @@ public class MainFrame extends JFrame {
     //=========================================================
 
     private void setSelectedButton(
-            JButton selectedButton
+            JButton button
     ) {
 
-        JButton[] buttons = {
-                dashboardButton,
-                parkingButton,
-                vehicleButton,
-                sessionButton,
-                analyticsButton
-        };
-
-
-        for (
-                JButton button :
-                buttons
-        ) {
-
-            if (
-                    button
-                            instanceof RoundedButton
-            ) {
-
-                (
-                        (RoundedButton)
-                                button
-                ).setButtonColor(
-                        UITheme.BUTTON_COLOR
-                );
-            }
+        if (button == null) {
+            return;
         }
 
+        button.setBackground(
+                UITheme.BUTTON_SELECTED_COLOR
+        );
 
-        if (
-                selectedButton
-                        instanceof RoundedButton
-        ) {
+        button.setForeground(
+                UITheme.TEXT_COLOR
+        );
 
-            (
-                    (RoundedButton)
-                            selectedButton
-            ).setButtonColor(
-                    UITheme.BUTTON_SELECTED_COLOR
-            );
-        }
-
-
-        selectedButton.repaint();
+        button.repaint();
     }
 
 
     //=========================================================
-    // SHOW PANEL
+    // REFRESH ALL
     //=========================================================
 
-    private void showPanel(
-            JPanel panel
-    ) {
+    public void refreshAll() {
 
-        contentPanel.removeAll();
+        if (parkingPanel != null) {
 
-        contentPanel.setLayout(
-                new BorderLayout()
-        );
+            parkingPanel.refreshParkingSpaces();
+        }
 
-        contentPanel.add(
-                panel,
-                BorderLayout.CENTER
-        );
 
-        contentPanel.revalidate();
-        contentPanel.repaint();
+        if (sessionPanel != null) {
+
+            sessionPanel.refresh();
+        }
+
+
+        if (dashboardPanel != null) {
+
+            dashboardPanel.revalidate();
+            dashboardPanel.repaint();
+        }
+
+
+        if (analyticsPanel != null) {
+
+            analyticsPanel.revalidate();
+            analyticsPanel.repaint();
+        }
+
+
+        revalidate();
+        repaint();
+    }
+
+
+    //=========================================================
+    // ROUNDED NAVIGATION BUTTON
+    //=========================================================
+
+    private static class RoundedNavigationButton
+            extends JButton {
+
+        private boolean mouseOver = false;
+
+
+        public RoundedNavigationButton(
+                String text
+        ) {
+
+            super(text);
+
+
+            setFocusPainted(false);
+            setBorderPainted(false);
+            setContentAreaFilled(false);
+            setOpaque(false);
+
+
+            addMouseListener(
+                    new java.awt.event.MouseAdapter() {
+
+                        @Override
+                        public void mouseEntered(
+                                java.awt.event.MouseEvent e
+                        ) {
+
+                            mouseOver = true;
+
+                            repaint();
+                        }
+
+
+                        @Override
+                        public void mouseExited(
+                                java.awt.event.MouseEvent e
+                        ) {
+
+                            mouseOver = false;
+
+                            repaint();
+                        }
+                    }
+            );
+        }
+
+
+        @Override
+        protected void paintComponent(
+                Graphics g
+        ) {
+
+            Graphics2D g2 =
+                    (Graphics2D) g.create();
+
+
+            //=================================================
+            // ANTIALIASING
+            //=================================================
+
+            g2.setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON
+            );
+
+            g2.setRenderingHint(
+                    RenderingHints.KEY_RENDERING,
+                    RenderingHints.VALUE_RENDER_QUALITY
+            );
+
+
+            //=================================================
+            // DIMENSIONS
+            //=================================================
+
+            int width =
+                    getWidth();
+
+            int height =
+                    getHeight();
+
+
+            if (width <= 0 || height <= 0) {
+
+                g2.dispose();
+
+                return;
+            }
+
+
+            int arc = 18;
+
+
+            //=================================================
+            // DETERMINE BACKGROUND
+            //=================================================
+
+            Color backgroundColor =
+                    getBackground();
+
+
+            if (mouseOver) {
+
+                backgroundColor =
+                        UITheme.BUTTON_SELECTED_COLOR;
+            }
+
+
+            //=================================================
+            // ROUNDED BACKGROUND
+            //=================================================
+
+            g2.setColor(
+                    backgroundColor
+            );
+
+            g2.fillRoundRect(
+                    0,
+                    0,
+                    width - 1,
+                    height - 1,
+                    arc,
+                    arc
+            );
+
+
+            //=================================================
+            // ROUNDED BORDER
+            //=================================================
+
+            g2.setColor(
+                    UITheme.BORDER_COLOR
+            );
+
+            g2.setStroke(
+                    new BasicStroke(
+                            1.0f
+                    )
+            );
+
+            g2.drawRoundRect(
+                    0,
+                    0,
+                    width - 1,
+                    height - 1,
+                    arc,
+                    arc
+            );
+
+
+            g2.dispose();
+
+
+            //=================================================
+            // DRAW TEXT
+            //=================================================
+
+            super.paintComponent(g);
+        }
     }
 }

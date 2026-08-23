@@ -47,6 +47,29 @@ public class VehiclePanel extends JPanel {
         this.vehicleController =
                 vehicleController;
 
+        //INITIALIZE COMPONENTS
+        vehiclePanel = new JPanel();
+
+        vehicleLabel = new JLabel();
+
+        workspacePanel = new JPanel();
+
+        registrationNumberLabel = new JLabel();
+        registrationNumberField = new JTextField();
+
+        vehicleTypeLabel = new JLabel();
+        vehicleTypeComboBox = new JComboBox();
+
+        registerVehicleButton = new JButton();
+
+        vehicleListPanel = new JPanel();
+        listRegisterdVehicleLabel = new JLabel();
+
+        vehicleListTable = new JTable();
+        vehicleScrollPane = new JScrollPane(
+                vehicleListTable
+        );
+
         //ROOT PANEL
         setLayout(
                 new BorderLayout()
@@ -92,10 +115,10 @@ public class VehiclePanel extends JPanel {
 
         vehiclePanel.setBorder(
                 new EmptyBorder(
-                        5,
-                        5,
-                        5,
-                        5
+                        15,
+                        15,
+                        15,
+                        15
                 )
         );
 
@@ -117,7 +140,7 @@ public class VehiclePanel extends JPanel {
                 new EmptyBorder(
                         0,
                         0,
-                        20,
+                        25,
                         0
                 )
         );
@@ -129,12 +152,21 @@ public class VehiclePanel extends JPanel {
         workspacePanel.setLayout(
                 new BorderLayout(
                         0,
-                        18
+                        24
                 )
         );
 
         workspacePanel.setBackground(
                 UITheme.BACKGROUND_COLOR
+        );
+
+        workspacePanel.setBorder(
+                new EmptyBorder(
+                        5,
+                        0,
+                        5,
+                        0
+                )
         );
 
 
@@ -190,10 +222,10 @@ public class VehiclePanel extends JPanel {
                                 true
                         ),
                         new EmptyBorder(
-                                20,
-                                22,
-                                20,
-                                22
+                                26,
+                                28,
+                                26,
+                                28
                         )
                 )
         );
@@ -204,10 +236,10 @@ public class VehiclePanel extends JPanel {
 
         gbc.insets =
                 new Insets(
-                        7,
-                        7,
-                        7,
-                        7
+                        10,
+                        10,
+                        10,
+                        10
                 );
 
         gbc.fill =
@@ -259,10 +291,10 @@ public class VehiclePanel extends JPanel {
                                 true
                         ),
                         new EmptyBorder(
-                                8,
-                                12,
-                                8,
-                                12
+                                10,
+                                14,
+                                10,
+                                14
                         )
                 )
         );
@@ -356,10 +388,10 @@ public class VehiclePanel extends JPanel {
 
         registerVehicleButton.setBorder(
                 new EmptyBorder(
-                        10,
-                        20,
-                        10,
-                        20
+                        12,
+                        24,
+                        12,
+                        24
                 )
         );
 
@@ -447,7 +479,7 @@ public class VehiclePanel extends JPanel {
         vehicleListPanel.setLayout(
                 new BorderLayout(
                         0,
-                        12
+                        16
                 )
         );
 
@@ -463,10 +495,10 @@ public class VehiclePanel extends JPanel {
                                 true
                         ),
                         new EmptyBorder(
-                                15,
-                                15,
-                                15,
-                                15
+                                20,
+                                20,
+                                20,
+                                20
                         )
                 )
         );
@@ -483,6 +515,15 @@ public class VehiclePanel extends JPanel {
 
         listRegisterdVehicleLabel.setFont(
                 UITheme.bold(17)
+        );
+
+        listRegisterdVehicleLabel.setBorder(
+                new EmptyBorder(
+                        0,
+                        2,
+                        4,
+                        2
+                )
         );
 
 
@@ -521,7 +562,7 @@ public class VehiclePanel extends JPanel {
         );
 
         vehicleListTable.setRowHeight(
-                38
+                44
         );
 
         vehicleListTable.setGridColor(
@@ -567,7 +608,7 @@ public class VehiclePanel extends JPanel {
         tableHeader.setPreferredSize(
                 new Dimension(
                         0,
-                        40
+                        44
                 )
         );
 
