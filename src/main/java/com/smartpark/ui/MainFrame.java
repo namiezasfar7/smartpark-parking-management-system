@@ -1,6 +1,20 @@
 package com.smartpark.ui;
 
 //IMPORTS
+import com.smartpark.controller.DashboardController;
+import com.smartpark.controller.ParkingController;
+import com.smartpark.controller.ParkingSessionController;
+import com.smartpark.controller.VehicleController;
+import com.smartpark.repository.ParkingSessionRepository;
+import com.smartpark.repository.ParkingSpaceRepository;
+import com.smartpark.repository.VehicleRepository;
+import com.smartpark.repository.memory.InMemoryParkingSessionRepository;
+import com.smartpark.repository.memory.InMemoryParkingSpaceRepository;
+import com.smartpark.repository.memory.InMemoryVehicleRepository;
+import com.smartpark.service.AnalyticsService;
+import com.smartpark.service.ParkingService;
+import com.smartpark.service.ParkingSessionService;
+import com.smartpark.service.VehicleService;
 import com.smartpark.ui.components.RoundedButton;
 
 import javax.swing.*;
@@ -10,7 +24,10 @@ import java.awt.*;
 //MAIN FRAME CLASS
 public class MainFrame extends JFrame {
 
-    //DECLARE ATTRIBUTES
+    //=========================================================
+    // DECLARE ATTRIBUTES
+    //=========================================================
+
     //MAIN PANELS
     private JPanel mainPanel;
     private JPanel sidebarPanel;
@@ -36,103 +53,329 @@ public class MainFrame extends JFrame {
     private SessionPanel sessionPanel;
     private AnalyticsPanel analyticsPanel;
 
-    //DECLARE CONSTRUCTOR
+    //CONTROLLERS
+    private VehicleController vehicleController;
+    private ParkingController parkingController;
+    private ParkingSessionController parkingSessionController;
+    private DashboardController dashboardController;
+
+
+    //=========================================================
+    // CONSTRUCTOR
+    //=========================================================
+
     public MainFrame() {
 
         //FRAME SETTINGS
-        setTitle("SmartPark - Parking Management System");
+        setTitle(
+                "SmartPark - Parking Management System"
+        );
 
         setIconImage(
                 Toolkit.getDefaultToolkit().getImage(
-                        getClass().getResource("/icons/smartpark-logo.png")
+                        getClass().getResource(
+                                "/icons/smartpark-logo.png"
+                        )
                 )
         );
 
-        setSize(1200, 750);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(
+                1200,
+                750
+        );
+
+        setDefaultCloseOperation(
+                JFrame.EXIT_ON_CLOSE
+        );
+
         setLocationRelativeTo(null);
 
-        setContentPane(mainPanel);
 
-        //SETUP MAIN LAYOUT
+        //=====================================================
+        // SET CONTENT PANE
+        //=====================================================
+
+        setContentPane(
+                mainPanel
+        );
+
+
+        //=====================================================
+        // SETUP MAIN LAYOUT
+        //=====================================================
+
         setupMainLayout();
 
-        //CREATE APPLICATION PANELS
-        dashboardPanel = new DashboardPanel();
-        parkingPanel = new ParkingPanel();
-        vehiclePanel = new VehiclePanel();
-        sessionPanel = new SessionPanel();
-        analyticsPanel = new AnalyticsPanel();
 
-        //SETUP SIDEBAR
+        //=====================================================
+        // CREATE APPLICATION DEPENDENCIES
+        //=====================================================
+
+        setupControllers();
+
+
+        //=====================================================
+        // CREATE APPLICATION PANELS
+        //=====================================================
+
+        dashboardPanel =
+                new DashboardPanel();
+
+        parkingPanel =
+                new ParkingPanel();
+
+        vehiclePanel =
+                new VehiclePanel(
+                        vehicleController
+                );
+
+        sessionPanel =
+                new SessionPanel();
+
+        analyticsPanel =
+                new AnalyticsPanel();
+
+
+        //=====================================================
+        // SETUP SIDEBAR
+        //=====================================================
+
         setupSidebar();
 
-        //SHOW DASHBOARD FIRST
-        showPanel(dashboardPanel);
 
-        //BUTTON ACTIONS
-        dashboardButton.addActionListener(e -> {
-            showPanel(dashboardPanel);
-            setSelectedButton(dashboardButton);
-        });
+        //=====================================================
+        // SHOW DASHBOARD FIRST
+        //=====================================================
 
-        parkingButton.addActionListener(e -> {
-            showPanel(parkingPanel);
-            setSelectedButton(parkingButton);
-        });
+        showPanel(
+                dashboardPanel
+        );
 
-        vehicleButton.addActionListener(e -> {
-            showPanel(vehiclePanel);
-            setSelectedButton(vehicleButton);
-        });
 
-        sessionButton.addActionListener(e -> {
-            showPanel(sessionPanel);
-            setSelectedButton(sessionButton);
-        });
+        //=====================================================
+        // BUTTON ACTIONS
+        //=====================================================
 
-        analyticsButton.addActionListener(e -> {
-            showPanel(analyticsPanel);
-            setSelectedButton(analyticsButton);
-        });
+        dashboardButton.addActionListener(
+                e -> {
+
+                    showPanel(
+                            dashboardPanel
+                    );
+
+                    setSelectedButton(
+                            dashboardButton
+                    );
+                }
+        );
+
+
+        parkingButton.addActionListener(
+                e -> {
+
+                    showPanel(
+                            parkingPanel
+                    );
+
+                    setSelectedButton(
+                            parkingButton
+                    );
+                }
+        );
+
+
+        vehicleButton.addActionListener(
+                e -> {
+
+                    showPanel(
+                            vehiclePanel
+                    );
+
+                    setSelectedButton(
+                            vehicleButton
+                    );
+                }
+        );
+
+
+        sessionButton.addActionListener(
+                e -> {
+
+                    showPanel(
+                            sessionPanel
+                    );
+
+                    setSelectedButton(
+                            sessionButton
+                    );
+                }
+        );
+
+
+        analyticsButton.addActionListener(
+                e -> {
+
+                    showPanel(
+                            analyticsPanel
+                    );
+
+                    setSelectedButton(
+                            analyticsButton
+                    );
+                }
+        );
     }
 
-    //CREATE CUSTOM COMPONENT
+
+    //=========================================================
+    // CREATE CONTROLLERS
+    //=========================================================
+
+    private void setupControllers() {
+
+        //=====================================================
+        // VEHICLE
+        //=====================================================
+
+        VehicleRepository vehicleRepository =
+                new InMemoryVehicleRepository();
+
+        VehicleService vehicleService =
+                new VehicleService(
+                        vehicleRepository
+                );
+
+        vehicleController =
+                new VehicleController(
+                        vehicleService
+                );
+
+
+        //=====================================================
+        // PARKING SPACE
+        //=====================================================
+
+        ParkingSpaceRepository parkingSpaceRepository =
+                new InMemoryParkingSpaceRepository();
+
+        ParkingService parkingService =
+                new ParkingService(
+                        parkingSpaceRepository
+                );
+
+        parkingController =
+                new ParkingController(
+                        parkingService
+                );
+
+
+        //=====================================================
+        // PARKING SESSION
+        //=====================================================
+
+        ParkingSessionRepository parkingSessionRepository =
+                new InMemoryParkingSessionRepository();
+
+        ParkingSessionService parkingSessionService =
+                new ParkingSessionService(
+                        parkingSessionRepository,
+                        parkingSpaceRepository
+                );
+
+        parkingSessionController =
+                new ParkingSessionController(
+                        parkingSessionService
+                );
+
+
+        //=====================================================
+        // DASHBOARD / ANALYTICS
+        //=====================================================
+
+        AnalyticsService analyticsService =
+                new AnalyticsService(
+                        parkingSpaceRepository,
+                        parkingSessionRepository
+                );
+
+        dashboardController =
+                new DashboardController(
+                        analyticsService
+                );
+    }
+
+
+    //=========================================================
+    // CREATE CUSTOM COMPONENTS
+    //=========================================================
+
     private void createUIComponents() {
 
-        dashboardButton = new RoundedButton();
-        parkingButton = new RoundedButton();
-        vehicleButton = new RoundedButton();
-        sessionButton = new RoundedButton();
-        analyticsButton = new RoundedButton();
+        dashboardButton =
+                new RoundedButton();
+
+        parkingButton =
+                new RoundedButton();
+
+        vehicleButton =
+                new RoundedButton();
+
+        sessionButton =
+                new RoundedButton();
+
+        analyticsButton =
+                new RoundedButton();
     }
 
-    //MAIN LAYOUT
+
+    //=========================================================
+    // MAIN LAYOUT
+    //=========================================================
+
     private void setupMainLayout() {
 
         //MAIN PANEL
-        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setLayout(
+                new BorderLayout()
+        );
+
         mainPanel.setBackground(
                 UITheme.BACKGROUND_COLOR
         );
 
+
         //SIDEBAR
-        sidebarPanel.setLayout(new BorderLayout());
-        sidebarPanel.setPreferredSize(
-                new Dimension(250, 0)
+        sidebarPanel.setLayout(
+                new BorderLayout()
         );
+
+        sidebarPanel.setPreferredSize(
+                new Dimension(
+                        250,
+                        0
+                )
+        );
+
         sidebarPanel.setBackground(
                 UITheme.SIDEBAR_COLOR
         );
 
+
         //RIGHT SIDE
-        rightPanel.setLayout(new BorderLayout());
+        rightPanel.setLayout(
+                new BorderLayout()
+        );
+
         rightPanel.setBackground(
                 UITheme.BACKGROUND_COLOR
         );
 
+
         //HEADER
-        headerPanel.setLayout(new BorderLayout());
+        headerPanel.setLayout(
+                new BorderLayout()
+        );
+
         headerPanel.setBackground(
                 UITheme.BACKGROUND_COLOR
         );
@@ -146,8 +389,12 @@ public class MainFrame extends JFrame {
                 )
         );
 
+
         //CONTENT
-        contentPanel.setLayout(new BorderLayout());
+        contentPanel.setLayout(
+                new BorderLayout()
+        );
+
         contentPanel.setBackground(
                 UITheme.BACKGROUND_COLOR
         );
@@ -160,6 +407,7 @@ public class MainFrame extends JFrame {
                         30
                 )
         );
+
 
         //BUILD RIGHT SIDE
         rightPanel.removeAll();
@@ -174,6 +422,7 @@ public class MainFrame extends JFrame {
                 BorderLayout.CENTER
         );
 
+
         //BUILD MAIN FRAME
         mainPanel.removeAll();
 
@@ -187,17 +436,25 @@ public class MainFrame extends JFrame {
                 BorderLayout.CENTER
         );
 
+
         mainPanel.revalidate();
         mainPanel.repaint();
     }
 
-    //SIDEBAR
+
+    //=========================================================
+    // SIDEBAR
+    //=========================================================
+
     private void setupSidebar() {
 
         sidebarPanel.removeAll();
 
+
         //LOGO
-        logoLabel.setText("SmartPark");
+        logoLabel.setText(
+                "SmartPark"
+        );
 
         logoLabel.setForeground(
                 UITheme.TEXT_COLOR
@@ -216,13 +473,16 @@ public class MainFrame extends JFrame {
                 )
         );
 
+
         sidebarPanel.add(
                 logoLabel,
                 BorderLayout.NORTH
         );
 
+
         //BUTTON PANEL
-        buttonPanel = new JPanel();
+        buttonPanel =
+                new JPanel();
 
         buttonPanel.setLayout(
                 new BoxLayout(
@@ -244,52 +504,84 @@ public class MainFrame extends JFrame {
                 )
         );
 
-        //STYLE BUTTONS
-        styleButton(dashboardButton);
-        styleButton(parkingButton);
-        styleButton(vehicleButton);
-        styleButton(sessionButton);
-        styleButton(analyticsButton);
 
-        //ADD BUTTONS
+        //STYLE BUTTONS
+        styleButton(
+                dashboardButton
+        );
+
+        styleButton(
+                parkingButton
+        );
+
+        styleButton(
+                vehicleButton
+        );
+
+        styleButton(
+                sessionButton
+        );
+
+        styleButton(
+                analyticsButton
+        );
+
+
+        //ADD DASHBOARD
         buttonPanel.add(
                 dashboardButton
         );
 
         buttonPanel.add(
-                Box.createVerticalStrut(12)
+                Box.createVerticalStrut(
+                        12
+                )
         );
 
+
+        //ADD PARKING
         buttonPanel.add(
                 parkingButton
         );
 
         buttonPanel.add(
-                Box.createVerticalStrut(12)
+                Box.createVerticalStrut(
+                        12
+                )
         );
 
+
+        //ADD VEHICLES
         buttonPanel.add(
                 vehicleButton
         );
 
         buttonPanel.add(
-                Box.createVerticalStrut(12)
+                Box.createVerticalStrut(
+                        12
+                )
         );
 
+
+        //ADD SESSIONS
         buttonPanel.add(
                 sessionButton
         );
 
         buttonPanel.add(
-                Box.createVerticalStrut(12)
+                Box.createVerticalStrut(
+                        12
+                )
         );
 
+
+        //ADD ANALYTICS
         buttonPanel.add(
                 analyticsButton
         );
 
 
-        //ADD BUTTON PANEL TO SIDEBAR
+        //ADD BUTTON PANEL
         sidebarPanel.add(
                 buttonPanel,
                 BorderLayout.CENTER
@@ -301,12 +593,19 @@ public class MainFrame extends JFrame {
                 dashboardButton
         );
 
+
         sidebarPanel.revalidate();
         sidebarPanel.repaint();
     }
 
-    //BUTTON STYLE
-    private void styleButton(JButton button) {
+
+    //=========================================================
+    // BUTTON STYLE
+    //=========================================================
+
+    private void styleButton(
+            JButton button
+    ) {
 
         button.setForeground(
                 UITheme.TEXT_COLOR
@@ -316,8 +615,13 @@ public class MainFrame extends JFrame {
                 UITheme.regular(15)
         );
 
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
+        button.setFocusPainted(
+                false
+        );
+
+        button.setBorderPainted(
+                false
+        );
 
         button.setAlignmentX(
                 Component.CENTER_ALIGNMENT
@@ -353,7 +657,11 @@ public class MainFrame extends JFrame {
         );
     }
 
-    //SELECTED BUTTON
+
+    //=========================================================
+    // SELECTED BUTTON
+    //=========================================================
+
     private void setSelectedButton(
             JButton selectedButton
     ) {
@@ -366,30 +674,52 @@ public class MainFrame extends JFrame {
                 analyticsButton
         };
 
-        for (JButton button : buttons) {
 
-            if (button instanceof RoundedButton) {
+        for (
+                JButton button :
+                buttons
+        ) {
 
-                ((RoundedButton) button)
-                        .setButtonColor(
-                                UITheme.BUTTON_COLOR
-                        );
+            if (
+                    button
+                            instanceof RoundedButton
+            ) {
+
+                (
+                        (RoundedButton)
+                                button
+                ).setButtonColor(
+                        UITheme.BUTTON_COLOR
+                );
             }
         }
 
-        if (selectedButton instanceof RoundedButton) {
 
-            ((RoundedButton) selectedButton)
-                    .setButtonColor(
-                            UITheme.BUTTON_SELECTED_COLOR
-                    );
+        if (
+                selectedButton
+                        instanceof RoundedButton
+        ) {
+
+            (
+                    (RoundedButton)
+                            selectedButton
+            ).setButtonColor(
+                    UITheme.BUTTON_SELECTED_COLOR
+            );
         }
+
 
         selectedButton.repaint();
     }
 
-    //SHOW PANEL
-    private void showPanel(JPanel panel) {
+
+    //=========================================================
+    // SHOW PANEL
+    //=========================================================
+
+    private void showPanel(
+            JPanel panel
+    ) {
 
         contentPanel.removeAll();
 

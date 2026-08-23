@@ -1,9 +1,14 @@
 package com.smartpark.ui;
 
 //IMPORTS
+import com.smartpark.controller.VehicleController;
+import com.smartpark.model.Vehicle;
+import com.smartpark.model.VehicleType;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
 
@@ -30,9 +35,17 @@ public class VehiclePanel extends JPanel {
     private JTable vehicleListTable;
     private JScrollPane vehicleScrollPane;
 
+    //CONTROLLER
+    private VehicleController vehicleController;
+
 
     //DECLARE CONSTRUCTOR
-    public VehiclePanel() {
+    public VehiclePanel(
+            VehicleController vehicleController
+    ) {
+
+        this.vehicleController =
+                vehicleController;
 
         //ROOT PANEL
         setLayout(
@@ -51,10 +64,21 @@ public class VehiclePanel extends JPanel {
 
         //SETUP VEHICLE PANEL
         setupVehiclePanel();
+
+        //LOAD EXISTING VEHICLES
+        refreshVehicleTable();
+
+        //REGISTER BUTTON ACTION
+        registerVehicleButton.addActionListener(
+                e -> registerVehicle()
+        );
     }
 
 
-    //SETUP VEHICLE PANEL
+    //=========================================================
+    // VEHICLE PANEL
+    //=========================================================
+
     private void setupVehiclePanel() {
 
         //MAIN VEHICLE PANEL
@@ -117,7 +141,6 @@ public class VehiclePanel extends JPanel {
         //SETUP FORM
         setupVehicleForm();
 
-
         //SETUP VEHICLE LIST
         setupVehicleList();
 
@@ -141,7 +164,10 @@ public class VehiclePanel extends JPanel {
     }
 
 
-    //SETUP VEHICLE FORM
+    //=========================================================
+    // VEHICLE FORM
+    //=========================================================
+
     private void setupVehicleForm() {
 
         //FORM PANEL
@@ -188,7 +214,10 @@ public class VehiclePanel extends JPanel {
                 GridBagConstraints.HORIZONTAL;
 
 
-        //REGISTRATION NUMBER LABEL
+        //=====================================================
+        // REGISTRATION NUMBER LABEL
+        //=====================================================
+
         registrationNumberLabel.setText(
                 "Registration Number"
         );
@@ -202,7 +231,10 @@ public class VehiclePanel extends JPanel {
         );
 
 
-        //REGISTRATION NUMBER FIELD
+        //=====================================================
+        // REGISTRATION NUMBER FIELD
+        //=====================================================
+
         registrationNumberField.setBackground(
                 UITheme.BUTTON_COLOR
         );
@@ -236,7 +268,10 @@ public class VehiclePanel extends JPanel {
         );
 
 
-        //VEHICLE TYPE LABEL
+        //=====================================================
+        // VEHICLE TYPE LABEL
+        //=====================================================
+
         vehicleTypeLabel.setText(
                 "Vehicle Type"
         );
@@ -250,7 +285,16 @@ public class VehiclePanel extends JPanel {
         );
 
 
-        //VEHICLE TYPE COMBO BOX
+        //=====================================================
+        // VEHICLE TYPE COMBO BOX
+        //=====================================================
+
+        vehicleTypeComboBox.setModel(
+                new DefaultComboBoxModel<>(
+                        VehicleType.values()
+                )
+        );
+
         vehicleTypeComboBox.setBackground(
                 UITheme.BUTTON_COLOR
         );
@@ -272,7 +316,10 @@ public class VehiclePanel extends JPanel {
         );
 
 
-        //REGISTER BUTTON
+        //=====================================================
+        // REGISTER BUTTON
+        //=====================================================
+
         registerVehicleButton.setText(
                 "Register Vehicle"
         );
@@ -317,7 +364,10 @@ public class VehiclePanel extends JPanel {
         );
 
 
-        //ROW 1 - REGISTRATION NUMBER
+        //=====================================================
+        // ROW 1 - REGISTRATION NUMBER
+        //=====================================================
+
         gbc.gridx = 0;
         gbc.gridy = 0;
 
@@ -339,7 +389,10 @@ public class VehiclePanel extends JPanel {
         );
 
 
-        //ROW 2 - VEHICLE TYPE
+        //=====================================================
+        // ROW 2 - VEHICLE TYPE
+        //=====================================================
+
         gbc.gridx = 0;
         gbc.gridy = 1;
 
@@ -361,7 +414,10 @@ public class VehiclePanel extends JPanel {
         );
 
 
-        //ROW 3 - BUTTON
+        //=====================================================
+        // ROW 3 - BUTTON
+        //=====================================================
+
         gbc.gridx = 1;
         gbc.gridy = 2;
 
@@ -381,7 +437,10 @@ public class VehiclePanel extends JPanel {
     }
 
 
-    //SETUP VEHICLE LIST
+    //=========================================================
+    // VEHICLE LIST
+    //=========================================================
+
     private void setupVehicleList() {
 
         //LIST PANEL
@@ -427,7 +486,28 @@ public class VehiclePanel extends JPanel {
         );
 
 
-        //TABLE
+        //TABLE MODEL
+        vehicleListTable.setModel(
+                new DefaultTableModel(
+                        new Object[][] {},
+                        new String[] {
+                                "Registration Number",
+                                "Vehicle Type"
+                        }
+                ) {
+
+                    @Override
+                    public boolean isCellEditable(
+                            int row,
+                            int column
+                    ) {
+                        return false;
+                    }
+                }
+        );
+
+
+        //TABLE STYLE
         vehicleListTable.setBackground(
                 UITheme.CARD_COLOR
         );
@@ -465,7 +545,10 @@ public class VehiclePanel extends JPanel {
         );
 
 
-        //TABLE HEADER
+        //=====================================================
+        // TABLE HEADER
+        //=====================================================
+
         JTableHeader tableHeader =
                 vehicleListTable.getTableHeader();
 
@@ -489,7 +572,10 @@ public class VehiclePanel extends JPanel {
         );
 
 
-        //SCROLL PANE
+        //=====================================================
+        // SCROLL PANE
+        //=====================================================
+
         vehicleScrollPane.setBackground(
                 UITheme.CARD_COLOR
         );
@@ -524,5 +610,131 @@ public class VehiclePanel extends JPanel {
                 vehicleListPanel,
                 BorderLayout.CENTER
         );
+    }
+
+
+    //=========================================================
+    // REGISTER VEHICLE
+    //=========================================================
+
+    private void registerVehicle() {
+
+        String registrationNumber =
+                registrationNumberField
+                        .getText()
+                        .trim()
+                        .toUpperCase();
+
+
+        //CHECK EMPTY REGISTRATION
+        if (registrationNumber.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please enter a registration number.",
+                    "Invalid Registration",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            registrationNumberField.requestFocus();
+
+            return;
+        }
+
+
+        //CHECK DUPLICATE REGISTRATION
+        if (
+                vehicleController
+                        .findVehicle(
+                                registrationNumber
+                        )
+                        != null
+        ) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "A vehicle with this registration number already exists.",
+                    "Duplicate Vehicle",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            registrationNumberField.requestFocus();
+
+            return;
+        }
+
+
+        //GET VEHICLE TYPE
+        VehicleType vehicleType =
+                (VehicleType)
+                        vehicleTypeComboBox
+                                .getSelectedItem();
+
+
+        //CREATE VEHICLE
+        Vehicle vehicle =
+                new Vehicle(
+                        registrationNumber,
+                        "",
+                        vehicleType
+                );
+
+
+        //REGISTER THROUGH CONTROLLER
+        vehicleController.registerVehicle(
+                vehicle
+        );
+
+
+        //REFRESH TABLE
+        refreshVehicleTable();
+
+
+        //CLEAR FORM
+        registrationNumberField.setText("");
+
+        vehicleTypeComboBox.setSelectedIndex(0);
+
+        registrationNumberField.requestFocus();
+
+
+        //SUCCESS MESSAGE
+        JOptionPane.showMessageDialog(
+                this,
+                "Vehicle registered successfully.",
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+
+    //=========================================================
+    // REFRESH VEHICLE TABLE
+    //=========================================================
+
+    private void refreshVehicleTable() {
+
+        DefaultTableModel model =
+                (DefaultTableModel)
+                        vehicleListTable.getModel();
+
+
+        //CLEAR EXISTING ROWS
+        model.setRowCount(0);
+
+
+        //GET VEHICLES THROUGH CONTROLLER
+        for (
+                Vehicle vehicle :
+                vehicleController.getAllVehicles()
+        ) {
+
+            model.addRow(
+                    new Object[] {
+                            vehicle.getRegistrationNumber(),
+                            vehicle.getVehicleType()
+                    }
+            );
+        }
     }
 }
