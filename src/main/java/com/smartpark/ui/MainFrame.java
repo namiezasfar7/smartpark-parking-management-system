@@ -147,7 +147,7 @@ public class MainFrame extends JFrame {
         );
 
         //ANALYTICS
-        analyticsPanel = new AnalyticsPanel();
+        analyticsPanel = new AnalyticsPanel(analyticsService);
     }
 
     //CREATE SIDEBAR
@@ -287,7 +287,6 @@ public class MainFrame extends JFrame {
         //REFRESH DASHBOARD
         if (DASHBOARD_PAGE.equals(page)) {
 
-            //CHECK CONDITION
             if (dashboardPanel != null) {
                 dashboardPanel.refresh();
             }
@@ -296,7 +295,6 @@ public class MainFrame extends JFrame {
         //REFRESH PARKING
         if (PARKING_PAGE.equals(page)) {
 
-            //CHECK CONDITION
             if (parkingPanel != null) {
                 parkingPanel.refreshParkingSpaces();
             }
@@ -305,9 +303,16 @@ public class MainFrame extends JFrame {
         //REFRESH SESSIONS
         if (SESSIONS_PAGE.equals(page)) {
 
-            //CHECK CONDITION
             if (sessionPanel != null) {
                 sessionPanel.refresh();
+            }
+        }
+
+        //REFRESH ANALYTICS
+        if (ANALYTICS_PAGE.equals(page)) {
+
+            if (analyticsPanel != null) {
+                analyticsPanel.refresh();
             }
         }
 
@@ -323,31 +328,26 @@ public class MainFrame extends JFrame {
             case DASHBOARD_PAGE:
 
                 setSelectedButton(dashboardButton);
-
                 break;
 
             case PARKING_PAGE:
 
                 setSelectedButton(parkingButton);
-
                 break;
 
             case VEHICLES_PAGE:
 
                 setSelectedButton(vehiclesButton);
-
                 break;
 
             case SESSIONS_PAGE:
 
                 setSelectedButton(sessionsButton);
-
                 break;
 
             case ANALYTICS_PAGE:
 
                 setSelectedButton(analyticsButton);
-
                 break;
 
             default:
@@ -356,7 +356,6 @@ public class MainFrame extends JFrame {
         }
 
         contentPanel.revalidate();
-
         contentPanel.repaint();
     }
 
