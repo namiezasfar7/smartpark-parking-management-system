@@ -1,6 +1,6 @@
 package com.smartpark.exception;
 
-//PARKING SPACE UNAVAILABLE EXCEPTION CLASS
+//PARKING SPACE UNAVAILABLE EXCEPTION
 public class ParkingSpaceUnavailableException extends RuntimeException {
 
     //DECLARE CONSTRUCTOR

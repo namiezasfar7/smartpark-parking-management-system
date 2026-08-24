@@ -1,6 +1,6 @@
 package com.smartpark.exception;
 
-//VEHICLE NOT FOUND EXCEPTION CLASS
+//VEHICLE NOT FOUND EXCEPTION
 public class VehicleNotFoundException extends RuntimeException {
 
     //DECLARE CONSTRUCTOR

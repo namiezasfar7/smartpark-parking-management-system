@@ -1,6 +1,6 @@
 package com.smartpark.exception;
 
-//ACTIVE SESSION EXCEPTION CLASS
+//ACTIVE SESSION EXCEPTION
 public class ActiveSessionException extends RuntimeException {
 
     //DECLARE CONSTRUCTOR
