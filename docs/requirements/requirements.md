@@ -40,9 +40,7 @@ Can additionally:
 
 ## 4. Functional Requirements
 
-- different classes
-- polymorphism
-- abstraction
+To be defined.
 
 ## 5. Non-Functional Requirements
 
