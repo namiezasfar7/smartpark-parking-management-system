@@ -83,27 +83,19 @@ public class DashboardPanel extends JPanel {
 
         //MAIN DASHBOARD PANEL
         dashboardPanel.setLayout(new BorderLayout());
-
         dashboardPanel.setBackground(UITheme.BACKGROUND_COLOR);
-
         dashboardPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
         //DASHBOARD TITLE
         dashboardLabel.setText("Dashboard");
-
         dashboardLabel.setForeground(UITheme.TEXT_COLOR);
-
         dashboardLabel.setFont(UITheme.bold(28));
-
         dashboardLabel.setBorder(new EmptyBorder(0, 0, 25, 0));
 
         //WORKSPACE
         workspacePanel.removeAll();
-
         workspacePanel.setLayout(new GridLayout(2, 2, 24, 24));
-
         workspacePanel.setBackground(UITheme.BACKGROUND_COLOR);
-
         workspacePanel.setBorder(new EmptyBorder(5, 0, 5, 0));
 
         //GET UPDATED DATA FROM CONTROLLER
@@ -113,41 +105,10 @@ public class DashboardPanel extends JPanel {
         int activeSessions = dashboardController.getActiveSessions();
 
         //STYLE CARDS
-        setupCard(
-                spacesCard,
-                spacesTitleLabel,
-                spacesValueLabel,
-                "Total Spaces",
-                String.valueOf(totalSpaces),
-                UITheme.CARD_TOTAL
-        );
-
-        setupCard(
-                occupiedCard,
-                occupiedTitleLabel,
-                occupiedValueLabel,
-                "Occupied Spaces",
-                String.valueOf(occupiedSpaces),
-                UITheme.CARD_OCCUPIED
-        );
-
-        setupCard(
-                availableCard,
-                availableTitleLabel,
-                availableValueLabel,
-                "Available Spaces",
-                String.valueOf(availableSpaces),
-                UITheme.CARD_AVAILABLE
-        );
-
-        setupCard(
-                sessionCard,
-                sessionTitleLabel,
-                sessionValueLabel,
-                "Active Sessions",
-                String.valueOf(activeSessions),
-                UITheme.CARD_SESSIONS
-        );
+        setupCard(spacesCard, spacesTitleLabel, spacesValueLabel, "Total Spaces", String.valueOf(totalSpaces), UITheme.CARD_TOTAL);
+        setupCard(occupiedCard, occupiedTitleLabel, occupiedValueLabel, "Occupied Spaces", String.valueOf(occupiedSpaces), UITheme.CARD_OCCUPIED);
+        setupCard(availableCard, availableTitleLabel, availableValueLabel, "Available Spaces", String.valueOf(availableSpaces), UITheme.CARD_AVAILABLE);
+        setupCard(sessionCard, sessionTitleLabel, sessionValueLabel, "Active Sessions", String.valueOf(activeSessions), UITheme.CARD_SESSIONS);
 
         //ADD CARDS
         workspacePanel.add(spacesCard);
@@ -159,7 +120,6 @@ public class DashboardPanel extends JPanel {
         dashboardPanel.removeAll();
 
         dashboardPanel.add(dashboardLabel, BorderLayout.NORTH);
-
         dashboardPanel.add(workspacePanel, BorderLayout.CENTER);
 
         dashboardPanel.revalidate();
@@ -172,18 +132,10 @@ public class DashboardPanel extends JPanel {
     }
 
     //SETUP CARD
-    private void setupCard(
-            JPanel card,
-            JLabel titleLabel,
-            JLabel valueLabel,
-            String title,
-            String value,
-            Color cardColor
-    ) {
+    private void setupCard(JPanel card, JLabel titleLabel, JLabel valueLabel, String title, String value, Color cardColor) {
 
         //CARD
         card.setOpaque(false);
-
         card.setLayout(new BorderLayout());
 
         //ROUNDED CARD BACKGROUND

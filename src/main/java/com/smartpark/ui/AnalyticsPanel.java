@@ -21,7 +21,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
-
 //ANALYTICS PANEL CLASS
 public class AnalyticsPanel extends JPanel {
 
@@ -45,9 +44,7 @@ public class AnalyticsPanel extends JPanel {
     private LineChartPanel sessionsChartPanel;
     private DonutChartPanel statusChartPanel;
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     //DECLARE CONSTRUCTOR
     public AnalyticsPanel(AnalyticsService analyticsService) {
@@ -67,291 +64,121 @@ public class AnalyticsPanel extends JPanel {
         refresh();
     }
 
-
     //DECLARE METHODS
     //MAIN ANALYTICS PANEL
     private void setupAnalyticsPanel() {
 
-        analyticsPanel.setBorder(
-                new EmptyBorder(20, 40, 20, 40)
-        );
+        analyticsPanel.setBorder(new EmptyBorder(20, 40, 20, 40));
 
         //TITLE
         analyticsLabel = new JLabel("Analytics");
-
         analyticsLabel.setForeground(UITheme.TEXT_COLOR);
         analyticsLabel.setFont(UITheme.bold(34));
-
-        analyticsLabel.setBorder(
-                new EmptyBorder(0, 0, 20, 0)
-        );
-
-        analyticsPanel.add(
-                analyticsLabel,
-                BorderLayout.NORTH
-        );
+        analyticsLabel.setBorder(new EmptyBorder(0, 0, 20, 0));
+        analyticsPanel.add(analyticsLabel, BorderLayout.NORTH);
 
         //WORKSPACE
         workspacePanel = new JPanel();
-
-        workspacePanel.setLayout(
-                new BoxLayout(
-                        workspacePanel,
-                        BoxLayout.Y_AXIS
-                )
-        );
-
-        workspacePanel.setBackground(
-                UITheme.BACKGROUND_COLOR
-        );
+        workspacePanel.setLayout(new BoxLayout(workspacePanel, BoxLayout.Y_AXIS));
+        workspacePanel.setBackground(UITheme.BACKGROUND_COLOR);
 
         setupStatisticCards();
         setupCharts();
         setupStatisticsTable();
 
         //WORKSPACE SCROLL
-        JScrollPane workspaceScrollPane =
-                new JScrollPane(workspacePanel);
-
+        JScrollPane workspaceScrollPane = new JScrollPane(workspacePanel);
         workspaceScrollPane.setBorder(null);
-
-        workspaceScrollPane.setBackground(
-                UITheme.BACKGROUND_COLOR
-        );
-
-        workspaceScrollPane.getViewport().setBackground(
-                UITheme.BACKGROUND_COLOR
-        );
-
-        workspaceScrollPane.setHorizontalScrollBarPolicy(
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
-        );
-
-        workspaceScrollPane.setVerticalScrollBarPolicy(
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
-        );
-
-        workspaceScrollPane.getVerticalScrollBar()
-                .setUnitIncrement(16);
+        workspaceScrollPane.setBackground(UITheme.BACKGROUND_COLOR);
+        workspaceScrollPane.getViewport().setBackground(UITheme.BACKGROUND_COLOR);
+        workspaceScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        workspaceScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        workspaceScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
         //SCROLLBAR
-        JScrollBar verticalScrollBar =
-                workspaceScrollPane.getVerticalScrollBar();
+        JScrollBar verticalScrollBar = workspaceScrollPane.getVerticalScrollBar();
+        verticalScrollBar.setBackground(UITheme.BACKGROUND_COLOR);
+        verticalScrollBar.setForeground(UITheme.BUTTON_COLOR);
+        verticalScrollBar.setPreferredSize(new Dimension(12, 0));
 
-        verticalScrollBar.setBackground(
-                UITheme.BACKGROUND_COLOR
-        );
+        verticalScrollBar.setUI(new BasicScrollBarUI() {
 
-        verticalScrollBar.setForeground(
-                UITheme.BUTTON_COLOR
-        );
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = UITheme.BUTTON_COLOR;
+                this.trackColor = UITheme.BACKGROUND_COLOR;
+            }
 
-        verticalScrollBar.setPreferredSize(
-                new Dimension(12, 0)
-        );
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
 
-        verticalScrollBar.setUI(
-                new BasicScrollBarUI() {
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
 
-                    @Override
-                    protected void configureScrollBarColors() {
+            private JButton createZeroButton() {
 
-                        this.thumbColor =
-                                UITheme.BUTTON_COLOR;
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0)) button.setMaximumSize(new Dimension(0, 0));
 
-                        this.trackColor =
-                                UITheme.BACKGROUND_COLOR;
-                    }
+                return button;
+            }
 
-                    @Override
-                    protected JButton createDecreaseButton(
-                            int orientation
-                    ) {
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
 
-                        return createZeroButton();
-                    }
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setColor(UITheme.BACKGROUND_COLOR);
+                g2.fillRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height);
+                g2.dispose();
+            }
 
-                    @Override
-                    protected JButton createIncreaseButton(
-                            int orientation
-                    ) {
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
 
-                        return createZeroButton();
-                    }
-
-                    private JButton createZeroButton() {
-
-                        JButton button = new JButton();
-
-                        button.setPreferredSize(
-                                new Dimension(0, 0)
-                        );
-
-                        button.setMinimumSize(
-                                new Dimension(0, 0)
-                        );
-
-                        button.setMaximumSize(
-                                new Dimension(0, 0)
-                        );
-
-                        return button;
-                    }
-
-                    @Override
-                    protected void paintTrack(
-                            Graphics g,
-                            JComponent c,
-                            Rectangle trackBounds
-                    ) {
-
-                        Graphics2D g2 =
-                                (Graphics2D) g.create();
-
-                        g2.setColor(
-                                UITheme.BACKGROUND_COLOR
-                        );
-
-                        g2.fillRect(
-                                trackBounds.x,
-                                trackBounds.y,
-                                trackBounds.width,
-                                trackBounds.height
-                        );
-
-                        g2.dispose();
-                    }
-
-                    @Override
-                    protected void paintThumb(
-                            Graphics g,
-                            JComponent c,
-                            Rectangle thumbBounds
-                    ) {
-
-                        if (
-                                thumbBounds.isEmpty()
-                                        ||
-                                        !((JScrollBar) c).isEnabled()
-                        ) {
-                            return;
-                        }
-
-                        Graphics2D g2 =
-                                (Graphics2D) g.create();
-
-                        g2.setRenderingHint(
-                                RenderingHints.KEY_ANTIALIASING,
-                                RenderingHints.VALUE_ANTIALIAS_ON
-                        );
-
-                        g2.setColor(
-                                UITheme.BUTTON_COLOR
-                        );
-
-                        int width =
-                                Math.max(
-                                        1,
-                                        thumbBounds.width - 4
-                                );
-
-                        int height =
-                                Math.max(
-                                        1,
-                                        thumbBounds.height - 4
-                                );
-
-                        g2.fillRoundRect(
-                                thumbBounds.x + 2,
-                                thumbBounds.y + 2,
-                                width,
-                                height,
-                                6,
-                                6
-                        );
-
-                        g2.dispose();
-                    }
+                if (thumbBounds.isEmpty() || !((JScrollBar) c).isEnabled()) {
+                    return;
                 }
-        );
 
-        analyticsPanel.add(
-                workspaceScrollPane,
-                BorderLayout.CENTER
-        );
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(UITheme.BUTTON_COLOR);
+
+                int width = Math.max(1, thumbBounds.width - 4);
+                int height = Math.max(1, thumbBounds.height - 4);
+
+                g2.fillRoundRect(thumbBounds.x + 2, thumbBounds.y + 2, width, height, 6, 6);
+
+                g2.dispose();
+            }
+        });
+
+        analyticsPanel.add(workspaceScrollPane, BorderLayout.CENTER);
     }
-
 
     //STATISTIC CARDS
     private void setupStatisticCards() {
 
-        JPanel cardsPanel =
-                new JPanel(
-                        new GridLayout(1, 4, 16, 0)
-                );
+        JPanel cardsPanel = new JPanel(new GridLayout(1, 4, 16, 0));
+        cardsPanel.setBackground(UITheme.BACKGROUND_COLOR);
+        cardsPanel.setPreferredSize(new Dimension(0, 145));
+        cardsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 145));
+        cardsPanel.setMinimumSize(new Dimension(0, 145));
+        cardsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        cardsPanel.setBackground(
-                UITheme.BACKGROUND_COLOR
-        );
+        JPanel totalCard = createStatisticCard("TOTAL SESSIONS", "0", UITheme.CARD_TOTAL);
+        JPanel completedCard = createStatisticCard("COMPLETED", "0", UITheme.CARD_AVAILABLE);
+        JPanel activeCard = createStatisticCard("ACTIVE", "0", UITheme.CARD_OCCUPIED);
+        JPanel averageCard = createStatisticCard("AVG. DURATION", "0m", UITheme.CARD_SESSIONS);
 
-        cardsPanel.setPreferredSize(
-                new Dimension(0, 145)
-        );
-
-        cardsPanel.setMaximumSize(
-                new Dimension(
-                        Integer.MAX_VALUE,
-                        145
-                )
-        );
-
-        cardsPanel.setMinimumSize(
-                new Dimension(0, 145)
-        );
-
-        cardsPanel.setAlignmentX(
-                Component.LEFT_ALIGNMENT
-        );
-
-        JPanel totalCard =
-                createStatisticCard(
-                        "TOTAL SESSIONS",
-                        "0",
-                        UITheme.CARD_TOTAL
-                );
-
-        JPanel completedCard =
-                createStatisticCard(
-                        "COMPLETED",
-                        "0",
-                        UITheme.CARD_AVAILABLE
-                );
-
-        JPanel activeCard =
-                createStatisticCard(
-                        "ACTIVE",
-                        "0",
-                        UITheme.CARD_OCCUPIED
-                );
-
-        JPanel averageCard =
-                createStatisticCard(
-                        "AVG. DURATION",
-                        "0m",
-                        UITheme.CARD_SESSIONS
-                );
-
-        totalParkingSessionLabel =
-                findValueLabel(totalCard);
-
-        completedParkingSessionLabel =
-                findValueLabel(completedCard);
-
-        currentlyActiveParkingSessionLabel =
-                findValueLabel(activeCard);
-
-        averageParkingDurationLabel =
-                findValueLabel(averageCard);
+        totalParkingSessionLabel = findValueLabel(totalCard);
+        completedParkingSessionLabel = findValueLabel(completedCard);
+        currentlyActiveParkingSessionLabel = findValueLabel(activeCard);
+        averageParkingDurationLabel = findValueLabel(averageCard);
 
         cardsPanel.add(totalCard);
         cardsPanel.add(completedCard);
@@ -360,112 +187,52 @@ public class AnalyticsPanel extends JPanel {
 
         workspacePanel.add(cardsPanel);
 
-        workspacePanel.add(
-                Box.createRigidArea(
-                        new Dimension(0, 18)
-                )
-        );
+        workspacePanel.add(Box.createRigidArea(new Dimension(0, 18)));
     }
 
-
     //STATISTIC CARD
-    private JPanel createStatisticCard(
-            String title,
-            String value,
-            Color color
-    ) {
+    private JPanel createStatisticCard(String title, String value, Color color) {
 
         JPanel card = new JPanel();
-
-        card.setLayout(
-                new BoxLayout(
-                        card,
-                        BoxLayout.Y_AXIS
-                )
-        );
-
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBackground(color);
+        card.setBorder(new EmptyBorder(15, 10, 15, 10));
 
-        card.setBorder(
-                new EmptyBorder(
-                        15,
-                        10,
-                        15,
-                        10
-                )
-        );
+        JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
+        titleLabel.setForeground(UITheme.TEXT_COLOR);
+        titleLabel.setFont(UITheme.regular(15));
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel titleLabel =
-                new JLabel(
-                        title,
-                        SwingConstants.CENTER
-                );
-
-        titleLabel.setForeground(
-                UITheme.TEXT_COLOR
-        );
-
-        titleLabel.setFont(
-                UITheme.regular(15)
-        );
-
-        titleLabel.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
-
-        JLabel valueLabel =
-                new JLabel(
-                        value,
-                        SwingConstants.CENTER
-                );
-
-        valueLabel.setForeground(
-                UITheme.TEXT_COLOR
-        );
-
-        valueLabel.setFont(
-                UITheme.bold(30)
-        );
-
-        valueLabel.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
+        JLabel valueLabel = new JLabel(value, SwingConstants.CENTER);
+        valueLabel.setForeground(UITheme.TEXT_COLOR);
+        valueLabel.setFont(UITheme.bold(30));
+        valueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         card.add(titleLabel);
-
-        card.add(
-                Box.createRigidArea(
-                        new Dimension(0, 8)
-                )
-        );
-
+        card.add(Box.createRigidArea(new Dimension(0, 8)));
         card.add(valueLabel);
 
         return card;
     }
 
-
     //FIND VALUE LABEL
     private JLabel findValueLabel(JPanel card) {
 
+        //CHECK CONDITION
         if (card == null) {
             return null;
         }
 
-        for (Component component :
-                card.getComponents()) {
+        //LOOP UNTIL CONDITION IS TRUE
+        for (Component component : card.getComponents()) {
 
+            //CHECK CONDITION
             if (component instanceof JLabel) {
 
-                JLabel label =
-                        (JLabel) component;
+                JLabel label = (JLabel) component;
 
-                if (
-                        label.getFont() != null
-                                &&
-                                label.getFont().isBold()
-                ) {
-
+                //CHECK CONDITION
+                if (label.getFont() != null && label.getFont().isBold()) {
                     return label;
                 }
             }
@@ -474,199 +241,72 @@ public class AnalyticsPanel extends JPanel {
         return null;
     }
 
-
     //CHARTS
     private void setupCharts() {
 
-        chartsPanel =
-                new JPanel(
-                        new GridLayout(1, 2, 16, 0)
-                );
-
-        chartsPanel.setBackground(
-                UITheme.BACKGROUND_COLOR
-        );
-
-        chartsPanel.setPreferredSize(
-                new Dimension(0, 300)
-        );
-
-        chartsPanel.setMaximumSize(
-                new Dimension(
-                        Integer.MAX_VALUE,
-                        300
-                )
-        );
-
-        chartsPanel.setMinimumSize(
-                new Dimension(0, 300)
-        );
-
-        chartsPanel.setAlignmentX(
-                Component.LEFT_ALIGNMENT
-        );
+        chartsPanel = new JPanel(new GridLayout(1, 2, 16, 0));
+        chartsPanel.setBackground(UITheme.BACKGROUND_COLOR);
+        chartsPanel.setPreferredSize(new Dimension(0, 300));
+        chartsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
+        chartsPanel.setMinimumSize(new Dimension(0, 300));
+        chartsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         //LINE CHART
-        JPanel sessionsContainer =
-                createChartContainer(
-                        "Sessions Over Time"
-                );
-
-        sessionsChartPanel =
-                new LineChartPanel();
-
-        sessionsContainer.add(
-                sessionsChartPanel,
-                BorderLayout.CENTER
-        );
+        JPanel sessionsContainer = createChartContainer("Sessions Over Time");
+        sessionsChartPanel = new LineChartPanel();
+        sessionsContainer.add(sessionsChartPanel, BorderLayout.CENTER);
 
         //DONUT CHART
-        JPanel statusContainer =
-                createChartContainer(
-                        "Session Status"
-                );
+        JPanel statusContainer = createChartContainer("Session Status");
 
-        statusChartPanel =
-                new DonutChartPanel();
+        statusChartPanel = new DonutChartPanel();
 
-        statusContainer.add(
-                statusChartPanel,
-                BorderLayout.CENTER
-        );
+        statusContainer.add(statusChartPanel, BorderLayout.CENTER);
 
         chartsPanel.add(sessionsContainer);
         chartsPanel.add(statusContainer);
 
         workspacePanel.add(chartsPanel);
-
-        workspacePanel.add(
-                Box.createRigidArea(
-                        new Dimension(0, 18)
-                )
-        );
+        workspacePanel.add(Box.createRigidArea(new Dimension(0, 18)));
     }
 
-
     //CHART CONTAINER
-    private JPanel createChartContainer(
-            String title
-    ) {
+    private JPanel createChartContainer(String title) {
 
-        JPanel panel =
-                new JPanel(
-                        new BorderLayout()
-                );
-
-        panel.setBackground(
-                UITheme.CARD_COLOR
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(UITheme.CARD_COLOR);
+        panel.setBorder(BorderFactory.createCompoundBorder(new LineBorder(UITheme.BORDER_COLOR, 1),
+                                                           new EmptyBorder(15, 15, 15, 15))
         );
+        panel.setMinimumSize(new Dimension(0, 280));
 
-        panel.setBorder(
-                BorderFactory.createCompoundBorder(
-                        new LineBorder(
-                                UITheme.BORDER_COLOR,
-                                1
-                        ),
-                        new EmptyBorder(
-                                15,
-                                15,
-                                15,
-                                15
-                        )
-                )
-        );
+        JLabel titleLabel = new JLabel(title);
 
-        panel.setMinimumSize(
-                new Dimension(0, 280)
-        );
+        titleLabel.setForeground(UITheme.TEXT_COLOR);
+        titleLabel.setFont(UITheme.bold(19));
+        titleLabel.setBorder(new EmptyBorder(0, 0, 8, 0));
 
-        JLabel titleLabel =
-                new JLabel(title);
-
-        titleLabel.setForeground(
-                UITheme.TEXT_COLOR
-        );
-
-        titleLabel.setFont(
-                UITheme.bold(19)
-        );
-
-        titleLabel.setBorder(
-                new EmptyBorder(
-                        0,
-                        0,
-                        8,
-                        0
-                )
-        );
-
-        panel.add(
-                titleLabel,
-                BorderLayout.NORTH
-        );
+        panel.add(titleLabel, BorderLayout.NORTH);
 
         return panel;
     }
 
-
     //STATISTICS TABLE
     private void setupStatisticsTable() {
 
-        JPanel statisticsPanel =
-                new JPanel(
-                        new BorderLayout(0, 10)
-                );
-
-        statisticsPanel.setBackground(
-                UITheme.CARD_COLOR
+        JPanel statisticsPanel = new JPanel(new BorderLayout(0, 10));
+        statisticsPanel.setBackground(UITheme.CARD_COLOR);
+        statisticsPanel.setBorder(BorderFactory.createCompoundBorder(new LineBorder(UITheme.BORDER_COLOR, 1),
+                                                                     new EmptyBorder(15, 15, 15, 15))
         );
+        statisticsPanel.setPreferredSize(new Dimension(0, 245));
+        statisticsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 245));
+        statisticsPanel.setMinimumSize(new Dimension(0, 245));
+        statisticsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        statisticsPanel.setBorder(
-                BorderFactory.createCompoundBorder(
-                        new LineBorder(
-                                UITheme.BORDER_COLOR,
-                                1
-                        ),
-                        new EmptyBorder(
-                                15,
-                                15,
-                                15,
-                                15
-                        )
-                )
-        );
-
-        statisticsPanel.setPreferredSize(
-                new Dimension(0, 245)
-        );
-
-        statisticsPanel.setMaximumSize(
-                new Dimension(
-                        Integer.MAX_VALUE,
-                        245
-                )
-        );
-
-        statisticsPanel.setMinimumSize(
-                new Dimension(0, 245)
-        );
-
-        statisticsPanel.setAlignmentX(
-                Component.LEFT_ALIGNMENT
-        );
-
-        JLabel statisticsLabel =
-                new JLabel(
-                        "Session Statistics"
-                );
-
-        statisticsLabel.setForeground(
-                UITheme.TEXT_COLOR
-        );
-
-        statisticsLabel.setFont(
-                UITheme.bold(19)
-        );
+        JLabel statisticsLabel = new JLabel("Session Statistics");
+        statisticsLabel.setForeground(UITheme.TEXT_COLOR);
+        statisticsLabel.setFont(UITheme.bold(19));
 
         //TABLE COLUMNS
         String[] columns = {
@@ -680,203 +320,94 @@ public class AnalyticsPanel extends JPanel {
         };
 
         //TABLE MODEL
-        statisticsTableModel =
-                new DefaultTableModel(
-                        columns,
-                        0
-                ) {
+        statisticsTableModel = new DefaultTableModel(columns, 0) {
 
-                    @Override
-                    public boolean isCellEditable(
-                            int row,
-                            int column
-                    ) {
-
-                        return false;
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
                     }
-                };
+        };
 
-        statisticsTable =
-                new JTable(
-                        statisticsTableModel
-                );
-
-        statisticsTable.setBackground(
-                UITheme.CARD_COLOR
-        );
-
-        statisticsTable.setForeground(
-                UITheme.TEXT_COLOR
-        );
-
-        statisticsTable.setFont(
-                UITheme.regular(13)
-        );
-
+        statisticsTable = new JTable(statisticsTableModel);
+        statisticsTable.setBackground(UITheme.CARD_COLOR);
+        statisticsTable.setForeground(UITheme.TEXT_COLOR);
+        statisticsTable.setFont(UITheme.regular(13));
         statisticsTable.setRowHeight(34);
-
-        statisticsTable.setGridColor(
-                UITheme.BORDER_COLOR
-        );
-
-        statisticsTable.setSelectionBackground(
-                UITheme.BUTTON_COLOR
-        );
-
-        statisticsTable.setSelectionForeground(
-                UITheme.TEXT_COLOR
-        );
+        statisticsTable.setGridColor(UITheme.BORDER_COLOR);
+        statisticsTable.setSelectionBackground(UITheme.BUTTON_COLOR);
+        statisticsTable.setSelectionForeground(UITheme.TEXT_COLOR);
 
         statisticsTable.setShowVerticalLines(false);
-
         statisticsTable.setFillsViewportHeight(true);
 
         //HEADER
-        JTableHeader header =
-                statisticsTable.getTableHeader();
+        JTableHeader header = statisticsTable.getTableHeader();
+        header.setBackground(UITheme.BUTTON_COLOR);
+        header.setForeground(UITheme.TEXT_COLOR);
+        header.setFont(UITheme.bold(13));
+        header.setPreferredSize(new Dimension(0, 36));
 
-        header.setBackground(
-                UITheme.BUTTON_COLOR
-        );
+        DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
+        headerRenderer.setBackground(UITheme.BUTTON_COLOR);
+        headerRenderer.setForeground(UITheme.TEXT_COLOR);
+        headerRenderer.setFont(UITheme.bold(13));
+        headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-        header.setForeground(
-                UITheme.TEXT_COLOR
-        );
-
-        header.setFont(
-                UITheme.bold(13)
-        );
-
-        header.setPreferredSize(
-                new Dimension(0, 36)
-        );
-
-        DefaultTableCellRenderer headerRenderer =
-                new DefaultTableCellRenderer();
-
-        headerRenderer.setBackground(
-                UITheme.BUTTON_COLOR
-        );
-
-        headerRenderer.setForeground(
-                UITheme.TEXT_COLOR
-        );
-
-        headerRenderer.setFont(
-                UITheme.bold(13)
-        );
-
-        headerRenderer.setHorizontalAlignment(
-                SwingConstants.CENTER
-        );
-
-        header.setDefaultRenderer(
-                headerRenderer
-        );
+        header.setDefaultRenderer(headerRenderer);
 
         //CELL RENDERER
-        DefaultTableCellRenderer cellRenderer =
-                new DefaultTableCellRenderer();
+        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
+        cellRenderer.setBackground(UITheme.CARD_COLOR);
+        cellRenderer.setForeground(UITheme.TEXT_COLOR);
+        cellRenderer.setFont(UITheme.regular(13));
+        cellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-        cellRenderer.setBackground(
-                UITheme.CARD_COLOR
-        );
-
-        cellRenderer.setForeground(
-                UITheme.TEXT_COLOR
-        );
-
-        cellRenderer.setFont(
-                UITheme.regular(13)
-        );
-
-        cellRenderer.setHorizontalAlignment(
-                SwingConstants.CENTER
-        );
-
-        statisticsTable.setDefaultRenderer(
-                Object.class,
-                cellRenderer
-        );
+        statisticsTable.setDefaultRenderer(Object.class, cellRenderer);
 
         //SCROLL PANE
-        statisticsScrollPane =
-                new JScrollPane(
-                        statisticsTable
-                );
+        statisticsScrollPane = new JScrollPane(statisticsTable);
+        statisticsScrollPane.setBackground(UITheme.CARD_COLOR);
+        statisticsScrollPane.getViewport().setBackground(UITheme.CARD_COLOR);
+        statisticsScrollPane.setBorder(new LineBorder(UITheme.BORDER_COLOR, 1));
 
-        statisticsScrollPane.setBackground(
-                UITheme.CARD_COLOR
-        );
-
-        statisticsScrollPane.getViewport()
-                .setBackground(
-                        UITheme.CARD_COLOR
-                );
-
-        statisticsScrollPane.setBorder(
-                new LineBorder(
-                        UITheme.BORDER_COLOR,
-                        1
-                )
-        );
-
-        statisticsPanel.add(
-                statisticsLabel,
-                BorderLayout.NORTH
-        );
-
-        statisticsPanel.add(
-                statisticsScrollPane,
-                BorderLayout.CENTER
-        );
+        statisticsPanel.add(statisticsLabel, BorderLayout.NORTH);
+        statisticsPanel.add(statisticsScrollPane, BorderLayout.CENTER);
 
         workspacePanel.add(statisticsPanel);
     }
 
-
     //REFRESH
     public void refresh() {
 
+        //CHECK CONDITION
         if (analyticsService == null) {
             return;
         }
 
         //REFRESH STATISTIC CARDS
-        int totalSessions =
-                analyticsService.getTotalSessions();
+        int totalSessions = analyticsService.getTotalSessions();
+        int completedSessions = analyticsService.getCompletedSessions();
+        int activeSessions = analyticsService.getActiveSessions();
+        String averageDuration = analyticsService.getAverageDurationFormatted();
 
-        int completedSessions =
-                analyticsService.getCompletedSessions();
-
-        int activeSessions =
-                analyticsService.getActiveSessions();
-
-        String averageDuration =
-                analyticsService.getAverageDurationFormatted();
-
+        //CHECK CONDITION
         if (totalParkingSessionLabel != null) {
-            totalParkingSessionLabel.setText(
-                    String.valueOf(totalSessions)
-            );
+            totalParkingSessionLabel.setText(String.valueOf(totalSessions));
         }
 
+        //CHECK CONDITION
         if (completedParkingSessionLabel != null) {
-            completedParkingSessionLabel.setText(
-                    String.valueOf(completedSessions)
-            );
+            completedParkingSessionLabel.setText(String.valueOf(completedSessions));
         }
 
+        //CHECK CONDITION
         if (currentlyActiveParkingSessionLabel != null) {
-            currentlyActiveParkingSessionLabel.setText(
-                    String.valueOf(activeSessions)
-            );
+            currentlyActiveParkingSessionLabel.setText(String.valueOf(activeSessions));
         }
 
+        //CHECK CONDITION
         if (averageParkingDurationLabel != null) {
-            averageParkingDurationLabel.setText(
-                    averageDuration
-            );
+            averageParkingDurationLabel.setText(averageDuration);
         }
 
         //REFRESH TABLE
@@ -886,14 +417,12 @@ public class AnalyticsPanel extends JPanel {
         if (sessionsChartPanel != null) {
 
             sessionsChartPanel.refreshData();
-
             sessionsChartPanel.repaint();
         }
 
         if (statusChartPanel != null) {
 
             statusChartPanel.refreshData();
-
             statusChartPanel.repaint();
         }
 
@@ -901,61 +430,49 @@ public class AnalyticsPanel extends JPanel {
         repaint();
     }
 
-
     //REFRESH TABLE
     private void refreshStatisticsTable() {
 
-        if (
-                statisticsTableModel == null
-                        ||
-                        analyticsService == null
-        ) {
+        //CHECK CONDITION
+        if (statisticsTableModel == null || analyticsService == null) {
             return;
         }
 
         statisticsTableModel.setRowCount(0);
 
-        List<ParkingSession> sessions =
-                analyticsService.getAllSessions();
+        List <ParkingSession> sessions = analyticsService.getAllSessions();
 
+        //CHECK CONDITION
         if (sessions == null) {
             return;
         }
 
+        //LOOP UNTIL CONDITION IS TRUE
         for (ParkingSession session : sessions) {
 
+            //CHECK CONDITION
             if (session == null) {
                 continue;
             }
 
             //SESSION ID
-            String sessionId =
-                    session.getSessionId();
+            String sessionId = session.getSessionId();
 
-            if (
-                    sessionId == null
-                            ||
-                            sessionId.trim().isEmpty()
-            ) {
-
+            //CHECK CONDITION
+            if (sessionId == null || sessionId.trim().isEmpty()) {
                 sessionId = "-";
             }
 
             //VEHICLE REGISTRATION
             String registration = "-";
 
+            //CHECK CONDITION
             if (session.getVehicle() != null) {
 
-                String value =
-                        session.getVehicle()
-                                .getRegistrationNumber();
+                String value = session.getVehicle().getRegistrationNumber();
 
-                if (
-                        value != null
-                                &&
-                                !value.trim().isEmpty()
-                ) {
-
+                //CHECK CONDITION
+                if (value != null && !value.trim().isEmpty()) {
                     registration = value;
                 }
             }
@@ -963,48 +480,32 @@ public class AnalyticsPanel extends JPanel {
             //PARKING SPACE
             String parkingSpace = "-";
 
+            //CHECK CONDITION
             if (session.getParkingSpace() != null) {
 
-                String value =
-                        session.getParkingSpace()
-                                .getSpaceId();
+                String value = session.getParkingSpace().getSpaceId();
 
-                if (
-                        value != null
-                                &&
-                                !value.trim().isEmpty()
-                ) {
-
+                //CHECK CONDITION
+                if (value != null && !value.trim().isEmpty()) {
                     parkingSpace = value;
                 }
             }
 
             //ENTRY TIME
-            String entryTime =
-                    formatDateTime(
-                            session.getEntryTime()
-                    );
+            String entryTime = formatDateTime(session.getEntryTime());
 
             //EXIT TIME
-            String exitTime =
-                    formatDateTime(
-                            session.getExitTime()
-                    );
+            String exitTime = formatDateTime(session.getExitTime());
 
             //DURATION
-            String duration =
-                    getDuration(
-                            session.getEntryTime(),
-                            session.getExitTime()
-                    );
+            String duration = getDuration(session.getEntryTime(), session.getExitTime());
 
             //STATUS
             String status = "-";
 
+            //CHECK CONDITION
             if (session.getStatus() != null) {
-
-                status =
-                        session.getStatus().toString();
+                status = session.getStatus().toString();
             }
 
             //ADD ROW
@@ -1021,121 +522,73 @@ public class AnalyticsPanel extends JPanel {
             );
         }
 
+        //CHECK CONDITION
         if (statisticsTable != null) {
 
             statisticsTable.revalidate();
-
             statisticsTable.repaint();
         }
     }
 
-
     //FORMAT DATE TIME
     private String formatDateTime(String dateTime) {
 
-        if (
-                dateTime == null
-                        ||
-                        dateTime.trim().isEmpty()
-        ) {
-
+        //CHECK CONDITION
+        if (dateTime == null || dateTime.trim().isEmpty()) {
             return "-";
         }
 
+        //CHECK CONDITION
         try {
-
-            LocalDateTime parsedDateTime =
-                    LocalDateTime.parse(
-                            dateTime.trim(),
-                            DATE_TIME_FORMATTER
-                    );
-
-            return parsedDateTime.format(
-                    DATE_TIME_FORMATTER
-            );
+            LocalDateTime parsedDateTime = LocalDateTime.parse(dateTime.trim(), DATE_TIME_FORMATTER);
+            return parsedDateTime.format(DATE_TIME_FORMATTER);
 
         }
         catch (DateTimeParseException e) {
-
             return dateTime;
         }
     }
 
-
     //GET DURATION
-    private String getDuration(
-            String entryTime,
-            String exitTime
-    ) {
+    private String getDuration(String entryTime, String exitTime) {
 
         //NO ENTRY TIME
-        if (
-                entryTime == null
-                        ||
-                        entryTime.trim().isEmpty()
-        ) {
-
+        if (entryTime == null || entryTime.trim().isEmpty()) {
             return "-";
         }
 
         //NO EXIT TIME
-        if (
-                exitTime == null
-                        ||
-                        exitTime.trim().isEmpty()
-        ) {
-
+        if (exitTime == null || exitTime.trim().isEmpty()) {
             return "-";
         }
 
+        //CHECK CONDITION
         try {
+            LocalDateTime entry = LocalDateTime.parse(entryTime.trim(), DATE_TIME_FORMATTER);
+            LocalDateTime exit = LocalDateTime.parse(exitTime.trim(), DATE_TIME_FORMATTER);
 
-            LocalDateTime entry =
-                    LocalDateTime.parse(
-                            entryTime.trim(),
-                            DATE_TIME_FORMATTER
-                    );
+            long minutes = Duration.between(entry, exit).toMinutes();
 
-            LocalDateTime exit =
-                    LocalDateTime.parse(
-                            exitTime.trim(),
-                            DATE_TIME_FORMATTER
-                    );
-
-            long minutes =
-                    Duration.between(
-                            entry,
-                            exit
-                    ).toMinutes();
-
+            //CHECK CONDITION
             if (minutes < 0) {
-
                 return "-";
             }
 
-            long hours =
-                    minutes / 60;
+            long hours = minutes / 60;
+            long remainingMinutes = minutes % 60;
 
-            long remainingMinutes =
-                    minutes % 60;
-
+            //CHECK CONDITION
             if (hours > 0) {
-
-                return hours
-                        + "h "
-                        + remainingMinutes
-                        + "m";
+                return hours + "h " + remainingMinutes + "m";
             }
 
             return remainingMinutes + "m";
 
         }
         catch (DateTimeParseException e) {
-
             return "-";
         }
     }
-
 
     //LINE CHART
     private class LineChartPanel extends JPanel {
@@ -1154,34 +607,28 @@ public class AnalyticsPanel extends JPanel {
 
         public LineChartPanel() {
 
-            setBackground(
-                    UITheme.CARD_COLOR
-            );
+            setBackground(UITheme.CARD_COLOR);
 
             setOpaque(true);
 
-            setPreferredSize(
-                    new Dimension(0, 220)
-            );
+            setPreferredSize(new Dimension(0, 220));
 
-            setMinimumSize(
-                    new Dimension(0, 200)
-            );
+            setMinimumSize(new Dimension(0, 200));
 
             refreshData();
         }
 
         private void refreshData() {
 
+            //CHECK CONDITION
             if (analyticsService == null) {
                 return;
             }
 
-            values =
-                    analyticsService.getLastSevenDaysCounts();
+            values = analyticsService.getLastSevenDaysCounts();
 
+            //CHECK CONDITION
             if (values == null || values.length == 0) {
-
                 values = new int[7];
             }
         }
@@ -1191,13 +638,8 @@ public class AnalyticsPanel extends JPanel {
 
             super.paintComponent(g);
 
-            Graphics2D g2 =
-                    (Graphics2D) g.create();
-
-            g2.setRenderingHint(
-                    RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON
-            );
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             int width = getWidth();
             int height = getHeight();
@@ -1207,196 +649,103 @@ public class AnalyticsPanel extends JPanel {
             int top = 15;
             int bottom = 35;
 
-            int chartWidth =
-                    width - left - right;
+            int chartWidth = width - left - right;
 
-            int chartHeight =
-                    height - top - bottom;
+            int chartHeight = height - top - bottom;
 
-            if (
-                    chartWidth <= 0
-                            ||
-                            chartHeight <= 0
-            ) {
+            //CHECK CONDITION
+            if (chartWidth <= 0 || chartHeight <= 0) {
 
                 g2.dispose();
-
                 return;
             }
 
             //GRID
-            g2.setColor(
-                    UITheme.BORDER_COLOR
-            );
+            g2.setColor(UITheme.BORDER_COLOR);
 
+            //LOOP UNTIL CONDITION IS TRUE
             for (int i = 0; i <= 4; i++) {
 
-                int y =
-                        top
-                                +
-                                chartHeight * i / 4;
+                int y = top + chartHeight * i / 4;
 
-                g2.drawLine(
-                        left,
-                        y,
-                        width - right,
-                        y
-                );
+                g2.drawLine(left, y, width - right, y);
             }
 
             int maxValue = 1;
 
+            //LOOP UNTIL CONDITION IS TRUE
             for (int value : values) {
 
+                //CHECK CONDITION
                 if (value > maxValue) {
-
                     maxValue = value;
                 }
             }
 
-            maxValue =
-                    Math.max(
-                            5,
-                            ((maxValue + 4) / 5) * 5
-                    );
+            maxValue = Math.max(5, ((maxValue + 4) / 5) * 5);
 
             //LINE
-            g2.setStroke(
-                    new BasicStroke(
-                            3f,
-                            BasicStroke.CAP_ROUND,
-                            BasicStroke.JOIN_ROUND
-                    )
-            );
+            g2.setStroke(new BasicStroke(3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
             int previousX = 0;
             int previousY = 0;
 
-            for (
-                    int i = 0;
-                    i < values.length;
-                    i++
-            ) {
+            //LOOP UNTIL CONDITION IS TRUE
+            for (int i = 0; i < values.length; i++) {
 
                 int x;
 
+                //CHECK CONDITION
                 if (values.length == 1) {
-
-                    x =
-                            left
-                                    +
-                                    chartWidth / 2;
+                    x = left + chartWidth / 2;
 
                 }
                 else {
-
-                    x =
-                            left
-                                    +
-                                    chartWidth
-                                            *
-                                            i
-                                            /
-                                            (values.length - 1);
+                    x = left + chartWidth * i / (values.length - 1);
                 }
 
-                int y =
-                        top
-                                +
-                                chartHeight
-                                -
-                                values[i]
-                                        *
-                                        chartHeight
-                                        /
-                                        maxValue;
+                int y = top + chartHeight - values[i] * chartHeight / maxValue;
 
+                //CHECK CONDITION
                 if (i > 0) {
-
-                    g2.setColor(
-                            UITheme.TEXT_COLOR
-                    );
-
-                    g2.drawLine(
-                            previousX,
-                            previousY,
-                            x,
-                            y
-                    );
+                    g2.setColor(UITheme.TEXT_COLOR);
+                    g2.drawLine(previousX, previousY, x, y);
                 }
 
-                g2.setColor(
-                        UITheme.BUTTON_SELECTED_COLOR
-                );
-
-                g2.fill(
-                        new Ellipse2D.Double(
-                                x - 5,
-                                y - 5,
-                                10,
-                                10
-                        )
-                );
+                g2.setColor(UITheme.BUTTON_SELECTED_COLOR);
+                g2.fill(new Ellipse2D.Double(x - 5, y - 5, 10, 10));
 
                 previousX = x;
                 previousY = y;
             }
 
             //LABELS
-            g2.setColor(
-                    UITheme.SECONDARY_TEXT_COLOR
-            );
+            g2.setColor(UITheme.SECONDARY_TEXT_COLOR);
+            g2.setFont(UITheme.regular(12));
 
-            g2.setFont(
-                    UITheme.regular(12)
-            );
+            FontMetrics fm = g2.getFontMetrics();
 
-            FontMetrics fm =
-                    g2.getFontMetrics();
-
-            for (
-                    int i = 0;
-                    i < labels.length;
-                    i++
-            ) {
+            //LOOP UNTIL CONDITION IS TRUE
+            for (int i = 0; i < labels.length; i++) {
 
                 int x;
 
+                //CHECK CONDITION
                 if (labels.length == 1) {
-
-                    x =
-                            left
-                                    +
-                                    chartWidth / 2;
+                    x = left + chartWidth / 2;
                 }
                 else {
-
-                    x =
-                            left
-                                    +
-                                    chartWidth
-                                            *
-                                            i
-                                            /
-                                            (labels.length - 1);
+                    x = left + chartWidth * i / (labels.length - 1);
                 }
 
-                int textWidth =
-                        fm.stringWidth(
-                                labels[i]
-                        );
+                int textWidth = fm.stringWidth(labels[i]);
 
-                g2.drawString(
-                        labels[i],
-                        x - textWidth / 2,
-                        height - 8
-                );
+                g2.drawString(labels[i], x - textWidth / 2, height - 8);
             }
 
             g2.dispose();
         }
     }
-
 
     //DONUT CHART
     private class DonutChartPanel extends JPanel {
@@ -1407,37 +756,27 @@ public class AnalyticsPanel extends JPanel {
 
         public DonutChartPanel() {
 
-            setBackground(
-                    UITheme.CARD_COLOR
-            );
+            setBackground(UITheme.CARD_COLOR);
 
             setOpaque(true);
 
-            setPreferredSize(
-                    new Dimension(0, 220)
-            );
+            setPreferredSize(new Dimension(0, 220));
 
-            setMinimumSize(
-                    new Dimension(0, 200)
-            );
+            setMinimumSize(new Dimension(0, 200));
 
             refreshData();
         }
 
         private void refreshData() {
 
+            //CHECK CONDITION
             if (analyticsService == null) {
                 return;
             }
 
-            completed =
-                    analyticsService.getCompletedSessions();
-
-            active =
-                    analyticsService.getActiveSessions();
-
-            other =
-                    analyticsService.getOtherSessions();
+            completed = analyticsService.getCompletedSessions();
+            active = analyticsService.getActiveSessions();
+            other = analyticsService.getOtherSessions();
         }
 
         @Override
@@ -1445,47 +784,22 @@ public class AnalyticsPanel extends JPanel {
 
             super.paintComponent(g);
 
-            Graphics2D g2 =
-                    (Graphics2D) g.create();
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            g2.setRenderingHint(
-                    RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON
-            );
+            int total = completed + active + other;
 
-            int total =
-                    completed
-                            +
-                            active
-                            +
-                            other;
-
+            //CHECK CONDITION
             if (total <= 0) {
 
-                g2.setColor(
-                        UITheme.SECONDARY_TEXT_COLOR
-                );
+                g2.setColor(UITheme.SECONDARY_TEXT_COLOR);
+                g2.setFont(UITheme.regular(13));
 
-                g2.setFont(
-                        UITheme.regular(13)
-                );
+                String text = "No session data";
 
-                String text =
-                        "No session data";
+                FontMetrics fm = g2.getFontMetrics();
 
-                FontMetrics fm =
-                        g2.getFontMetrics();
-
-                g2.drawString(
-                        text,
-                        (
-                                getWidth()
-                                        -
-                                        fm.stringWidth(text)
-                        ) / 2,
-                        getHeight() / 2
-                );
-
+                g2.drawString(text, (getWidth() - fm.stringWidth(text)) / 2, getHeight() / 2);
                 g2.dispose();
 
                 return;
@@ -1494,217 +808,62 @@ public class AnalyticsPanel extends JPanel {
             int width = getWidth();
             int height = getHeight();
 
-            int diameter =
-                    Math.min(
-                            Math.max(
-                                    130,
-                                    height - 20
-                            ),
-                            175
-                    );
-
-            diameter =
-                    Math.min(
-                            diameter,
-                            Math.max(
-                                    120,
-                                    width - 160
-                            )
-                    );
-
-            diameter =
-                    Math.max(
-                            100,
-                            diameter
-                    );
+            int diameter = Math.min(Math.max(130, height - 20), 175);
+            diameter = Math.min(diameter, Math.max(120, width - 160));
+            diameter = Math.max(100, diameter);
 
             int x = 20;
+            int y = Math.max(0, (height - diameter) / 2);
 
-            int y =
-                    Math.max(
-                            0,
-                            (height - diameter) / 2
-                    );
-
-            double completedAngle =
-                    360.0
-                            *
-                            completed
-                            /
-                            total;
-
-            double activeAngle =
-                    360.0
-                            *
-                            active
-                            /
-                            total;
-
-            double otherAngle =
-                    360.0
-                            *
-                            other
-                            /
-                            total;
+            double completedAngle = 360.0 * completed / total;
+            double activeAngle = 360.0 * active / total;
+            double otherAngle = 360.0 * other / total;
 
             //COMPLETED
-            g2.setColor(
-                    UITheme.CARD_AVAILABLE
-            );
-
-            g2.fill(
-                    new Arc2D.Double(
-                            x,
-                            y,
-                            diameter,
-                            diameter,
-                            90,
-                            -completedAngle,
-                            Arc2D.PIE
-                    )
-            );
+            g2.setColor(UITheme.CARD_AVAILABLE);
+            g2.fill(new Arc2D.Double(x, y, diameter, diameter, 90, -completedAngle, Arc2D.PIE));
 
             //ACTIVE
-            g2.setColor(
-                    UITheme.CARD_OCCUPIED
-            );
-
-            g2.fill(
-                    new Arc2D.Double(
-                            x,
-                            y,
-                            diameter,
-                            diameter,
-                            90 - completedAngle,
-                            -activeAngle,
-                            Arc2D.PIE
-                    )
-            );
+            g2.setColor(UITheme.CARD_OCCUPIED);
+            g2.fill(new Arc2D.Double(x, y, diameter, diameter, 90 - completedAngle, -activeAngle, Arc2D.PIE));
 
             //OTHER
-            g2.setColor(
-                    UITheme.CARD_SESSIONS
-            );
-
-            g2.fill(
-                    new Arc2D.Double(
-                            x,
-                            y,
-                            diameter,
-                            diameter,
-                            90
-                                    -
-                                    completedAngle
-                                    -
-                                    activeAngle,
-                            -otherAngle,
-                            Arc2D.PIE
-                    )
-            );
+            g2.setColor(UITheme.CARD_SESSIONS);
+            g2.fill(new Arc2D.Double(x, y, diameter, diameter, 90 - completedAngle - activeAngle, -otherAngle, Arc2D.PIE));
 
             //CENTER HOLE
-            int holeSize =
-                    diameter / 2;
+            int holeSize = diameter / 2;
 
-            int holeX =
-                    x
-                            +
-                            (diameter - holeSize) / 2;
+            int holeX = x + (diameter - holeSize) / 2;
+            int holeY = y + (diameter - holeSize) / 2;
 
-            int holeY =
-                    y
-                            +
-                            (diameter - holeSize) / 2;
-
-            g2.setColor(
-                    UITheme.CARD_COLOR
-            );
-
-            g2.fillOval(
-                    holeX,
-                    holeY,
-                    holeSize,
-                    holeSize
-            );
+            g2.setColor(UITheme.CARD_COLOR);
+            g2.fillOval(holeX, holeY, holeSize, holeSize);
 
             //LEGEND
-            int legendX =
-                    x
-                            +
-                            diameter
-                            +
-                            25;
+            int legendX = x + diameter + 25;
 
+            //CHECK CONDITION
             if (legendX + 130 > width) {
-
-                legendX =
-                        Math.max(
-                                10,
-                                width - 130
-                        );
+                legendX = Math.max(10, width - 130);
             }
 
             int legendY = 45;
 
-            drawLegend(
-                    g2,
-                    legendX,
-                    legendY,
-                    UITheme.CARD_AVAILABLE,
-                    "Completed  " + completed
-            );
-
-            drawLegend(
-                    g2,
-                    legendX,
-                    legendY + 38,
-                    UITheme.CARD_OCCUPIED,
-                    "Active  " + active
-            );
-
-            drawLegend(
-                    g2,
-                    legendX,
-                    legendY + 76,
-                    UITheme.CARD_SESSIONS,
-                    "Other  " + other
-            );
+            drawLegend(g2, legendX, legendY, UITheme.CARD_AVAILABLE, "Completed  " + completed);
+            drawLegend(g2, legendX, legendY + 38, UITheme.CARD_OCCUPIED, "Active  " + active);
+            drawLegend(g2, legendX, legendY + 76, UITheme.CARD_SESSIONS, "Other  " + other);
 
             g2.dispose();
         }
 
-        private void drawLegend(
-                Graphics2D g2,
-                int x,
-                int y,
-                Color color,
-                String text
-        ) {
+        private void drawLegend(Graphics2D g2, int x, int y, Color color, String text) {
 
             g2.setColor(color);
-
-            g2.fillRoundRect(
-                    x,
-                    y - 11,
-                    14,
-                    14,
-                    4,
-                    4
-            );
-
-            g2.setColor(
-                    UITheme.TEXT_COLOR
-            );
-
-            g2.setFont(
-                    UITheme.regular(12)
-            );
-
-            g2.drawString(
-                    text,
-                    x + 22,
-                    y + 1
-            );
+            g2.fillRoundRect(x, y - 11, 14, 14, 4, 4);
+            g2.setColor(UITheme.TEXT_COLOR);
+            g2.setFont(UITheme.regular(12));
+            g2.drawString(text, x + 22, y + 1);
         }
     }
 }

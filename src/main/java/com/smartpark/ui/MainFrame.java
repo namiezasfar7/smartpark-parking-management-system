@@ -140,11 +140,7 @@ public class MainFrame extends JFrame {
         vehiclePanel = new VehiclePanel(vehicleController);
 
         //SESSIONS
-        sessionPanel = new SessionPanel(
-                vehicleController,
-                parkingController,
-                parkingSessionController
-        );
+        sessionPanel = new SessionPanel(vehicleController, parkingController, parkingSessionController);
 
         //ANALYTICS
         analyticsPanel = new AnalyticsPanel(analyticsService);
@@ -154,38 +150,23 @@ public class MainFrame extends JFrame {
     private JPanel createSidebar() {
 
         JPanel sidebar = new JPanel(new BorderLayout());
-
         sidebar.setBackground(UITheme.SIDEBAR_COLOR);
-
         sidebar.setPreferredSize(new Dimension(315, 0));
 
         //SIDEBAR CONTENT
         JPanel sidebarContent = new JPanel();
-
-        sidebarContent.setLayout(
-                new BoxLayout(sidebarContent, BoxLayout.Y_AXIS)
-        );
-
+        sidebarContent.setLayout(new BoxLayout(sidebarContent, BoxLayout.Y_AXIS));
         sidebarContent.setBackground(UITheme.SIDEBAR_COLOR);
-
-        sidebarContent.setBorder(
-                new EmptyBorder(35, 29, 25, 29)
-        );
+        sidebarContent.setBorder(new EmptyBorder(35, 29, 25, 29));
 
         //LOGO
         JLabel logoLabel = new JLabel("SmartPark");
-
         logoLabel.setForeground(UITheme.TEXT_COLOR);
-
         logoLabel.setFont(UITheme.bold(30));
-
         logoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         sidebarContent.add(logoLabel);
-
-        sidebarContent.add(
-                Box.createRigidArea(new Dimension(0, 50))
-        );
+        sidebarContent.add(Box.createRigidArea(new Dimension(0, 50)));
 
         //CREATE NAVIGATION BUTTONS
         dashboardButton = createNavigationButton("Dashboard");
@@ -203,36 +184,21 @@ public class MainFrame extends JFrame {
 
         //ADD NAVIGATION BUTTONS
         sidebarContent.add(dashboardButton);
-
-        sidebarContent.add(
-                Box.createRigidArea(new Dimension(0, 14))
-        );
+        sidebarContent.add(Box.createRigidArea(new Dimension(0, 14)));
 
         sidebarContent.add(parkingButton);
-
-        sidebarContent.add(
-                Box.createRigidArea(new Dimension(0, 14))
-        );
+        sidebarContent.add(Box.createRigidArea(new Dimension(0, 14)));
 
         sidebarContent.add(vehiclesButton);
-
-        sidebarContent.add(
-                Box.createRigidArea(new Dimension(0, 14))
-        );
+        sidebarContent.add(Box.createRigidArea(new Dimension(0, 14)));
 
         sidebarContent.add(sessionsButton);
-
-        sidebarContent.add(
-                Box.createRigidArea(new Dimension(0, 14))
-        );
+        sidebarContent.add(Box.createRigidArea(new Dimension(0, 14)));
 
         sidebarContent.add(analyticsButton);
 
         //ADD SIDEBAR CONTENT
-        sidebar.add(
-                sidebarContent,
-                BorderLayout.NORTH
-        );
+        sidebar.add(sidebarContent, BorderLayout.NORTH);
 
         return sidebar;
     }
@@ -240,43 +206,23 @@ public class MainFrame extends JFrame {
     //CREATE ROUNDED NAVIGATION BUTTON
     private JButton createNavigationButton(String text) {
 
-        RoundedNavigationButton button =
-                new RoundedNavigationButton(text);
-
+        RoundedNavigationButton button = new RoundedNavigationButton(text);
         button.setFont(UITheme.regular(16));
-
         button.setForeground(UITheme.TEXT_COLOR);
-
         button.setBackground(UITheme.BUTTON_COLOR);
 
         button.setFocusPainted(false);
-
         button.setBorderPainted(false);
-
         button.setContentAreaFilled(false);
-
         button.setOpaque(false);
 
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        button.setPreferredSize(
-                new Dimension(260, 58)
-        );
-
-        button.setMinimumSize(
-                new Dimension(260, 58)
-        );
-
-        button.setMaximumSize(
-                new Dimension(Integer.MAX_VALUE, 58)
-        );
+        button.setPreferredSize(new Dimension(260, 58));
+        button.setMinimumSize(new Dimension(260, 58));
+        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 58));
 
         //SET CURSOR
-        button.setCursor(
-                Cursor.getPredefinedCursor(
-                        Cursor.HAND_CURSOR
-                )
-        );
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         return button;
     }
@@ -363,13 +309,9 @@ public class MainFrame extends JFrame {
     private void resetNavigationButtons() {
 
         setNormalButton(dashboardButton);
-
         setNormalButton(parkingButton);
-
         setNormalButton(vehiclesButton);
-
         setNormalButton(sessionsButton);
-
         setNormalButton(analyticsButton);
     }
 
@@ -382,9 +324,7 @@ public class MainFrame extends JFrame {
         }
 
         button.setBackground(UITheme.BUTTON_COLOR);
-
         button.setForeground(UITheme.TEXT_COLOR);
-
         button.repaint();
     }
 
@@ -396,12 +336,8 @@ public class MainFrame extends JFrame {
             return;
         }
 
-        button.setBackground(
-                UITheme.BUTTON_SELECTED_COLOR
-        );
-
+        button.setBackground(UITheme.BUTTON_SELECTED_COLOR);
         button.setForeground(UITheme.TEXT_COLOR);
-
         button.repaint();
     }
 
@@ -431,7 +367,6 @@ public class MainFrame extends JFrame {
         }
 
         revalidate();
-
         repaint();
     }
 
@@ -447,33 +382,24 @@ public class MainFrame extends JFrame {
             super(text);
 
             setFocusPainted(false);
-
             setBorderPainted(false);
-
             setContentAreaFilled(false);
-
             setOpaque(false);
 
             addMouseListener(
                     new java.awt.event.MouseAdapter() {
 
                         @Override
-                        public void mouseEntered(
-                                java.awt.event.MouseEvent e
-                        ) {
+                        public void mouseEntered(java.awt.event.MouseEvent e) {
 
                             mouseOver = true;
-
                             repaint();
                         }
 
                         @Override
-                        public void mouseExited(
-                                java.awt.event.MouseEvent e
-                        ) {
+                        public void mouseExited(java.awt.event.MouseEvent e) {
 
                             mouseOver = false;
-
                             repaint();
                         }
                     }
@@ -484,30 +410,20 @@ public class MainFrame extends JFrame {
         @Override
         protected void paintComponent(Graphics g) {
 
-            Graphics2D g2 =
-                    (Graphics2D) g.create();
+            Graphics2D g2 = (Graphics2D) g.create();
 
             //ANTIALIASING
-            g2.setRenderingHint(
-                    RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON
-            );
-
-            g2.setRenderingHint(
-                    RenderingHints.KEY_RENDERING,
-                    RenderingHints.VALUE_RENDER_QUALITY
-            );
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
             //DIMENSIONS
             int width = getWidth();
-
             int height = getHeight();
 
             //CHECK CONDITION
             if (width <= 0 || height <= 0) {
 
                 g2.dispose();
-
                 return;
             }
 
@@ -519,38 +435,17 @@ public class MainFrame extends JFrame {
 
             //CHECK CONDITION
             if (mouseOver) {
-
-                backgroundColor =
-                        UITheme.BUTTON_SELECTED_COLOR;
+                backgroundColor = UITheme.BUTTON_SELECTED_COLOR;
             }
 
             //ROUNDED BACKGROUND
             g2.setColor(backgroundColor);
-
-            g2.fillRoundRect(
-                    0,
-                    0,
-                    width - 1,
-                    height - 1,
-                    arc,
-                    arc
-            );
+            g2.fillRoundRect(0, 0, width - 1, height - 1, arc, arc);
 
             //ROUNDED BORDER
             g2.setColor(UITheme.BORDER_COLOR);
-
-            g2.setStroke(
-                    new BasicStroke(1.0f)
-            );
-
-            g2.drawRoundRect(
-                    0,
-                    0,
-                    width - 1,
-                    height - 1,
-                    arc,
-                    arc
-            );
+            g2.setStroke(new BasicStroke(1.0f));
+            g2.drawRoundRect(0, 0, width - 1, height - 1, arc, arc);
 
             g2.dispose();
 
