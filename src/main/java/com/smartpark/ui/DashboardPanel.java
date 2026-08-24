@@ -106,7 +106,7 @@ public class DashboardPanel extends JPanel {
 
         workspacePanel.setBorder(new EmptyBorder(5, 0, 5, 0));
 
-        //GET DATA FROM CONTROLLER
+        //GET UPDATED DATA FROM CONTROLLER
         int totalSpaces = dashboardController.getTotalSpaces();
         int occupiedSpaces = dashboardController.getOccupiedSpaces();
         int availableSpaces = dashboardController.getAvailableSpaces();
@@ -164,6 +164,11 @@ public class DashboardPanel extends JPanel {
 
         dashboardPanel.revalidate();
         dashboardPanel.repaint();
+    }
+
+    //REFRESH DASHBOARD
+    public void refresh() {
+        setupDashboard();
     }
 
     //SETUP CARD
