@@ -123,7 +123,8 @@ public class AnalyticsPanel extends JPanel {
 
                 JButton button = new JButton();
                 button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0)) button.setMaximumSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
 
                 return button;
             }
