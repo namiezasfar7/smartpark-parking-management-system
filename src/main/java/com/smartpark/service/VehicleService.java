@@ -1,6 +1,7 @@
 package com.smartpark.service;
 
 //IMPORTS
+import com.smartpark.exception.VehicleNotFoundException;
 import com.smartpark.model.Vehicle;
 import com.smartpark.repository.VehicleRepository;
 
@@ -25,7 +26,15 @@ public class VehicleService {
 
     //FIND VEHICLE
     public Vehicle findVehicle(String registrationNumber) {
-        return vehicleRepository.findByRegistrationNumber(registrationNumber);
+
+        Vehicle vehicle = vehicleRepository.findByRegistrationNumber(registrationNumber);
+
+        //CHECK CONDITION
+        if (vehicle == null) {
+            throw new VehicleNotFoundException("Vehicle not found: " + registrationNumber);
+        }
+
+        return vehicle;
     }
 
     //GET ALL VEHICLES
