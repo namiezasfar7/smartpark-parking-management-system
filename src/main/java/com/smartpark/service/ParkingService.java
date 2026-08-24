@@ -4,6 +4,7 @@ package com.smartpark.service;
 import com.smartpark.model.ParkingSpace;
 import com.smartpark.model.ParkingSpaceStatus;
 import com.smartpark.repository.ParkingSpaceRepository;
+import com.smartpark.util.ValidationUtil;
 
 import java.util.List;
 
@@ -22,9 +23,14 @@ public class ParkingService {
     //ADD PARKING SPACE
     public void addParkingSpace(ParkingSpace parkingSpace) {
 
-        //CHECK CONDITION
-        if (parkingSpace == null) {
-            return;
+        //VALIDATE PARKING SPACE
+        ValidationUtil.validateParkingSpace(parkingSpace);
+
+        //CHECK IF PARKING SPACE ALREADY EXISTS
+        ParkingSpace existingParkingSpace = parkingSpaceRepository.findBySpaceId(parkingSpace.getSpaceId());
+
+        if (existingParkingSpace != null) {
+            throw new IllegalArgumentException("Parking space already exists: " + parkingSpace.getSpaceId());
         }
 
         parkingSpaceRepository.save(parkingSpace);
@@ -33,10 +39,8 @@ public class ParkingService {
     //FIND PARKING SPACE
     public ParkingSpace findParkingSpace(String spaceId) {
 
-        //CHECK CONDITION
-        if (spaceId == null) {
-            return null;
-        }
+        //VALIDATE SPACE ID
+        ValidationUtil.validateSpaceId(spaceId);
 
         return parkingSpaceRepository.findBySpaceId(spaceId);
     }
@@ -49,13 +53,18 @@ public class ParkingService {
     //UPDATE PARKING SPACE STATUS
     public void updateParkingSpaceStatus(String spaceId, ParkingSpaceStatus status) {
 
+        //VALIDATE INPUT
+        ValidationUtil.validateSpaceId(spaceId);
+        ValidationUtil.validateParkingSpaceStatus(status);
+
         ParkingSpace parkingSpace = findParkingSpace(spaceId);
 
-        //CHECK CONDITION
-        if (parkingSpace == null || status == null) {
-            return;
+        //CHECK IF PARKING SPACE EXISTS
+        if (parkingSpace == null) {
+            throw new IllegalArgumentException("Parking space not found: " + spaceId);
         }
 
+        //UPDATE STATUS
         parkingSpace.setStatus(status);
     }
 }
