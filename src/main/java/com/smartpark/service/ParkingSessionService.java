@@ -3,11 +3,13 @@ package com.smartpark.service;
 //IMPORTS
 import com.smartpark.exception.ActiveSessionException;
 import com.smartpark.exception.ParkingSpaceUnavailableException;
+import com.smartpark.exception.VehicleNotFoundException;
 
 import com.smartpark.model.ParkingSession;
 import com.smartpark.model.ParkingSessionStatus;
 import com.smartpark.model.ParkingSpace;
 import com.smartpark.model.ParkingSpaceStatus;
+import com.smartpark.model.Vehicle;
 
 import com.smartpark.repository.ParkingSessionRepository;
 import com.smartpark.repository.ParkingSpaceRepository;
@@ -36,24 +38,37 @@ public class ParkingSessionService {
             throw new IllegalArgumentException("Parking session cannot be null.");
         }
 
-        //CHECK IF SESSION ALREADY EXISTS
-        ParkingSession existingSession = parkingSessionRepository.findBySessionId(session.getSessionId());
+        //GET VEHICLE
+        Vehicle vehicle = session.getVehicle();
 
-        if (existingSession != null) {
-            throw new ActiveSessionException("Parking session is already active.");
+        //CHECK VEHICLE
+        if (vehicle == null) {
+            throw new VehicleNotFoundException("Vehicle cannot be null.");
         }
 
+        //CHECK IF VEHICLE ALREADY HAS AN ACTIVE SESSION
+        for (ParkingSession existingSession : parkingSessionRepository.findAll()) {
+
+            if (existingSession.getVehicle() != null
+                    && existingSession.getVehicle().getRegistrationNumber().equals(vehicle.getRegistrationNumber())
+                    && existingSession.getStatus() == ParkingSessionStatus.ACTIVE) {
+
+                throw new ActiveSessionException("Vehicle already has an active parking session: " + vehicle.getRegistrationNumber());
+            }
+        }
+
+        //GET PARKING SPACE
         ParkingSpace parkingSpace = session.getParkingSpace();
 
-        //CHECK CONDITION
+        //CHECK PARKING SPACE
         if (parkingSpace == null) {
             throw new IllegalArgumentException("Parking space cannot be null.");
         }
 
-        //GET ACTUAL PARKING SPACE
+        //GET ACTUAL REPOSITORY OBJECT
         ParkingSpace actualSpace = parkingSpaceRepository.findBySpaceId(parkingSpace.getSpaceId());
 
-        //CHECK CONDITION
+        //CHECK IF SPACE EXISTS
         if (actualSpace == null) {
             throw new IllegalArgumentException("Parking space does not exist.");
         }
@@ -72,6 +87,11 @@ public class ParkingSessionService {
 
     //FIND SESSION
     public ParkingSession findSession(String sessionId) {
+
+        if (sessionId == null || sessionId.trim().isEmpty()) {
+            return null;
+        }
+
         return parkingSessionRepository.findBySessionId(sessionId);
     }
 
@@ -90,13 +110,15 @@ public class ParkingSessionService {
             throw new IllegalArgumentException("Parking session not found.");
         }
 
-        //CHECK IF SESSION IS ALREADY COMPLETED
+        //CHECK CONDITION
         if (session.getStatus() == ParkingSessionStatus.COMPLETED) {
             return;
         }
 
         //COMPLETE SESSION
         session.completeSession();
+
+        //GET PARKING SPACE
         ParkingSpace parkingSpace = session.getParkingSpace();
 
         //CHECK CONDITION

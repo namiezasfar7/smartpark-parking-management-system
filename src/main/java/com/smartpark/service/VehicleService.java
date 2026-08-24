@@ -1,7 +1,6 @@
 package com.smartpark.service;
 
 //IMPORTS
-import com.smartpark.exception.VehicleNotFoundException;
 import com.smartpark.model.Vehicle;
 import com.smartpark.repository.VehicleRepository;
 
@@ -24,9 +23,14 @@ public class VehicleService {
 
         //CHECK CONDITION
         if (vehicle == null) {
-            throw new IllegalArgumentException(
-                    "Vehicle cannot be null."
-            );
+            throw new IllegalArgumentException("Vehicle cannot be null.");
+        }
+
+        //CHECK IF VEHICLE ALREADY EXISTS
+        Vehicle existingVehicle = vehicleRepository.findByRegistrationNumber(vehicle.getRegistrationNumber());
+
+        if (existingVehicle != null) {
+            throw new IllegalArgumentException("Vehicle already registered: " + vehicle.getRegistrationNumber());
         }
 
         vehicleRepository.save(vehicle);
@@ -37,17 +41,10 @@ public class VehicleService {
 
         //CHECK CONDITION
         if (registrationNumber == null || registrationNumber.trim().isEmpty()) {
-            throw new IllegalArgumentException("Registration number cannot be empty.");
+            return null;
         }
 
-        Vehicle vehicle = vehicleRepository.findByRegistrationNumber(registrationNumber);
-
-        //CHECK CONDITION
-        if (vehicle == null) {
-            throw new VehicleNotFoundException("Vehicle not found: " + registrationNumber);
-        }
-
-        return vehicle;
+        return vehicleRepository.findByRegistrationNumber(registrationNumber);
     }
 
     //GET ALL VEHICLES
