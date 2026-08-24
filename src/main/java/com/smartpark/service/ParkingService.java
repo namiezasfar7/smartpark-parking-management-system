@@ -1,6 +1,7 @@
 package com.smartpark.service;
 
 //IMPORTS
+import com.smartpark.exception.ParkingSpaceUnavailableException;
 import com.smartpark.model.ParkingSpace;
 import com.smartpark.model.ParkingSpaceStatus;
 import com.smartpark.repository.ParkingSpaceRepository;
@@ -42,7 +43,7 @@ public class ParkingService {
     }
 
     //GET ALL PARKING SPACES
-    public List <ParkingSpace> getAllParkingSpaces() {
+    public List<ParkingSpace> getAllParkingSpaces() {
         return parkingSpaceRepository.findAll();
     }
 
@@ -54,6 +55,11 @@ public class ParkingService {
         //CHECK CONDITION
         if (parkingSpace == null || status == null) {
             return;
+        }
+
+        //CHECK IF SPACE IS ALREADY OCCUPIED
+        if (status == ParkingSpaceStatus.OCCUPIED && parkingSpace.getStatus() == ParkingSpaceStatus.OCCUPIED) {
+            throw new ParkingSpaceUnavailableException("Parking space is unavailable: " + spaceId);
         }
 
         parkingSpace.setStatus(status);
