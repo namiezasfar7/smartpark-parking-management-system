@@ -1,21 +1,32 @@
 package com.smartpark.ui;
 
 //IMPORTS
+import com.smartpark.model.ParkingSession;
+import com.smartpark.service.AnalyticsService;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 import java.awt.*;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.List;
 
 //ANALYTICS PANEL CLASS
 public class AnalyticsPanel extends JPanel {
 
     //DECLARE ATTRIBUTES
+    private final AnalyticsService analyticsService;
+
     private JPanel analyticsPanel;
     private JLabel analyticsLabel;
     private JPanel workspacePanel;
@@ -26,14 +37,19 @@ public class AnalyticsPanel extends JPanel {
     private JLabel averageParkingDurationLabel;
 
     private JTable statisticsTable;
+    private DefaultTableModel statisticsTableModel;
     private JScrollPane statisticsScrollPane;
 
     private JPanel chartsPanel;
     private LineChartPanel sessionsChartPanel;
     private DonutChartPanel statusChartPanel;
 
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     //DECLARE CONSTRUCTOR
-    public AnalyticsPanel() {
+    public AnalyticsPanel(AnalyticsService analyticsService) {
+
+        this.analyticsService = analyticsService;
 
         setLayout(new BorderLayout());
         setBackground(UITheme.BACKGROUND_COLOR);
@@ -44,6 +60,8 @@ public class AnalyticsPanel extends JPanel {
         add(analyticsPanel, BorderLayout.CENTER);
 
         setupAnalyticsPanel();
+
+        refresh();
     }
 
     //DECLARE METHODS
@@ -57,7 +75,6 @@ public class AnalyticsPanel extends JPanel {
         analyticsLabel.setForeground(UITheme.TEXT_COLOR);
         analyticsLabel.setFont(UITheme.bold(34));
         analyticsLabel.setBorder(new EmptyBorder(0, 0, 20, 0));
-
         analyticsPanel.add(analyticsLabel, BorderLayout.NORTH);
 
         //WORKSPACE
@@ -106,8 +123,7 @@ public class AnalyticsPanel extends JPanel {
 
                 JButton button = new JButton();
                 button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0)) button.setMaximumSize(new Dimension(0, 0));
 
                 return button;
             }
@@ -124,7 +140,6 @@ public class AnalyticsPanel extends JPanel {
             @Override
             protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
 
-                //CHECK CONDITION
                 if (thumbBounds.isEmpty() || !((JScrollBar) c).isEnabled()) {
                     return;
                 }
@@ -155,10 +170,20 @@ public class AnalyticsPanel extends JPanel {
         cardsPanel.setMinimumSize(new Dimension(0, 145));
         cardsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        cardsPanel.add(createStatisticCard("TOTAL SESSIONS", "128", UITheme.CARD_TOTAL));
-        cardsPanel.add(createStatisticCard("COMPLETED", "96", UITheme.CARD_AVAILABLE));
-        cardsPanel.add(createStatisticCard("ACTIVE", "12", UITheme.CARD_OCCUPIED));
-        cardsPanel.add(createStatisticCard("AVG. DURATION", "2h 18m", UITheme.CARD_SESSIONS));
+        JPanel totalCard = createStatisticCard("TOTAL SESSIONS", "0", UITheme.CARD_TOTAL);
+        JPanel completedCard = createStatisticCard("COMPLETED", "0", UITheme.CARD_AVAILABLE);
+        JPanel activeCard = createStatisticCard("ACTIVE", "0", UITheme.CARD_OCCUPIED);
+        JPanel averageCard = createStatisticCard("AVG. DURATION", "0m", UITheme.CARD_SESSIONS);
+
+        totalParkingSessionLabel = findValueLabel(totalCard);
+        completedParkingSessionLabel = findValueLabel(completedCard);
+        currentlyActiveParkingSessionLabel = findValueLabel(activeCard);
+        averageParkingDurationLabel = findValueLabel(averageCard);
+
+        cardsPanel.add(totalCard);
+        cardsPanel.add(completedCard);
+        cardsPanel.add(activeCard);
+        cardsPanel.add(averageCard);
 
         workspacePanel.add(cardsPanel);
 
@@ -179,17 +204,41 @@ public class AnalyticsPanel extends JPanel {
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel valueLabel = new JLabel(value, SwingConstants.CENTER);
-
         valueLabel.setForeground(UITheme.TEXT_COLOR);
         valueLabel.setFont(UITheme.bold(30));
         valueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         card.add(titleLabel);
         card.add(Box.createRigidArea(new Dimension(0, 8)));
-
         card.add(valueLabel);
 
         return card;
+    }
+
+    //FIND VALUE LABEL
+    private JLabel findValueLabel(JPanel card) {
+
+        //CHECK CONDITION
+        if (card == null) {
+            return null;
+        }
+
+        //LOOP UNTIL CONDITION IS TRUE
+        for (Component component : card.getComponents()) {
+
+            //CHECK CONDITION
+            if (component instanceof JLabel) {
+
+                JLabel label = (JLabel) component;
+
+                //CHECK CONDITION
+                if (label.getFont() != null && label.getFont().isBold()) {
+                    return label;
+                }
+            }
+        }
+
+        return null;
     }
 
     //CHARTS
@@ -204,23 +253,15 @@ public class AnalyticsPanel extends JPanel {
 
         //LINE CHART
         JPanel sessionsContainer = createChartContainer("Sessions Over Time");
-
         sessionsChartPanel = new LineChartPanel();
-
-        //CHECK CONDITION
-        if (sessionsChartPanel != null) {
-            sessionsContainer.add(sessionsChartPanel, BorderLayout.CENTER);
-        }
+        sessionsContainer.add(sessionsChartPanel, BorderLayout.CENTER);
 
         //DONUT CHART
         JPanel statusContainer = createChartContainer("Session Status");
 
         statusChartPanel = new DonutChartPanel();
 
-        //CHECK CONDITION
-        if (statusChartPanel != null) {
-            statusContainer.add(statusChartPanel, BorderLayout.CENTER);
-        }
+        statusContainer.add(statusChartPanel, BorderLayout.CENTER);
 
         chartsPanel.add(sessionsContainer);
         chartsPanel.add(statusContainer);
@@ -234,13 +275,13 @@ public class AnalyticsPanel extends JPanel {
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(UITheme.CARD_COLOR);
-        panel.setBorder(BorderFactory.createCompoundBorder(
-                        new LineBorder(UITheme.BORDER_COLOR, 1),
-                        new EmptyBorder(15, 15, 15, 15))
+        panel.setBorder(BorderFactory.createCompoundBorder(new LineBorder(UITheme.BORDER_COLOR, 1),
+                                                           new EmptyBorder(15, 15, 15, 15))
         );
         panel.setMinimumSize(new Dimension(0, 280));
 
         JLabel titleLabel = new JLabel(title);
+
         titleLabel.setForeground(UITheme.TEXT_COLOR);
         titleLabel.setFont(UITheme.bold(19));
         titleLabel.setBorder(new EmptyBorder(0, 0, 8, 0));
@@ -255,9 +296,8 @@ public class AnalyticsPanel extends JPanel {
 
         JPanel statisticsPanel = new JPanel(new BorderLayout(0, 10));
         statisticsPanel.setBackground(UITheme.CARD_COLOR);
-        statisticsPanel.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(UITheme.BORDER_COLOR, 1),
-                new EmptyBorder(15, 15, 15, 15))
+        statisticsPanel.setBorder(BorderFactory.createCompoundBorder(new LineBorder(UITheme.BORDER_COLOR, 1),
+                                                                     new EmptyBorder(15, 15, 15, 15))
         );
         statisticsPanel.setPreferredSize(new Dimension(0, 245));
         statisticsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 245));
@@ -268,18 +308,27 @@ public class AnalyticsPanel extends JPanel {
         statisticsLabel.setForeground(UITheme.TEXT_COLOR);
         statisticsLabel.setFont(UITheme.bold(19));
 
-        //TABLE DATA
-        String[] columns = {"Registration", "Parking Space", "Entry Time", "Exit Time", "Duration", "Status"};
-
-        Object[][] data = {
-                {"ABC-123", "P-01", "08:15", "10:32", "2h 17m", "Completed"},
-                {"KLM-456", "P-05", "09:20", "11:48", "2h 28m", "Completed"},
-                {"XYZ-789", "P-03", "10:10", "-", "-", "Active"},
-                {"DEF-321", "P-08", "07:45", "09:32", "1h 47m", "Completed"}
+        //TABLE COLUMNS
+        String[] columns = {
+                "Session ID",
+                "Registration",
+                "Parking Space",
+                "Entry Time",
+                "Exit Time",
+                "Duration",
+                "Status"
         };
 
+        //TABLE MODEL
+        statisticsTableModel = new DefaultTableModel(columns, 0) {
 
-        statisticsTable = new JTable(data, columns);
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+                    }
+        };
+
+        statisticsTable = new JTable(statisticsTableModel);
         statisticsTable.setBackground(UITheme.CARD_COLOR);
         statisticsTable.setForeground(UITheme.TEXT_COLOR);
         statisticsTable.setFont(UITheme.regular(13));
@@ -327,35 +376,261 @@ public class AnalyticsPanel extends JPanel {
         workspacePanel.add(statisticsPanel);
     }
 
+    //REFRESH
+    public void refresh() {
+
+        //CHECK CONDITION
+        if (analyticsService == null) {
+            return;
+        }
+
+        //REFRESH STATISTIC CARDS
+        int totalSessions = analyticsService.getTotalSessions();
+        int completedSessions = analyticsService.getCompletedSessions();
+        int activeSessions = analyticsService.getActiveSessions();
+        String averageDuration = analyticsService.getAverageDurationFormatted();
+
+        //CHECK CONDITION
+        if (totalParkingSessionLabel != null) {
+            totalParkingSessionLabel.setText(String.valueOf(totalSessions));
+        }
+
+        //CHECK CONDITION
+        if (completedParkingSessionLabel != null) {
+            completedParkingSessionLabel.setText(String.valueOf(completedSessions));
+        }
+
+        //CHECK CONDITION
+        if (currentlyActiveParkingSessionLabel != null) {
+            currentlyActiveParkingSessionLabel.setText(String.valueOf(activeSessions));
+        }
+
+        //CHECK CONDITION
+        if (averageParkingDurationLabel != null) {
+            averageParkingDurationLabel.setText(averageDuration);
+        }
+
+        //REFRESH TABLE
+        refreshStatisticsTable();
+
+        //REFRESH CHARTS
+        if (sessionsChartPanel != null) {
+
+            sessionsChartPanel.refreshData();
+            sessionsChartPanel.repaint();
+        }
+
+        if (statusChartPanel != null) {
+
+            statusChartPanel.refreshData();
+            statusChartPanel.repaint();
+        }
+
+        revalidate();
+        repaint();
+    }
+
+    //REFRESH TABLE
+    private void refreshStatisticsTable() {
+
+        //CHECK CONDITION
+        if (statisticsTableModel == null || analyticsService == null) {
+            return;
+        }
+
+        statisticsTableModel.setRowCount(0);
+
+        List <ParkingSession> sessions = analyticsService.getAllSessions();
+
+        //CHECK CONDITION
+        if (sessions == null) {
+            return;
+        }
+
+        //LOOP UNTIL CONDITION IS TRUE
+        for (ParkingSession session : sessions) {
+
+            //CHECK CONDITION
+            if (session == null) {
+                continue;
+            }
+
+            //SESSION ID
+            String sessionId = session.getSessionId();
+
+            //CHECK CONDITION
+            if (sessionId == null || sessionId.trim().isEmpty()) {
+                sessionId = "-";
+            }
+
+            //VEHICLE REGISTRATION
+            String registration = "-";
+
+            //CHECK CONDITION
+            if (session.getVehicle() != null) {
+
+                String value = session.getVehicle().getRegistrationNumber();
+
+                //CHECK CONDITION
+                if (value != null && !value.trim().isEmpty()) {
+                    registration = value;
+                }
+            }
+
+            //PARKING SPACE
+            String parkingSpace = "-";
+
+            //CHECK CONDITION
+            if (session.getParkingSpace() != null) {
+
+                String value = session.getParkingSpace().getSpaceId();
+
+                //CHECK CONDITION
+                if (value != null && !value.trim().isEmpty()) {
+                    parkingSpace = value;
+                }
+            }
+
+            //ENTRY TIME
+            String entryTime = formatDateTime(session.getEntryTime());
+
+            //EXIT TIME
+            String exitTime = formatDateTime(session.getExitTime());
+
+            //DURATION
+            String duration = getDuration(session.getEntryTime(), session.getExitTime());
+
+            //STATUS
+            String status = "-";
+
+            //CHECK CONDITION
+            if (session.getStatus() != null) {
+                status = session.getStatus().toString();
+            }
+
+            //ADD ROW
+            statisticsTableModel.addRow(
+                    new Object[]{
+                            sessionId,
+                            registration,
+                            parkingSpace,
+                            entryTime,
+                            exitTime,
+                            duration,
+                            status
+                    }
+            );
+        }
+
+        //CHECK CONDITION
+        if (statisticsTable != null) {
+
+            statisticsTable.revalidate();
+            statisticsTable.repaint();
+        }
+    }
+
+    //FORMAT DATE TIME
+    private String formatDateTime(String dateTime) {
+
+        //CHECK CONDITION
+        if (dateTime == null || dateTime.trim().isEmpty()) {
+            return "-";
+        }
+
+        //CHECK CONDITION
+        try {
+            LocalDateTime parsedDateTime = LocalDateTime.parse(dateTime.trim(), DATE_TIME_FORMATTER);
+            return parsedDateTime.format(DATE_TIME_FORMATTER);
+
+        }
+        catch (DateTimeParseException e) {
+            return dateTime;
+        }
+    }
+
+    //GET DURATION
+    private String getDuration(String entryTime, String exitTime) {
+
+        //NO ENTRY TIME
+        if (entryTime == null || entryTime.trim().isEmpty()) {
+            return "-";
+        }
+
+        //NO EXIT TIME
+        if (exitTime == null || exitTime.trim().isEmpty()) {
+            return "-";
+        }
+
+        //CHECK CONDITION
+        try {
+            LocalDateTime entry = LocalDateTime.parse(entryTime.trim(), DATE_TIME_FORMATTER);
+            LocalDateTime exit = LocalDateTime.parse(exitTime.trim(), DATE_TIME_FORMATTER);
+
+            long minutes = Duration.between(entry, exit).toMinutes();
+
+            //CHECK CONDITION
+            if (minutes < 0) {
+                return "-";
+            }
+
+            long hours = minutes / 60;
+            long remainingMinutes = minutes % 60;
+
+            //CHECK CONDITION
+            if (hours > 0) {
+                return hours + "h " + remainingMinutes + "m";
+            }
+
+            return remainingMinutes + "m";
+
+        }
+        catch (DateTimeParseException e) {
+            return "-";
+        }
+    }
+
     //LINE CHART
     private class LineChartPanel extends JPanel {
 
-        private final int[] values = {
-                5,
-                8,
-                6,
-                11,
-                9,
-                14,
-                17
-        };
+        private int[] values = new int[7];
 
         private final String[] labels = {
-                "Mon",
-                "Tue",
-                "Wed",
-                "Thu",
-                "Fri",
-                "Sat",
-                "Sun"
+                "Day 1",
+                "Day 2",
+                "Day 3",
+                "Day 4",
+                "Day 5",
+                "Day 6",
+                "Today"
         };
 
         public LineChartPanel() {
 
             setBackground(UITheme.CARD_COLOR);
+
             setOpaque(true);
+
             setPreferredSize(new Dimension(0, 220));
+
             setMinimumSize(new Dimension(0, 200));
+
+            refreshData();
+        }
+
+        private void refreshData() {
+
+            //CHECK CONDITION
+            if (analyticsService == null) {
+                return;
+            }
+
+            values = analyticsService.getLastSevenDaysCounts();
+
+            //CHECK CONDITION
+            if (values == null || values.length == 0) {
+                values = new int[7];
+            }
         }
 
         @Override
@@ -375,6 +650,7 @@ public class AnalyticsPanel extends JPanel {
             int bottom = 35;
 
             int chartWidth = width - left - right;
+
             int chartHeight = height - top - bottom;
 
             //CHECK CONDITION
@@ -391,13 +667,24 @@ public class AnalyticsPanel extends JPanel {
             for (int i = 0; i <= 4; i++) {
 
                 int y = top + chartHeight * i / 4;
+
                 g2.drawLine(left, y, width - right, y);
             }
 
-            int maxValue = 20;
+            int maxValue = 1;
+
+            //LOOP UNTIL CONDITION IS TRUE
+            for (int value : values) {
+
+                //CHECK CONDITION
+                if (value > maxValue) {
+                    maxValue = value;
+                }
+            }
+
+            maxValue = Math.max(5, ((maxValue + 4) / 5) * 5);
 
             //LINE
-            g2.setColor(UITheme.TEXT_COLOR);
             g2.setStroke(new BasicStroke(3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
             int previousX = 0;
@@ -410,11 +697,10 @@ public class AnalyticsPanel extends JPanel {
 
                 //CHECK CONDITION
                 if (values.length == 1) {
-
                     x = left + chartWidth / 2;
+
                 }
                 else {
-
                     x = left + chartWidth * i / (values.length - 1);
                 }
 
@@ -422,7 +708,6 @@ public class AnalyticsPanel extends JPanel {
 
                 //CHECK CONDITION
                 if (i > 0) {
-
                     g2.setColor(UITheme.TEXT_COLOR);
                     g2.drawLine(previousX, previousY, x, y);
                 }
@@ -433,7 +718,6 @@ public class AnalyticsPanel extends JPanel {
                 previousX = x;
                 previousY = y;
             }
-
 
             //LABELS
             g2.setColor(UITheme.SECONDARY_TEXT_COLOR);
@@ -448,11 +732,9 @@ public class AnalyticsPanel extends JPanel {
 
                 //CHECK CONDITION
                 if (labels.length == 1) {
-
                     x = left + chartWidth / 2;
                 }
                 else {
-
                     x = left + chartWidth * i / (labels.length - 1);
                 }
 
@@ -468,16 +750,33 @@ public class AnalyticsPanel extends JPanel {
     //DONUT CHART
     private class DonutChartPanel extends JPanel {
 
-        private final int completed = 96;
-        private final int active = 12;
-        private final int other = 20;
+        private int completed = 0;
+        private int active = 0;
+        private int other = 0;
 
         public DonutChartPanel() {
 
             setBackground(UITheme.CARD_COLOR);
+
             setOpaque(true);
+
             setPreferredSize(new Dimension(0, 220));
+
             setMinimumSize(new Dimension(0, 200));
+
+            refreshData();
+        }
+
+        private void refreshData() {
+
+            //CHECK CONDITION
+            if (analyticsService == null) {
+                return;
+            }
+
+            completed = analyticsService.getCompletedSessions();
+            active = analyticsService.getActiveSessions();
+            other = analyticsService.getOtherSessions();
         }
 
         @Override
@@ -493,7 +792,16 @@ public class AnalyticsPanel extends JPanel {
             //CHECK CONDITION
             if (total <= 0) {
 
+                g2.setColor(UITheme.SECONDARY_TEXT_COLOR);
+                g2.setFont(UITheme.regular(13));
+
+                String text = "No session data";
+
+                FontMetrics fm = g2.getFontMetrics();
+
+                g2.drawString(text, (getWidth() - fm.stringWidth(text)) / 2, getHeight() / 2);
                 g2.dispose();
+
                 return;
             }
 
@@ -506,6 +814,7 @@ public class AnalyticsPanel extends JPanel {
 
             int x = 20;
             int y = Math.max(0, (height - diameter) / 2);
+
             double completedAngle = 360.0 * completed / total;
             double activeAngle = 360.0 * active / total;
             double otherAngle = 360.0 * other / total;
@@ -522,7 +831,6 @@ public class AnalyticsPanel extends JPanel {
             g2.setColor(UITheme.CARD_SESSIONS);
             g2.fill(new Arc2D.Double(x, y, diameter, diameter, 90 - completedAngle - activeAngle, -otherAngle, Arc2D.PIE));
 
-
             //CENTER HOLE
             int holeSize = diameter / 2;
 
@@ -537,15 +845,14 @@ public class AnalyticsPanel extends JPanel {
 
             //CHECK CONDITION
             if (legendX + 130 > width) {
-
                 legendX = Math.max(10, width - 130);
             }
 
             int legendY = 45;
 
-            drawLegend(g2, legendX, legendY, UITheme.CARD_AVAILABLE, "Completed  96");
-            drawLegend(g2, legendX, legendY + 38, UITheme.CARD_OCCUPIED, "Active  12");
-            drawLegend(g2, legendX, legendY + 76, UITheme.CARD_SESSIONS, "Other  20");
+            drawLegend(g2, legendX, legendY, UITheme.CARD_AVAILABLE, "Completed  " + completed);
+            drawLegend(g2, legendX, legendY + 38, UITheme.CARD_OCCUPIED, "Active  " + active);
+            drawLegend(g2, legendX, legendY + 76, UITheme.CARD_SESSIONS, "Other  " + other);
 
             g2.dispose();
         }

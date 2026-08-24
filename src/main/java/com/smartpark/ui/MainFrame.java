@@ -143,7 +143,7 @@ public class MainFrame extends JFrame {
         sessionPanel = new SessionPanel(vehicleController, parkingController, parkingSessionController);
 
         //ANALYTICS
-        analyticsPanel = new AnalyticsPanel();
+        analyticsPanel = new AnalyticsPanel(analyticsService);
     }
 
     //CREATE SIDEBAR
@@ -207,7 +207,6 @@ public class MainFrame extends JFrame {
     private JButton createNavigationButton(String text) {
 
         RoundedNavigationButton button = new RoundedNavigationButton(text);
-
         button.setFont(UITheme.regular(16));
         button.setForeground(UITheme.TEXT_COLOR);
         button.setBackground(UITheme.BUTTON_COLOR);
@@ -218,7 +217,6 @@ public class MainFrame extends JFrame {
         button.setOpaque(false);
 
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
-
         button.setPreferredSize(new Dimension(260, 58));
         button.setMinimumSize(new Dimension(260, 58));
         button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 58));
@@ -232,9 +230,17 @@ public class MainFrame extends JFrame {
     //SHOW PAGE
     private void showPage(String page) {
 
+        //REFRESH DASHBOARD
+        if (DASHBOARD_PAGE.equals(page)) {
+
+            if (dashboardPanel != null) {
+                dashboardPanel.refresh();
+            }
+        }
+
         //REFRESH PARKING
         if (PARKING_PAGE.equals(page)) {
-            //CHECK CONDITION
+
             if (parkingPanel != null) {
                 parkingPanel.refreshParkingSpaces();
             }
@@ -242,9 +248,17 @@ public class MainFrame extends JFrame {
 
         //REFRESH SESSIONS
         if (SESSIONS_PAGE.equals(page)) {
-            //CHECK CONDITION
+
             if (sessionPanel != null) {
                 sessionPanel.refresh();
+            }
+        }
+
+        //REFRESH ANALYTICS
+        if (ANALYTICS_PAGE.equals(page)) {
+
+            if (analyticsPanel != null) {
+                analyticsPanel.refresh();
             }
         }
 
@@ -330,25 +344,25 @@ public class MainFrame extends JFrame {
     //REFRESH ALL
     public void refreshAll() {
 
-        //CHECK CONDITION
+        //REFRESH PARKING
         if (parkingPanel != null) {
             parkingPanel.refreshParkingSpaces();
         }
 
-        //CHECK CONDITION
+        //REFRESH SESSIONS
         if (sessionPanel != null) {
             sessionPanel.refresh();
         }
 
-        //CHECK CONDITION
+        //REFRESH DASHBOARD
         if (dashboardPanel != null) {
-            dashboardPanel.revalidate();
-            dashboardPanel.repaint();
+            dashboardPanel.refresh();
         }
 
-        //CHECK CONDITION
+        //REFRESH ANALYTICS
         if (analyticsPanel != null) {
             analyticsPanel.revalidate();
+
             analyticsPanel.repaint();
         }
 
@@ -372,16 +386,19 @@ public class MainFrame extends JFrame {
             setContentAreaFilled(false);
             setOpaque(false);
 
-            addMouseListener(new java.awt.event.MouseAdapter() {
+            addMouseListener(
+                    new java.awt.event.MouseAdapter() {
 
                         @Override
                         public void mouseEntered(java.awt.event.MouseEvent e) {
+
                             mouseOver = true;
                             repaint();
                         }
 
                         @Override
                         public void mouseExited(java.awt.event.MouseEvent e) {
+
                             mouseOver = false;
                             repaint();
                         }
@@ -405,6 +422,7 @@ public class MainFrame extends JFrame {
 
             //CHECK CONDITION
             if (width <= 0 || height <= 0) {
+
                 g2.dispose();
                 return;
             }

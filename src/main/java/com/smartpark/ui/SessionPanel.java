@@ -429,24 +429,32 @@ public class SessionPanel extends JPanel {
         activeSessionsPanel.setBackground(UITheme.CARD_COLOR);
         activeSessionsPanel.setBorder(new LineBorder(UITheme.BORDER_COLOR, 1));
 
+        //TITLE
         activeSessionsLabel = new JLabel("Active Sessions");
-
         activeSessionsLabel.setForeground(UITheme.TEXT_COLOR);
         activeSessionsLabel.setFont(UITheme.bold(20));
         activeSessionsLabel.setBorder(new EmptyBorder(15, 18, 5, 18));
 
         activeSessionsPanel.add(activeSessionsLabel, BorderLayout.NORTH);
 
-        String[] columns = {"Session ID", "Vehicle", "Parking Space", "Entry Time", "Status"};
+        //TABLE COLUMNS
+        String[] columns = {
+                "Session ID",
+                "Vehicle",
+                "Parking Space",
+                "Entry Time",
+                "Status"
+        };
 
         sessionsTableModel = new DefaultTableModel(columns, 0) {
 
-                    @Override
-                    public boolean isCellEditable(int row, int column) {
-                        return false;
-                    }
-                };
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
+        //TABLE
         sessionsTable = new JTable(sessionsTableModel);
         sessionsTable.setBackground(UITheme.CARD_COLOR);
         sessionsTable.setForeground(UITheme.TEXT_COLOR);
@@ -455,16 +463,23 @@ public class SessionPanel extends JPanel {
         sessionsTable.setGridColor(UITheme.BORDER_COLOR);
         sessionsTable.setSelectionBackground(UITheme.BUTTON_COLOR);
         sessionsTable.setSelectionForeground(UITheme.TEXT_COLOR);
+
         sessionsTable.setShowVerticalLines(false);
         sessionsTable.setFillsViewportHeight(true);
         sessionsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+        //TABLE HEADER
         JTableHeader header = sessionsTable.getTableHeader();
         header.setBackground(UITheme.BUTTON_COLOR);
         header.setForeground(UITheme.TEXT_COLOR);
         header.setFont(UITheme.bold(13));
-        header.setPreferredSize(new Dimension(0, 3));
 
+        //FIX HEADER HEIGHT
+        header.setPreferredSize(new Dimension(0, 40));
+
+        header.setReorderingAllowed(false);
+
+        //HEADER RENDERER
         DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
         headerRenderer.setBackground(UITheme.BUTTON_COLOR);
         headerRenderer.setForeground(UITheme.TEXT_COLOR);
@@ -473,6 +488,7 @@ public class SessionPanel extends JPanel {
 
         header.setDefaultRenderer(headerRenderer);
 
+        //TABLE CELL RENDERER
         DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
         cellRenderer.setBackground(UITheme.CARD_COLOR);
         cellRenderer.setForeground(UITheme.TEXT_COLOR);
@@ -481,29 +497,41 @@ public class SessionPanel extends JPanel {
 
         sessionsTable.setDefaultRenderer(Object.class, cellRenderer);
 
+        //COLUMN WIDTHS
+        sessionsTable.getColumnModel().getColumn(0).setPreferredWidth(120);
+        sessionsTable.getColumnModel().getColumn(1).setPreferredWidth(120);
+        sessionsTable.getColumnModel().getColumn(2).setPreferredWidth(130);
+        sessionsTable.getColumnModel().getColumn(3).setPreferredWidth(180);
+        sessionsTable.getColumnModel().getColumn(4).setPreferredWidth(100);
+
+        //SCROLL PANE
         sessionsScrollPane = new JScrollPane(sessionsTable);
         sessionsScrollPane.setBackground(UITheme.CARD_COLOR);
         sessionsScrollPane.getViewport().setBackground(UITheme.CARD_COLOR);
         sessionsScrollPane.setBorder(new LineBorder(UITheme.BORDER_COLOR, 1));
+
         activeSessionsPanel.add(sessionsScrollPane, BorderLayout.CENTER);
 
+        //COMPLETE BUTTON
         completeSessionButton = new JButton("Complete Selected Session");
         completeSessionButton.setFont(UITheme.bold(15));
         completeSessionButton.setForeground(UITheme.TEXT_COLOR);
         completeSessionButton.setBackground(UITheme.BUTTON_SELECTED_COLOR);
         completeSessionButton.setFocusPainted(false);
 
-        //SET CURSOR
+        //CURSOR
         completeSessionButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         completeSessionButton.setBorder(new EmptyBorder(10, 15, 10, 15));
 
-        //ADD ACTION LISTENER
+        //ACTION LISTENER
         completeSessionButton.addActionListener(e -> completeSelectedSession());
 
+        //BUTTON PANEL
         JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.setBackground(UITheme.CARD_COLOR);
         buttonPanel.setBorder(new EmptyBorder(0, 18, 18, 18));
+
         buttonPanel.add(completeSessionButton, BorderLayout.CENTER);
 
         activeSessionsPanel.add(buttonPanel, BorderLayout.SOUTH);
