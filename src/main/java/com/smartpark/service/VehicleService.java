@@ -11,7 +11,7 @@ import java.util.List;
 public class VehicleService {
 
     //DECLARE ATTRIBUTES
-    private VehicleRepository vehicleRepository;
+    private final VehicleRepository vehicleRepository;
 
     //DECLARE CONSTRUCTOR
     public VehicleService(VehicleRepository vehicleRepository) {
@@ -21,11 +21,24 @@ public class VehicleService {
     //DECLARE METHODS
     //REGISTER VEHICLE
     public void registerVehicle(Vehicle vehicle) {
+
+        //CHECK CONDITION
+        if (vehicle == null) {
+            throw new IllegalArgumentException(
+                    "Vehicle cannot be null."
+            );
+        }
+
         vehicleRepository.save(vehicle);
     }
 
     //FIND VEHICLE
     public Vehicle findVehicle(String registrationNumber) {
+
+        //CHECK CONDITION
+        if (registrationNumber == null || registrationNumber.trim().isEmpty()) {
+            throw new IllegalArgumentException("Registration number cannot be empty.");
+        }
 
         Vehicle vehicle = vehicleRepository.findByRegistrationNumber(registrationNumber);
 
