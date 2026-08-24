@@ -2,9 +2,6 @@ package com.smartpark.ui;
 
 //IMPORTS
 import com.smartpark.model.ParkingSession;
-import com.smartpark.model.ParkingSessionStatus;
-import com.smartpark.model.ParkingSpace;
-
 import com.smartpark.service.AnalyticsService;
 
 import javax.swing.*;
@@ -84,6 +81,7 @@ public class AnalyticsPanel extends JPanel {
 
         analyticsLabel.setForeground(UITheme.TEXT_COLOR);
         analyticsLabel.setFont(UITheme.bold(34));
+
         analyticsLabel.setBorder(
                 new EmptyBorder(0, 0, 20, 0)
         );
@@ -108,9 +106,7 @@ public class AnalyticsPanel extends JPanel {
         );
 
         setupStatisticCards();
-
         setupCharts();
-
         setupStatisticsTable();
 
         //WORKSPACE SCROLL
@@ -539,7 +535,6 @@ public class AnalyticsPanel extends JPanel {
         );
 
         chartsPanel.add(sessionsContainer);
-
         chartsPanel.add(statusContainer);
 
         workspacePanel.add(chartsPanel);
@@ -673,7 +668,7 @@ public class AnalyticsPanel extends JPanel {
                 UITheme.bold(19)
         );
 
-        //TABLE MODEL
+        //TABLE COLUMNS
         String[] columns = {
                 "Session ID",
                 "Registration",
@@ -684,6 +679,7 @@ public class AnalyticsPanel extends JPanel {
                 "Status"
         };
 
+        //TABLE MODEL
         statisticsTableModel =
                 new DefaultTableModel(
                         columns,
@@ -888,12 +884,16 @@ public class AnalyticsPanel extends JPanel {
 
         //REFRESH CHARTS
         if (sessionsChartPanel != null) {
+
             sessionsChartPanel.refreshData();
+
             sessionsChartPanel.repaint();
         }
 
         if (statusChartPanel != null) {
+
             statusChartPanel.refreshData();
+
             statusChartPanel.repaint();
         }
 
@@ -928,63 +928,137 @@ public class AnalyticsPanel extends JPanel {
                 continue;
             }
 
+            //SESSION ID
             String sessionId =
                     session.getSessionId();
 
+            if (
+                    sessionId == null
+                            ||
+                            sessionId.trim().isEmpty()
+            ) {
+
+                sessionId = "-";
+            }
+
+            //VEHICLE REGISTRATION
             String registration = "-";
 
             if (session.getVehicle() != null) {
 
-                registration =
+                String value =
                         session.getVehicle()
                                 .getRegistrationNumber();
+
+                if (
+                        value != null
+                                &&
+                                !value.trim().isEmpty()
+                ) {
+
+                    registration = value;
+                }
             }
 
+            //PARKING SPACE
             String parkingSpace = "-";
 
             if (session.getParkingSpace() != null) {
 
-                parkingSpace =
+                String value =
                         session.getParkingSpace()
                                 .getSpaceId();
+
+                if (
+                        value != null
+                                &&
+                                !value.trim().isEmpty()
+                ) {
+
+                    parkingSpace = value;
+                }
             }
 
+            //ENTRY TIME
             String entryTime =
-                    session.getEntryTime();
-
-            String exitTime =
-                    session.getExitTime();
-
-            String duration =
-                    getDuration(
-                            entryTime,
-                            exitTime
+                    formatDateTime(
+                            session.getEntryTime()
                     );
 
-            String status =
-                    session.getStatus() == null
-                            ? "-"
-                            : session.getStatus().toString();
+            //EXIT TIME
+            String exitTime =
+                    formatDateTime(
+                            session.getExitTime()
+                    );
 
+            //DURATION
+            String duration =
+                    getDuration(
+                            session.getEntryTime(),
+                            session.getExitTime()
+                    );
+
+            //STATUS
+            String status = "-";
+
+            if (session.getStatus() != null) {
+
+                status =
+                        session.getStatus().toString();
+            }
+
+            //ADD ROW
             statisticsTableModel.addRow(
                     new Object[]{
                             sessionId,
                             registration,
                             parkingSpace,
-                            entryTime == null
-                                    ? "-"
-                                    : entryTime,
-                            exitTime == null
-                                    ? "-"
-                                    : exitTime,
+                            entryTime,
+                            exitTime,
                             duration,
                             status
                     }
             );
         }
 
-        statisticsTable.revalidate();
-        statisticsTable.repaint();
+        if (statisticsTable != null) {
+
+            statisticsTable.revalidate();
+
+            statisticsTable.repaint();
+        }
+    }
+
+
+    //FORMAT DATE TIME
+    private String formatDateTime(String dateTime) {
+
+        if (
+                dateTime == null
+                        ||
+                        dateTime.trim().isEmpty()
+        ) {
+
+            return "-";
+        }
+
+        try {
+
+            LocalDateTime parsedDateTime =
+                    LocalDateTime.parse(
+                            dateTime.trim(),
+                            DATE_TIME_FORMATTER
+                    );
+
+            return parsedDateTime.format(
+                    DATE_TIME_FORMATTER
+            );
+
+        }
+        catch (DateTimeParseException e) {
+
+            return dateTime;
+        }
     }
 
 
@@ -994,11 +1068,23 @@ public class AnalyticsPanel extends JPanel {
             String exitTime
     ) {
 
+        //NO ENTRY TIME
         if (
                 entryTime == null
                         ||
-                        exitTime == null
+                        entryTime.trim().isEmpty()
         ) {
+
+            return "-";
+        }
+
+        //NO EXIT TIME
+        if (
+                exitTime == null
+                        ||
+                        exitTime.trim().isEmpty()
+        ) {
+
             return "-";
         }
 
@@ -1023,10 +1109,12 @@ public class AnalyticsPanel extends JPanel {
                     ).toMinutes();
 
             if (minutes < 0) {
+
                 return "-";
             }
 
-            long hours = minutes / 60;
+            long hours =
+                    minutes / 60;
 
             long remainingMinutes =
                     minutes % 60;
@@ -1083,7 +1171,6 @@ public class AnalyticsPanel extends JPanel {
             refreshData();
         }
 
-
         private void refreshData() {
 
             if (analyticsService == null) {
@@ -1092,8 +1179,12 @@ public class AnalyticsPanel extends JPanel {
 
             values =
                     analyticsService.getLastSevenDaysCounts();
-        }
 
+            if (values == null || values.length == 0) {
+
+                values = new int[7];
+            }
+        }
 
         @Override
         protected void paintComponent(Graphics g) {
@@ -1109,15 +1200,11 @@ public class AnalyticsPanel extends JPanel {
             );
 
             int width = getWidth();
-
             int height = getHeight();
 
             int left = 40;
-
             int right = 15;
-
             int top = 15;
-
             int bottom = 35;
 
             int chartWidth =
@@ -1162,11 +1249,11 @@ public class AnalyticsPanel extends JPanel {
             for (int value : values) {
 
                 if (value > maxValue) {
+
                     maxValue = value;
                 }
             }
 
-            //ADD SOME HEADROOM
             maxValue =
                     Math.max(
                             5,
@@ -1183,10 +1270,13 @@ public class AnalyticsPanel extends JPanel {
             );
 
             int previousX = 0;
-
             int previousY = 0;
 
-            for (int i = 0; i < values.length; i++) {
+            for (
+                    int i = 0;
+                    i < values.length;
+                    i++
+            ) {
 
                 int x;
 
@@ -1197,7 +1287,8 @@ public class AnalyticsPanel extends JPanel {
                                     +
                                     chartWidth / 2;
 
-                } else {
+                }
+                else {
 
                     x =
                             left
@@ -1248,7 +1339,6 @@ public class AnalyticsPanel extends JPanel {
                 );
 
                 previousX = x;
-
                 previousY = y;
             }
 
@@ -1264,7 +1354,11 @@ public class AnalyticsPanel extends JPanel {
             FontMetrics fm =
                     g2.getFontMetrics();
 
-            for (int i = 0; i < labels.length; i++) {
+            for (
+                    int i = 0;
+                    i < labels.length;
+                    i++
+            ) {
 
                 int x;
 
@@ -1274,8 +1368,8 @@ public class AnalyticsPanel extends JPanel {
                             left
                                     +
                                     chartWidth / 2;
-
-                } else {
+                }
+                else {
 
                     x =
                             left
@@ -1308,11 +1402,8 @@ public class AnalyticsPanel extends JPanel {
     private class DonutChartPanel extends JPanel {
 
         private int completed = 0;
-
         private int active = 0;
-
         private int other = 0;
-
 
         public DonutChartPanel() {
 
@@ -1333,7 +1424,6 @@ public class AnalyticsPanel extends JPanel {
             refreshData();
         }
 
-
         private void refreshData() {
 
             if (analyticsService == null) {
@@ -1349,7 +1439,6 @@ public class AnalyticsPanel extends JPanel {
             other =
                     analyticsService.getOtherSessions();
         }
-
 
         @Override
         protected void paintComponent(Graphics g) {
@@ -1389,10 +1478,11 @@ public class AnalyticsPanel extends JPanel {
 
                 g2.drawString(
                         text,
-                        (getWidth()
-                                -
-                                fm.stringWidth(text))
-                                / 2,
+                        (
+                                getWidth()
+                                        -
+                                        fm.stringWidth(text)
+                        ) / 2,
                         getHeight() / 2
                 );
 
@@ -1402,7 +1492,6 @@ public class AnalyticsPanel extends JPanel {
             }
 
             int width = getWidth();
-
             int height = getHeight();
 
             int diameter =
@@ -1583,7 +1672,6 @@ public class AnalyticsPanel extends JPanel {
 
             g2.dispose();
         }
-
 
         private void drawLegend(
                 Graphics2D g2,

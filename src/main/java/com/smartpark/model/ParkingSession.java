@@ -1,5 +1,9 @@
 package com.smartpark.model;
 
+//IMPORTS
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 //PARKING SESSION CLASS
 public class ParkingSession {
 
@@ -10,6 +14,9 @@ public class ParkingSession {
     private String entryTime;
     private String exitTime;
     private ParkingSessionStatus status;
+
+    //DATE/TIME FORMATTER
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     //DECLARE CONSTRUCTOR
     public ParkingSession(
@@ -50,7 +57,7 @@ public class ParkingSession {
         return status;
     }
 
-    // DECLARE SETTERS
+    //DECLARE SETTERS
     public void setEntryTime(String entryTime) {
         this.entryTime = entryTime;
     }
@@ -79,6 +86,7 @@ public class ParkingSession {
 
     //COMPLETE SESSION
     public void completeSession() {
-        status = ParkingSessionStatus.COMPLETED;
+        this.exitTime = LocalDateTime.now().format(DATE_TIME_FORMATTER);
+        this.status = ParkingSessionStatus.COMPLETED;
     }
 }
