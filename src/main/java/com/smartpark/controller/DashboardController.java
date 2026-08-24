@@ -7,7 +7,7 @@ import com.smartpark.service.AnalyticsService;
 public class DashboardController {
 
     //DECLARE ATTRIBUTES
-    private AnalyticsService analyticsService;
+    private final AnalyticsService analyticsService;
 
     //DECLARE CONSTRUCTOR
     public DashboardController(AnalyticsService analyticsService) {

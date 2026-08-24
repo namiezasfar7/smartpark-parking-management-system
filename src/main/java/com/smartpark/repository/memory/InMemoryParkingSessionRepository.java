@@ -47,6 +47,7 @@ public class InMemoryParkingSessionRepository implements ParkingSessionRepositor
 
         //LOOP UNTIL CONDITION IS TRUE
         for (ParkingSession parkingSession : parkingSessions) {
+
             //CHECK CONDITION
             if (sessionId.equals(parkingSession.getSessionId())) {
                 return parkingSession;
@@ -59,6 +60,6 @@ public class InMemoryParkingSessionRepository implements ParkingSessionRepositor
     //GET ALL SESSIONS
     @Override
     public List <ParkingSession> findAll() {
-        return parkingSessions;
+        return new ArrayList<>(parkingSessions);
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 public class ParkingSessionController {
 
     //DECLARE ATTRIBUTES
-    private ParkingSessionService parkingSessionService;
+    private final ParkingSessionService parkingSessionService;
 
     //DECLARE CONSTRUCTOR
     public ParkingSessionController(ParkingSessionService parkingSessionService) {
