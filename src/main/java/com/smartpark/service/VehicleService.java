@@ -3,6 +3,7 @@ package com.smartpark.service;
 //IMPORTS
 import com.smartpark.model.Vehicle;
 import com.smartpark.repository.VehicleRepository;
+import com.smartpark.util.ValidationUtil;
 
 import java.util.List;
 
@@ -21,14 +22,13 @@ public class VehicleService {
     //REGISTER VEHICLE
     public void registerVehicle(Vehicle vehicle) {
 
-        //CHECK CONDITION
-        if (vehicle == null) {
-            throw new IllegalArgumentException("Vehicle cannot be null.");
-        }
+        //VALIDATE VEHICLE
+        ValidationUtil.validateVehicle(vehicle);
 
         //CHECK IF VEHICLE ALREADY EXISTS
         Vehicle existingVehicle = vehicleRepository.findByRegistrationNumber(vehicle.getRegistrationNumber());
 
+        //CHECK CONDITION
         if (existingVehicle != null) {
             throw new IllegalArgumentException("Vehicle already registered: " + vehicle.getRegistrationNumber());
         }
@@ -39,10 +39,8 @@ public class VehicleService {
     //FIND VEHICLE
     public Vehicle findVehicle(String registrationNumber) {
 
-        //CHECK CONDITION
-        if (registrationNumber == null || registrationNumber.trim().isEmpty()) {
-            return null;
-        }
+        //VALIDATE REGISTRATION NUMBER
+        ValidationUtil.validateRegistrationNumber(registrationNumber);
 
         return vehicleRepository.findByRegistrationNumber(registrationNumber);
     }
