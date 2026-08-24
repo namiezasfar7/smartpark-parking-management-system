@@ -10,7 +10,7 @@ import java.util.List;
 public class VehicleController {
 
     //DECLARE ATTRIBUTES
-    private VehicleService vehicleService;
+    private final VehicleService vehicleService;
 
     //DECLARE CONSTRUCTOR
     public VehicleController(VehicleService vehicleService) {
@@ -29,7 +29,7 @@ public class VehicleController {
     }
 
     //GET ALL VEHICLES
-    public List<Vehicle> getAllVehicles() {
-       return vehicleService.getAllVehicles();
+    public List <Vehicle> getAllVehicles() {
+        return vehicleService.getAllVehicles();
     }
 }
