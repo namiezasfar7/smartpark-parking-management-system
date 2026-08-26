@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 //PARKING CONTROLLER CLASS
-public class ParkingController {
+class ParkingController {
 
     //DECLARE ATTRIBUTES
     private final ParkingService parkingService;
