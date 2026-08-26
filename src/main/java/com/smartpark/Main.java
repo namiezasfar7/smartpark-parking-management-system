@@ -45,9 +45,9 @@ public class Main {
             VehicleService vehicleService = new VehicleService(vehicleRepository);
             ParkingService parkingService = new ParkingService(parkingSpaceRepository);
             ParkingSessionService parkingSessionService = new ParkingSessionService(parkingSessionRepository,
-                                                                                    parkingSpaceRepository);
+                    parkingSpaceRepository);
             AnalyticsService analyticsService = new AnalyticsService(parkingSpaceRepository,
-                                                                     parkingSessionRepository);
+                    parkingSessionRepository);
 
             //CREATE CONTROLLERS
             VehicleController vehicleController = new VehicleController(vehicleService);
@@ -57,12 +57,12 @@ public class Main {
 
             //CREATE MAIN FRAME
             MainFrame mainFrame = new MainFrame(
-                            vehicleController,
-                            parkingController,
-                            parkingSessionController,
-                            dashboardController,
-                            analyticsService
-                    );
+                    vehicleController,
+                    parkingController,
+                    parkingSessionController,
+                    dashboardController,
+                    analyticsService
+            );
 
             //SHOW APPLICATION
             mainFrame.setVisible(true);
@@ -72,13 +72,13 @@ public class Main {
     //CREATE INITIAL PARKING SPACES
     private static void createInitialParkingSpaces(ParkingSpaceRepository repository) {
 
-        repository.save(new ParkingSpace("P-001", VehicleType.CAR));
-        repository.save(new ParkingSpace("P-002", VehicleType.CAR));
-        repository.save(new ParkingSpace("P-003", VehicleType.CAR));
-        repository.save(new ParkingSpace("P-004", VehicleType.CAR));
-        repository.save(new ParkingSpace("P-005", VehicleType.CAR));
-        repository.save(new ParkingSpace("P-006", VehicleType.CAR));
-        repository.save(new ParkingSpace("P-007", VehicleType.CAR));
-        repository.save(new ParkingSpace("P-008", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-001", "GF", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-002", "GF", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-003", "GF", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-004", "GF", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-005", "GF", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-006", "GF", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-007", "GF", VehicleType.CAR));
+        repository.save(new ParkingSpace("P-008", "GF", VehicleType.CAR));
     }
 }
