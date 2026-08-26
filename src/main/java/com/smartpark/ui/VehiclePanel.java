@@ -8,6 +8,7 @@ import com.smartpark.ui.components.RoundedPanelBorder;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
@@ -133,11 +134,8 @@ public class VehiclePanel extends JPanel {
         //FORM PANEL
         JPanel formPanel = new RoundedPanel();
         formPanel.setLayout(new GridBagLayout());
-        formPanel.setBackground(UITheme.BUTTON_COLOR);
-        formPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedPanelBorder(UITheme.BORDER_COLOR, 18),
-                                                               new EmptyBorder(18, 18, 18, 18))
-        );
-
+        formPanel.setBackground(UITheme.CARD_COLOR);
+        formPanel.setBorder(new EmptyBorder(14, 24, 18, 24));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 10, 8, 10);
@@ -258,19 +256,21 @@ public class VehiclePanel extends JPanel {
     private void setupVehicleList() {
 
         //LIST PANEL
-        vehicleListPanel.setLayout(new BorderLayout(0, 12));
-        vehicleListPanel.setBackground(UITheme.BUTTON_COLOR);
+        vehicleListPanel.setLayout(new BorderLayout(0, 0));
+        vehicleListPanel.setBackground(UITheme.CARD_COLOR);
+        vehicleListPanel.setOpaque(false);
         vehicleListPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedPanelBorder(UITheme.BORDER_COLOR, 18),
-                                                                      new EmptyBorder(14, 18, 18, 18))
+                                                                      new EmptyBorder(0, 0, 0, 0))
         );
 
         //LIST TITLE
         listRegisterdVehicleLabel.setText("Registered Vehicles");
         listRegisterdVehicleLabel.setForeground(UITheme.TEXT_COLOR);
         listRegisterdVehicleLabel.setFont(UITheme.bold(17));
-        listRegisterdVehicleLabel.setBorder(new EmptyBorder(2, 2, 8, 2));
+        listRegisterdVehicleLabel.setOpaque(false);
+        listRegisterdVehicleLabel.setBorder(new EmptyBorder(18, 22, 14, 22));
 
-        //TABLE MODEL
+        // TABLE MODEL
         vehicleListTable.setModel(new DefaultTableModel(new Object[][] {}, new String[] {"Registration Number", "Owner Name", "Vehicle Type"}) {
 
             @Override
@@ -280,40 +280,63 @@ public class VehiclePanel extends JPanel {
         });
 
         //TABLE STYLE
-        vehicleListTable.setBackground(UITheme.BACKGROUND_COLOR);
+        vehicleListTable.setOpaque(true);
+        vehicleListTable.setBackground(UITheme.CARD_COLOR);
         vehicleListTable.setForeground(UITheme.TEXT_COLOR);
-        vehicleListTable.setFont(UITheme.regular(14));
-        vehicleListTable.setRowHeight(44);
+        vehicleListTable.setFont(UITheme.regular(13));
+        vehicleListTable.setRowHeight(38);
         vehicleListTable.setGridColor(UITheme.BORDER_COLOR);
         vehicleListTable.setSelectionBackground(UITheme.BUTTON_COLOR);
         vehicleListTable.setSelectionForeground(UITheme.TEXT_COLOR);
-
         vehicleListTable.setShowVerticalLines(false);
         vehicleListTable.setShowHorizontalLines(true);
+        vehicleListTable.setFillsViewportHeight(true);
+        vehicleListTable.setIntercellSpacing(new Dimension(0, 0));
+        vehicleListTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         //TABLE HEADER
         JTableHeader tableHeader = vehicleListTable.getTableHeader();
         tableHeader.setBackground(UITheme.BUTTON_COLOR);
         tableHeader.setForeground(UITheme.TEXT_COLOR);
-        tableHeader.setFont(UITheme.bold(14));
+        tableHeader.setFont(UITheme.bold(13));
         tableHeader.setPreferredSize(new Dimension(0, 44));
+        tableHeader.setReorderingAllowed(false);
+
+        //HEADER RENDERER
+        DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
+        headerRenderer.setOpaque(true);
+        headerRenderer.setBackground(UITheme.BUTTON_COLOR);
+        headerRenderer.setForeground(UITheme.TEXT_COLOR);
+        headerRenderer.setFont(UITheme.bold(13));
+        headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        headerRenderer.setBorder(new EmptyBorder(0, 0, 0, 0));
+
+        tableHeader.setDefaultRenderer(headerRenderer);
+
+        //TABLE CELL RENDERER
+        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
+        cellRenderer.setOpaque(true);
+        cellRenderer.setBackground(UITheme.CARD_COLOR);
+        cellRenderer.setForeground(UITheme.TEXT_COLOR);
+        cellRenderer.setFont(UITheme.regular(13));
+        cellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+        vehicleListTable.setDefaultRenderer(Object.class, cellRenderer);
 
         //SCROLL PANE
-        vehicleScrollPane.setBackground(UITheme.BACKGROUND_COLOR);
-        vehicleScrollPane.getViewport().setBackground(UITheme.BACKGROUND_COLOR);
-
         vehicleScrollPane.setOpaque(false);
         vehicleScrollPane.getViewport().setOpaque(true);
+        vehicleScrollPane.getViewport().setBackground(UITheme.CARD_COLOR);
+        vehicleScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        vehicleScrollPane.getVerticalScrollBar().setOpaque(false);
 
-        vehicleScrollPane.setBorder(BorderFactory.createCompoundBorder(new RoundedPanelBorder(UITheme.BORDER_COLOR, 12),
-                                                                       new EmptyBorder(0, 0, 0, 0))
-        );
-
-        //ADD COMPONENTS
+        //ADD TITLE TO LIST PANEL
         vehicleListPanel.add(listRegisterdVehicleLabel, BorderLayout.NORTH);
+
+        //ADD TABLE/SCROLL PANE TO LIST PANEL
         vehicleListPanel.add(vehicleScrollPane, BorderLayout.CENTER);
 
-        //ADD LIST TO WORKSPACE
+        //ADD LIST PANEL TO WORKSPACE
         workspacePanel.add(vehicleListPanel, BorderLayout.CENTER);
     }
 
@@ -406,11 +429,14 @@ public class VehiclePanel extends JPanel {
 
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            //CARD BACKGROUND
             g2.setColor(getBackground());
             g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
 
             g2.dispose();
 
+            //PAINT CHILD COMPONENTS
             super.paintComponent(g);
         }
     }
@@ -482,14 +508,69 @@ public class VehiclePanel extends JPanel {
     }
 
     //ROUNDED COMBO BOX
-    private static class RoundedComboBox <E> extends JComboBox<E> {
+    private static class RoundedComboBox<E> extends JComboBox<E> {
 
         private final int radius = 12;
 
         public RoundedComboBox() {
 
             super();
+
             setOpaque(false);
+            setFocusable(false);
+            setBorder(new EmptyBorder(0, 12, 0, 12));
+
+            setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {
+
+                @Override
+                protected JButton createArrowButton() {
+
+                    JButton arrowButton = new JButton() {
+
+                        @Override
+                        protected void paintComponent(Graphics g) {
+
+                            Graphics2D g2 = (Graphics2D) g.create();
+                            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                            //ARROW COLOR
+                            g2.setColor(UITheme.TEXT_COLOR);
+
+                            //ARROW SIZE
+                            int arrowWidth = 10;
+                            int arrowHeight = 6;
+
+                            //ARROW POSITION
+                            int x = (getWidth() - arrowWidth) / 2;
+                            int y = (getHeight() - arrowHeight) / 2;
+
+                            //DRAW DOWNWARD ARROW
+                            Polygon arrow = new Polygon();
+                            arrow.addPoint(x, y);
+                            arrow.addPoint(x + arrowWidth, y);
+                            arrow.addPoint(x + arrowWidth / 2, y + arrowHeight);
+
+                            g2.fillPolygon(arrow);
+
+                            g2.dispose();
+                        }
+                    };
+
+                    arrowButton.setOpaque(false);
+                    arrowButton.setContentAreaFilled(false);
+                    arrowButton.setBorderPainted(false);
+                    arrowButton.setFocusPainted(false);
+
+                    return arrowButton;
+                }
+
+                @Override
+                public void paintCurrentValueBackground(
+                        Graphics g,
+                        Rectangle bounds,
+                        boolean hasFocus) {
+                }
+            });
         }
 
         @Override
@@ -498,7 +579,7 @@ public class VehiclePanel extends JPanel {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            //BACKGROUND
+            //COMBO BOX BACKGROUND
             g2.setColor(getBackground());
             g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
 
@@ -511,8 +592,9 @@ public class VehiclePanel extends JPanel {
         protected void paintBorder(Graphics g) {
 
             Graphics2D g2 = (Graphics2D) g.create();
-
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            //COMBO BOX BORDER
             g2.setColor(UITheme.BORDER_COLOR);
             g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
 
