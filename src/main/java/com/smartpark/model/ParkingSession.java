@@ -1,38 +1,54 @@
 package com.smartpark.model;
 
-//IMPORTS
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-//PARKING SESSION CLASS
 public class ParkingSession {
 
-    //DECLARE ATTRIBUTES
     private String sessionId;
     private Vehicle vehicle;
     private ParkingSpace parkingSpace;
+    private ParkingZone parkingZone;
     private String entryTime;
     private String exitTime;
     private ParkingSessionStatus status;
 
-    //DATE/TIME FORMATTER
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    //DECLARE CONSTRUCTOR
+    public ParkingSession(
+            String sessionId,
+            Vehicle vehicle,
+            ParkingSpace parkingSpace,
+            ParkingZone parkingZone,
+            String entryTime
+    ) {
+        this.sessionId = sessionId;
+        this.vehicle = vehicle;
+        this.parkingSpace = parkingSpace;
+        this.parkingZone = parkingZone;
+        this.entryTime = entryTime;
+        this.status = ParkingSessionStatus.ACTIVE;
+    }
+
+    // Keeps the existing MySQL repository compatible while it loads older sessions.
     public ParkingSession(
             String sessionId,
             Vehicle vehicle,
             ParkingSpace parkingSpace,
             String entryTime
     ) {
-        this.sessionId = sessionId;
-        this.vehicle = vehicle;
-        this.parkingSpace = parkingSpace;
-        this.entryTime = entryTime;
-        this.status = ParkingSessionStatus.ACTIVE;
+        this(
+                sessionId,
+                vehicle,
+                parkingSpace,
+                parkingSpace == null || parkingSpace.getZoneId() == null
+                        ? null
+                        : new ParkingZone(parkingSpace.getZoneId(), parkingSpace.getZoneId()),
+                entryTime
+        );
     }
 
-    //DECLARE GETTERS
     public String getSessionId() {
         return sessionId;
     }
@@ -43,6 +59,10 @@ public class ParkingSession {
 
     public ParkingSpace getParkingSpace() {
         return parkingSpace;
+    }
+
+    public ParkingZone getParkingZone() {
+        return parkingZone;
     }
 
     public String getEntryTime() {
@@ -57,7 +77,6 @@ public class ParkingSession {
         return status;
     }
 
-    //DECLARE SETTERS
     public void setEntryTime(String entryTime) {
         this.entryTime = entryTime;
     }
@@ -70,23 +89,21 @@ public class ParkingSession {
         this.status = status;
     }
 
-    //DECLARE METHODS
-    //TO STRING
-    @Override
-    public String toString() {
-        return "ParkingSession{" +
-                "sessionId = '" + sessionId + '\'' +
-                ", vehicle = " + vehicle +
-                ", parking space = " + parkingSpace +
-                ", entry time = " + entryTime +
-                ", exit time = " + exitTime +
-                ", status = " + status +
-                '}';
-    }
-
-    //COMPLETE SESSION
     public void completeSession() {
         this.exitTime = LocalDateTime.now().format(DATE_TIME_FORMATTER);
         this.status = ParkingSessionStatus.COMPLETED;
+    }
+
+    @Override
+    public String toString() {
+        return "ParkingSession{" +
+                "sessionId='" + sessionId + '\'' +
+                ", vehicle=" + vehicle +
+                ", parkingSpace=" + parkingSpace +
+                ", parkingZone=" + parkingZone +
+                ", entryTime='" + entryTime + '\'' +
+                ", exitTime='" + exitTime + '\'' +
+                ", status=" + status +
+                '}';
     }
 }
