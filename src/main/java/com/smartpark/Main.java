@@ -103,8 +103,11 @@ public class Main {
 
         //LOOP UNTIL CONDITION IS TRUE
         for (int i = 0; i < count; i++) {
-
-            ParkingSpace space = new ParkingSpace(String.format("P-%03d", startNumber + i), VehicleType.CAR);
+            ParkingSpace space = new ParkingSpace(
+                    String.format("P-%03d", startNumber + i),
+                    zone.getZoneId(),
+                    VehicleType.CAR
+            );
 
             zone.addSpace(space);
             spaceRepository.save(space);
