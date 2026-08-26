@@ -90,7 +90,7 @@ public class DashboardPanel extends JPanel {
         dashboardLabel.setText("Dashboard");
         dashboardLabel.setForeground(UITheme.TEXT_COLOR);
         dashboardLabel.setFont(UITheme.bold(28));
-        dashboardLabel.setBorder(new EmptyBorder(0, 0, 25, 0));
+        dashboardLabel.setBorder(new EmptyBorder(0, 0, 20, 0));
 
         //WORKSPACE
         workspacePanel.removeAll();
@@ -151,7 +151,7 @@ public class DashboardPanel extends JPanel {
         //VALUE
         valueLabel.setText(value);
         valueLabel.setForeground(UITheme.TEXT_COLOR);
-        valueLabel.setFont(UITheme.bold(32));
+        valueLabel.setFont(UITheme.bold(42));
 
         valueLabel.setBorder(new EmptyBorder(14, 30, 28, 30));
 

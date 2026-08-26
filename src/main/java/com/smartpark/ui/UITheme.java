@@ -30,6 +30,8 @@ public final class UITheme {
     public static final Color PARKING_MAINTENANCE = new Color(139, 92, 246);
     public static final Color PARKING_CARD_COLOR = new Color(21, 25, 34);
     public static final Color PARKING_HOVER_COLOR = new Color(30, 41, 59);
+    public static final Color PARKING_OCCUPIED_CARD = new Color(58, 45, 55);
+    public static final Color PARKING_MAINTENANCE_CARD = new Color(55, 55, 55);
 
     //FONT
     public static final String FONT_NAME = "Poppins";
