@@ -3,6 +3,7 @@ package com.smartpark.ui;
 //IMPORTS
 import com.smartpark.model.ParkingSession;
 import com.smartpark.service.AnalyticsService;
+import com.smartpark.ui.components.RoundedPanelBorder;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -194,10 +195,26 @@ public class AnalyticsPanel extends JPanel {
     //STATISTIC CARD
     private JPanel createStatisticCard(String title, String value, Color color) {
 
-        JPanel card = new JPanel();
+        JPanel card = new JPanel() {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 24, 24);
+
+                g2.dispose();
+
+                super.paintComponent(g);
+            }
+        };
+
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setOpaque(false);
         card.setBackground(color);
-        card.setBorder(new EmptyBorder(15, 10, 15, 10));
+        card.setBorder(new RoundedPanelBorder(color, 24));
 
         JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
         titleLabel.setForeground(UITheme.TEXT_COLOR);
@@ -209,9 +226,11 @@ public class AnalyticsPanel extends JPanel {
         valueLabel.setFont(UITheme.bold(30));
         valueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        card.add(Box.createVerticalGlue());
         card.add(titleLabel);
         card.add(Box.createRigidArea(new Dimension(0, 8)));
         card.add(valueLabel);
+        card.add(Box.createVerticalGlue());
 
         return card;
     }
@@ -247,9 +266,9 @@ public class AnalyticsPanel extends JPanel {
 
         chartsPanel = new JPanel(new GridLayout(1, 2, 16, 0));
         chartsPanel.setBackground(UITheme.BACKGROUND_COLOR);
-        chartsPanel.setPreferredSize(new Dimension(0, 300));
-        chartsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
-        chartsPanel.setMinimumSize(new Dimension(0, 300));
+        chartsPanel.setPreferredSize(new Dimension(0, 310));
+        chartsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 310));
+        chartsPanel.setMinimumSize(new Dimension(0, 310));
         chartsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         //LINE CHART
@@ -274,18 +293,34 @@ public class AnalyticsPanel extends JPanel {
     //CHART CONTAINER
     private JPanel createChartContainer(String title) {
 
-        JPanel panel = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout()) {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 18, 18);
+
+                g2.dispose();
+
+                super.paintComponent(g);
+            }
+        };
+
+        panel.setOpaque(false);
         panel.setBackground(UITheme.CARD_COLOR);
-        panel.setBorder(BorderFactory.createCompoundBorder(new LineBorder(UITheme.BORDER_COLOR, 1),
-                                                           new EmptyBorder(15, 15, 15, 15))
+
+        panel.setBorder(BorderFactory.createCompoundBorder(new RoundedPanelBorder(UITheme.BORDER_COLOR, 18),
+                                                           new EmptyBorder(6, 8, 6, 8))
         );
-        panel.setMinimumSize(new Dimension(0, 280));
 
         JLabel titleLabel = new JLabel(title);
 
         titleLabel.setForeground(UITheme.TEXT_COLOR);
         titleLabel.setFont(UITheme.bold(19));
-        titleLabel.setBorder(new EmptyBorder(0, 0, 8, 0));
+        titleLabel.setBorder(new EmptyBorder(2, 2, 14, 0));
 
         panel.add(titleLabel, BorderLayout.NORTH);
 
@@ -295,10 +330,26 @@ public class AnalyticsPanel extends JPanel {
     //STATISTICS TABLE
     private void setupStatisticsTable() {
 
-        JPanel statisticsPanel = new JPanel(new BorderLayout(0, 10));
+        JPanel statisticsPanel = new JPanel(new BorderLayout(0, 16)) {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 18, 18);
+
+                g2.dispose();
+
+                super.paintComponent(g);
+            }
+        };
+
+        statisticsPanel.setOpaque(false);
         statisticsPanel.setBackground(UITheme.CARD_COLOR);
-        statisticsPanel.setBorder(BorderFactory.createCompoundBorder(new LineBorder(UITheme.BORDER_COLOR, 1),
-                                                                     new EmptyBorder(15, 15, 15, 15))
+        statisticsPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedPanelBorder(UITheme.BORDER_COLOR, 18),
+                                                                     new EmptyBorder(18, 15, 15, 15))
         );
         statisticsPanel.setPreferredSize(new Dimension(0, 245));
         statisticsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 245));
@@ -369,7 +420,7 @@ public class AnalyticsPanel extends JPanel {
         statisticsScrollPane = new JScrollPane(statisticsTable);
         statisticsScrollPane.setBackground(UITheme.CARD_COLOR);
         statisticsScrollPane.getViewport().setBackground(UITheme.CARD_COLOR);
-        statisticsScrollPane.setBorder(new LineBorder(UITheme.BORDER_COLOR, 1));
+        statisticsScrollPane.setBorder(new RoundedPanelBorder(UITheme.BORDER_COLOR, 10));
 
         statisticsPanel.add(statisticsLabel, BorderLayout.NORTH);
         statisticsPanel.add(statisticsScrollPane, BorderLayout.CENTER);
@@ -646,9 +697,9 @@ public class AnalyticsPanel extends JPanel {
             int height = getHeight();
 
             int left = 40;
-            int right = 15;
+            int right = 30;
             int top = 15;
-            int bottom = 35;
+            int bottom = 45;
 
             int chartWidth = width - left - right;
 
