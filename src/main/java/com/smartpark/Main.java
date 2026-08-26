@@ -44,10 +44,8 @@ public class Main {
             //CREATE SERVICES
             VehicleService vehicleService = new VehicleService(vehicleRepository);
             ParkingService parkingService = new ParkingService(parkingSpaceRepository);
-            ParkingSessionService parkingSessionService = new ParkingSessionService(parkingSessionRepository,
-                    parkingSpaceRepository);
-            AnalyticsService analyticsService = new AnalyticsService(parkingSpaceRepository,
-                    parkingSessionRepository);
+            ParkingSessionService parkingSessionService = new ParkingSessionService(parkingSessionRepository, parkingSpaceRepository);
+            AnalyticsService analyticsService = new AnalyticsService(parkingSpaceRepository, parkingSessionRepository);
 
             //CREATE CONTROLLERS
             VehicleController vehicleController = new VehicleController(vehicleService);

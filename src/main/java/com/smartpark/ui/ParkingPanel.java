@@ -69,7 +69,7 @@ public class ParkingPanel extends JPanel {
         zoneLabel.setForeground(UITheme.SECONDARY_TEXT_COLOR);
         zoneLabel.setFont(UITheme.regular(14));
 
-        zoneComboBox = new JComboBox<>(new String[]{"All Zones"});
+        zoneComboBox = new RoundedComboBox<>(new String[]{"Ground", "Level 01", "Level 02", "Level 03"});
         zoneComboBox.setFont(UITheme.regular(14));
         zoneComboBox.setForeground(UITheme.TEXT_COLOR);
         zoneComboBox.setBackground(UITheme.BUTTON_COLOR);
@@ -193,15 +193,14 @@ public class ParkingPanel extends JPanel {
             protected void paintComponent(Graphics g) {
 
                 Graphics2D g2 = (Graphics2D) g.create();
-
-                //ANTIALIASING
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                //ROUNDED BACKGROUND
                 int arc = 18;
 
+                Shape shape = new java.awt.geom.RoundRectangle2D.Double(1, 1, getWidth() - 3, getHeight() - 3, arc, arc);
+
                 g2.setColor(getBackground());
-                g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
+                g2.fill(shape);
 
                 g2.dispose();
 
@@ -384,5 +383,94 @@ public class ParkingPanel extends JPanel {
         itemPanel.add(label);
 
         return itemPanel;
+    }
+
+    //ROUNDED COMBO BOX
+    private static class RoundedComboBox<E> extends JComboBox<E> {
+
+        private final int radius = 12;
+
+        public RoundedComboBox(E[] items) {
+
+            super(items);
+
+            setOpaque(false);
+            setFocusable(false);
+
+            setBorder(new EmptyBorder(0, 12, 0, 12));
+
+            setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {
+
+                @Override
+                protected JButton createArrowButton() {
+
+                    JButton arrowButton = new JButton() {
+
+                        @Override
+                        protected void paintComponent(Graphics g) {
+
+                            Graphics2D g2 = (Graphics2D) g.create();
+                            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                            //ARROW COLOR
+                            g2.setColor(UITheme.TEXT_COLOR);
+
+                            int arrowWidth = 9;
+                            int arrowHeight = 5;
+
+                            int x = (getWidth() - arrowWidth) / 2;
+                            int y = (getHeight() - arrowHeight) / 2;
+
+                            Polygon arrow = new Polygon();
+                            arrow.addPoint(x, y);
+                            arrow.addPoint(x + arrowWidth, y);
+                            arrow.addPoint(x + arrowWidth / 2, y + arrowHeight);
+
+                            g2.fillPolygon(arrow);
+                            g2.dispose();
+                        }
+                    };
+
+                    arrowButton.setOpaque(false);
+                    arrowButton.setContentAreaFilled(false);
+                    arrowButton.setBorderPainted(false);
+                    arrowButton.setFocusPainted(false);
+
+                    return arrowButton;
+                }
+
+                @Override
+                public void paintCurrentValueBackground(Graphics g, Rectangle bounds, boolean hasFocus) {
+                }
+            });
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            //ROUNDED BACKGROUND
+            g2.setColor(getBackground());
+            g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
+
+            g2.dispose();
+
+            super.paintComponent(g);
+        }
+
+        @Override
+        protected void paintBorder(Graphics g) {
+
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            //ROUNDED BORDER
+            g2.setColor(UITheme.BORDER_COLOR);
+            g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
+
+            g2.dispose();
+        }
     }
 }
