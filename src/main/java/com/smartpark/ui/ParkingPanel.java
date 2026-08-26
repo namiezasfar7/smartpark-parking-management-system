@@ -48,13 +48,12 @@ public class ParkingPanel extends JPanel {
 
         parkingPanel = new JPanel(new BorderLayout());
         parkingPanel.setBackground(UITheme.BACKGROUND_COLOR);
-        parkingPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        parkingPanel.setBorder(new EmptyBorder(15, 18, 15, 18));
 
         //HEADER
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(UITheme.BACKGROUND_COLOR);
         headerPanel.setBorder(new EmptyBorder(0, 0, 18, 0));
-
 
         parkingLabel = new JLabel("Parking");
         parkingLabel.setForeground(UITheme.TEXT_COLOR);
@@ -188,43 +187,77 @@ public class ParkingPanel extends JPanel {
     //CREATE PARKING SPACE CARD
     private JPanel createParkingSpaceCard(String spaceId) {
 
-        JPanel card = new JPanel(new BorderLayout());
+        JPanel card = new JPanel(new BorderLayout()) {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                //ANTIALIASING
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                //ROUNDED BACKGROUND
+                int arc = 18;
+
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
+
+                g2.dispose();
+
+                super.paintComponent(g);
+            }
+        };
+
+        //TRANSPARENT PANEL
+        card.setOpaque(false);
+
+        //DEFAULT CARD COLOR
         card.setBackground(UITheme.PARKING_CARD_COLOR);
+
+        //ROUNDED BORDER
         card.setBorder(new RoundedPanelBorder(UITheme.BORDER_COLOR, 18));
 
         //TOP
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
-        topPanel.setBorder(new EmptyBorder(18, 18, 10, 18));
+        topPanel.setBorder(new EmptyBorder(18, 20, 10, 20));
 
+        //SPACE ID
         JLabel spaceLabel = new JLabel(spaceId);
         spaceLabel.setForeground(UITheme.TEXT_COLOR);
         spaceLabel.setFont(UITheme.bold(18));
 
         topPanel.add(spaceLabel, BorderLayout.WEST);
 
+        //STATUS INDICATOR
         JPanel indicatorPanel = new JPanel();
         indicatorPanel.setOpaque(true);
-        indicatorPanel.setPreferredSize(new Dimension(12, 12));
+        indicatorPanel.setPreferredSize(new Dimension(14, 14));
+        indicatorPanel.setMinimumSize(new Dimension(14, 14));
+        indicatorPanel.setMaximumSize(new Dimension(14, 14));
 
         topPanel.add(indicatorPanel, BorderLayout.EAST);
 
         //STATUS
         JPanel statusPanel = new JPanel(new BorderLayout());
+
         statusPanel.setOpaque(false);
-        statusPanel.setBorder(new EmptyBorder(10, 18, 18, 18));
+        statusPanel.setBorder(new EmptyBorder(10, 20, 18, 20));
 
         JLabel statusLabel = new JLabel("UNKNOWN");
         statusLabel.setFont(UITheme.bold(14));
         statusPanel.add(statusLabel, BorderLayout.WEST);
 
+        //ADD COMPONENTS
         card.add(topPanel, BorderLayout.NORTH);
         card.add(statusPanel, BorderLayout.SOUTH);
 
-
+        //STORE COMPONENTS
         card.putClientProperty("statusLabel", statusLabel);
         card.putClientProperty("indicator", indicatorPanel);
 
+        //CARD SIZE
         card.setPreferredSize(new Dimension(200, 150));
 
         return card;
@@ -266,17 +299,31 @@ public class ParkingPanel extends JPanel {
 
         JPanel indicator = (JPanel) card.getClientProperty("indicator");
 
-        //CHECK CONDITION
+        //UPDATE STATUS TEXT
         if (statusLabel != null) {
-
             statusLabel.setText(status == null ? "UNKNOWN" : status);
             statusLabel.setForeground(color);
         }
 
-        //CHECK CONDITION
+        //UPDATE INDICATOR
         if (indicator != null) {
-
             indicator.setBackground(color);
+        }
+
+        //OCCUPIED APPEARANCE
+        if ("OCCUPIED".equalsIgnoreCase(status)) {
+
+            card.setBackground(new Color(95, 48, 55));
+            card.setBorder(new RoundedPanelBorder(new Color(180, 65, 75), 18));
+
+            //MAKE OCCUPIED TEXT VISIBLE
+            if (statusLabel != null) {
+                statusLabel.setForeground(new Color(255, 170, 175));
+            }
+        }
+        else {
+            card.setBackground(UITheme.PARKING_CARD_COLOR);
+            card.setBorder(new RoundedPanelBorder(UITheme.BORDER_COLOR, 18));
         }
 
         card.repaint();
