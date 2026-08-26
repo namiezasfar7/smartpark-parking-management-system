@@ -1,85 +1,73 @@
-package com.smartpark.config;
+package com.smartpark.controller;
 
 //IMPORTS
-import com.smartpark.controller.DashboardController;
-import com.smartpark.controller.ParkingController;
-import com.smartpark.controller.ParkingSessionController;
-import com.smartpark.controller.VehicleController;
-
-import com.smartpark.repository.ParkingSessionRepository;
-import com.smartpark.repository.ParkingSpaceRepository;
+import com.smartpark.model.ParkingSpace;
+import com.smartpark.model.ParkingSpaceStatus;
+import com.smartpark.model.ParkingZone;
 import com.smartpark.repository.ParkingZoneRepository;
-import com.smartpark.repository.VehicleRepository;
-
-import com.smartpark.repository.memory.InMemoryParkingSessionRepository;
-import com.smartpark.repository.memory.InMemoryParkingSpaceRepository;
-import com.smartpark.repository.memory.InMemoryParkingZoneRepository;
-import com.smartpark.repository.memory.InMemoryVehicleRepository;
-
-import com.smartpark.service.AnalyticsService;
 import com.smartpark.service.ParkingService;
-import com.smartpark.service.ParkingSessionService;
-import com.smartpark.service.VehicleService;
 
+import java.util.Collections;
+import java.util.List;
 
-//APPLICATION CLASS
-public class Application {
+//PARKING CONTROLLER CLASS
+public class ParkingController {
 
     //DECLARE ATTRIBUTES
-    //REPOSITORIES
-    private final VehicleRepository vehicleRepository;
-    private final ParkingSpaceRepository parkingSpaceRepository;
-    private final ParkingZoneRepository parkingZoneRepository;
-    private final ParkingSessionRepository parkingSessionRepository;
-
-    //SERVICES
-    private final VehicleService vehicleService;
     private final ParkingService parkingService;
-    private final ParkingSessionService parkingSessionService;
-    private final AnalyticsService analyticsService;
-
-    //CONTROLLERS
-    private final VehicleController vehicleController;
-    private final ParkingController parkingController;
-    private final ParkingSessionController parkingSessionController;
-    private final DashboardController dashboardController;
+    private final ParkingZoneRepository parkingZoneRepository;
 
     //DECLARE CONSTRUCTOR
-    public Application() {
-
-        //CREATE REPOSITORIES
-        vehicleRepository = new InMemoryVehicleRepository();
-        parkingSpaceRepository = new InMemoryParkingSpaceRepository();
-        parkingZoneRepository = new InMemoryParkingZoneRepository();
-        parkingSessionRepository = new InMemoryParkingSessionRepository();
-
-        //CREATE SERVICES
-        vehicleService = new VehicleService(vehicleRepository);
-        parkingService = new ParkingService(parkingSpaceRepository);
-        parkingSessionService = new ParkingSessionService(parkingSessionRepository, parkingSpaceRepository);
-        analyticsService = new AnalyticsService(parkingSpaceRepository, parkingSessionRepository);
-
-        //CREATE CONTROLLERS
-        vehicleController = new VehicleController(vehicleService);
-        parkingController = new ParkingController(parkingService);
-        parkingSessionController = new ParkingSessionController(parkingSessionService);
-        dashboardController = new DashboardController(analyticsService);
+    public ParkingController(ParkingService parkingService, ParkingZoneRepository parkingZoneRepository) {
+        this.parkingService = parkingService;
+        this.parkingZoneRepository = parkingZoneRepository;
     }
 
-    //DECLARE GETTERS - CONTROLLERS
-    public VehicleController getVehicleController() {
-        return vehicleController;
+    //DECLARE METHODS
+    //ADD PARKING SPACE
+    public void addParkingSpace(ParkingSpace parkingSpace) {
+        parkingService.addParkingSpace(parkingSpace);
     }
 
-    public ParkingController getParkingController() {
-        return parkingController;
+    //FIND PARKING SPACE
+    public ParkingSpace findParkingSpace(String spaceId) {
+        return parkingService.findParkingSpace(spaceId);
     }
 
-    public ParkingSessionController getParkingSessionController() {
-        return parkingSessionController;
+    //GET ALL PARKING SPACES
+    public List <ParkingSpace> getAllParkingSpaces() {
+        return parkingService.getAllParkingSpaces();
     }
 
-    public DashboardController getDashboardController() {
-        return dashboardController;
+    //UPDATE PARKING SPACE STATUS
+    public void updateParkingSpaceStatus(String spaceId, ParkingSpaceStatus status) {
+        parkingService.updateParkingSpaceStatus(spaceId, status);
+    }
+
+    //GET ALL ZONES
+    public List <ParkingZone> getAllZones() {
+
+        //CHECK CONDITION
+        if (parkingZoneRepository == null) {
+            return Collections.emptyList();
+        }
+        return parkingZoneRepository.findAll();
+    }
+
+    //GET PARKING SPACES BY ZONE
+    public List <ParkingSpace> getParkingSpacesByZone(String zoneId) {
+
+        //CHECK CONDITION
+        if (parkingZoneRepository == null || zoneId == null) {
+            return Collections.emptyList();
+        }
+
+        ParkingZone zone = parkingZoneRepository.findByZoneId(zoneId);
+
+        //CHECK CONDITION
+        if (zone == null) {
+            return Collections.emptyList();
+        }
+        return zone.getSpaces();
     }
 }
