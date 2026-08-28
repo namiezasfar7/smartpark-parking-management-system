@@ -6,7 +6,9 @@ SmartPark is a Java-based Parking Management System developed as part of an Obje
 
 The system provides a graphical desktop application for managing vehicles, parking spaces, parking sessions, and parking-related analytics.
 
-The project was developed using object-oriented design principles and a feature-branch Git workflow, with `develop` used for active development and `main` reserved for stable releases.
+SmartPark uses a layered object-oriented architecture with Java Swing for the graphical interface and MySQL for persistent data storage.
+
+The project uses a feature-branch Git workflow, with `develop` used for active development and `main` reserved for stable releases.
 
 ---
 
@@ -19,6 +21,7 @@ The project was developed using object-oriented design principles and a feature-
 * Prevent duplicate vehicle registrations
 * Select vehicle types
 * View all registered vehicles
+* Store vehicle information in MySQL
 
 ### Parking Space Management
 
@@ -28,6 +31,9 @@ The project was developed using object-oriented design principles and a feature-
 * Track occupied spaces
 * Track out-of-service spaces
 * Update parking space status
+* Store parking-space information in MySQL
+* Display parking-space status clearly in the user interface
+* Filter parking spaces by zone
 
 ### Parking Session Management
 
@@ -39,6 +45,7 @@ The project was developed using object-oriented design principles and a feature-
 * Complete parking sessions
 * Automatically record exit time
 * Automatically release parking spaces when sessions are completed
+* Store parking-session information in MySQL
 
 ### Analytics
 
@@ -53,7 +60,40 @@ The project was developed using object-oriented design principles and a feature-
 * View parking session counts for specific dates
 * View session activity for the previous seven days
 
-### Validation and Exception Handling
+### Database Integration
+
+SmartPark v1.1.0 introduces MySQL database integration for persistent storage.
+
+The application uses:
+
+* MySQL
+* MySQL Connector/J
+* JDBC
+* A database connection utility
+* MySQL repository implementations
+
+The main database repositories are:
+
+* `MySQLVehicleRepository`
+* `MySQLParkingSpaceRepository`
+* `MySQLParkingZoneRepository`
+* `MySQLParkingSessionRepository`
+
+Database connection information is managed by `DatabaseConnection`.
+
+The database password is read from the `SMARTPARK_DB_PASSWORD` environment variable rather than being stored directly in the source code.
+
+See:
+
+```text
+docs/database/mysql-setup.md
+```
+
+for database setup instructions.
+
+---
+
+## Validation and Exception Handling
 
 The application includes centralized input validation and custom exception handling for invalid parking operations.
 
@@ -71,14 +111,16 @@ Examples include:
 
 ## Technologies
 
-| Technology   | Purpose                                      |
-| ------------ | -------------------------------------------- |
-| Java 26      | Application development                      |
-| Java Swing   | Graphical user interface                     |
-| Apache Maven | Build and dependency management              |
-| Git          | Version control                              |
-| GitHub       | Source-code hosting and collaboration        |
-| MySQL        | Planned/optional future database integration |
+| Technology | Purpose |
+| ---------- | ------- |
+| Java 26 | Application development |
+| Java Swing | Graphical user interface |
+| Apache Maven | Build and dependency management |
+| MySQL | Persistent database storage |
+| MySQL Connector/J | Java-to-MySQL database connectivity |
+| JDBC | Database access |
+| Git | Version control |
+| GitHub | Source-code hosting and collaboration |
 
 ---
 
@@ -100,6 +142,9 @@ SmartPark follows a layered object-oriented architecture:
                           │
                           ▼
                         Models
+                          │
+                          ▼
+                         MySQL
 ```
 
 ### Main Layers
@@ -110,14 +155,19 @@ Contains the application's core domain objects, including:
 
 * `Vehicle`
 * `ParkingSpace`
+* `ParkingZone`
 * `ParkingSession`
-* Vehicle status enumerations
-* Parking status enumerations
-* Vehicle type enumerations
+* `VehicleType`
+* `ParkingSpaceStatus`
+* `ParkingSessionStatus`
 
 #### Repository
 
 Responsible for storing and retrieving application objects.
+
+Repository interfaces provide an abstraction between the service layer and the data-storage implementation.
+
+MySQL implementations provide persistent database access.
 
 #### Service
 
@@ -136,9 +186,20 @@ Acts as the connection between the graphical user interface and the service laye
 
 Contains the Java Swing-based graphical interface used by the user.
 
+The main interface areas include:
+
+* Dashboard
+* Parking
+* Vehicles
+* Sessions
+* Analytics
+
 #### Utility
 
-Contains reusable utility functionality such as `ValidationUtil`.
+Contains reusable utility functionality, including:
+
+* `ValidationUtil`
+* `DatabaseConnection`
 
 #### Exception
 
@@ -158,8 +219,54 @@ docs/architecture/system-architecture.md
 
 * Java Development Kit 26
 * Apache Maven
+* MySQL Server
+* MySQL Workbench or another MySQL client
 * Git
 * GitHub account for repository access
+
+---
+
+## Database Setup
+
+SmartPark v1.1.0 requires a MySQL database.
+
+The application expects the following database connection:
+
+```text
+Host: localhost
+Port: 3306
+Database: smartpark
+Username: root
+Password: SMARTPARK_DB_PASSWORD environment variable
+```
+
+The database and required tables must be created before running the application.
+
+Database setup instructions are available in:
+
+```text
+docs/database/mysql-setup.md
+```
+
+The database password should not be committed to Git.
+
+Set the environment variable before running the application.
+
+### Windows
+
+Command Prompt:
+
+```cmd
+set SMARTPARK_DB_PASSWORD=your_password
+```
+
+PowerShell:
+
+```powershell
+$env:SMARTPARK_DB_PASSWORD="your_password"
+```
+
+For IntelliJ IDEA, the environment variable can be added to the application's Run/Debug Configuration.
 
 ---
 
@@ -172,13 +279,33 @@ git clone https://github.com/namiezasfar7/smartpark-parking-management-system.gi
 cd smartpark-parking-management-system
 ```
 
-### 2. Build the Project
+### 2. Configure MySQL
+
+Create the `smartpark` database and required tables.
+
+Follow:
+
+```text
+docs/database/mysql-setup.md
+```
+
+### 3. Configure the Database Password
+
+Set:
+
+```text
+SMARTPARK_DB_PASSWORD
+```
+
+to the password of the MySQL user configured for SmartPark.
+
+### 4. Build the Project
 
 ```bash
 mvn clean package
 ```
 
-### 3. Run the Application
+### 5. Run the Application
 
 The application can be run using the generated classes or directly through an IDE such as IntelliJ IDEA.
 
@@ -200,12 +327,15 @@ smartpark-parking-management-system/
 │                   ├── exception/
 │                   ├── model/
 │                   ├── repository/
+│                   │   ├── memory/
+│                   │   └── mysql/
 │                   ├── service/
 │                   ├── ui/
 │                   └── util/
 │
 ├── docs/
 │   ├── architecture/
+│   ├── database/
 │   ├── development/
 │   ├── requirements/
 │   ├── screenshots/
@@ -213,8 +343,7 @@ smartpark-parking-management-system/
 │
 ├── pom.xml
 ├── LICENSE
-├── README.md
-└── LICENSE
+└── README.md
 ```
 
 ---
@@ -235,12 +364,12 @@ main
 
 ### Branch Responsibilities
 
-| Branch        | Responsibility                         |
-| ------------- | -------------------------------------- |
-| `main`        | Stable released versions               |
-| `develop`     | Active development                     |
-| `feature/*`   | Individual features                    |
-| `fix/*`       | Bug fixes                              |
+| Branch | Responsibility |
+| ------ | -------------- |
+| `main` | Stable released versions |
+| `develop` | Active development |
+| `feature/*` | Individual features |
+| `fix/*` | Bug fixes |
 | `exception/*` | Exception-handling related development |
 
 Changes are developed and tested on their respective branches before being merged into `develop`.
@@ -259,45 +388,48 @@ docs/development/git-workflow.md
 
 Complete project documentation is available in the `docs/` directory.
 
-| Document                 | Description                                             |
-| ------------------------ | ------------------------------------------------------- |
+| Document | Description |
+| -------- | ----------- |
 | `system-architecture.md` | Application architecture and component responsibilities |
-| `development-log.md`     | Development history and major implementation stages     |
-| `git-workflow.md`        | Git branching, commits, merging and release workflow    |
-| `requirements.md`        | Functional and non-functional requirements              |
-| `test-plan.md`           | Testing strategy and test cases                         |
-| `screenshots/`           | Application screenshots                                 |
+| `development-log.md` | Development history and major implementation stages |
+| `git-workflow.md` | Git branching, commits, merging and release workflow |
+| `mysql-setup.md` | MySQL database setup and configuration |
+| `requirements.md` | Functional and non-functional requirements |
+| `test-plan.md` | Testing strategy and test cases |
+| `screenshots/` | Application screenshots |
 
 ---
 
 ## Team
 
-| Member    | Responsibility                                   |
-| --------- | ------------------------------------------------ |
-| Namiez    | Team Lead, UI Design, Development, Documentation |
-| Amasha    | Development                                      |
-| Lakmina   | Development, Business Analysis                   |
-| Sheshanth | Development, Documentation                       |
+| Member | Responsibility |
+| ------ | -------------- |
+| Namiez | Team Lead, UI Design, Development, Documentation |
+| Amasha | Development |
+| Lakmina | Development, Business Analysis |
+| Sheshanth | Development, Documentation |
 
 ---
 
 ## Project Status
 
-**Version:** `1.0.0`
+**Version:** `1.1.0`
 
 **Status:** Stable Release
 
-SmartPark `v1.0.0` represents the completed initial version of the Parking Management System.
+SmartPark `v1.1.0` builds upon the initial `v1.0.0` implementation by introducing persistent MySQL database integration, UI improvements and bug fixes.
 
 ### Future Improvements
 
 Future versions may include:
 
-* Persistent database storage
+* User authentication
+* Parking fees and billing
 * Additional reporting functionality
-* Improved validation
-* Further UI enhancements
-* Expanded parking analytics
+* Advanced parking analytics
+* Search and filtering improvements
+* Exporting analytics
+* Additional vehicle categories
 
 ---
 
@@ -320,6 +452,9 @@ The project demonstrates:
 * GUI development
 * Input validation
 * Exception handling
+* Database integration
+* JDBC
+* MySQL persistence
 * Version control
 * Git branching and collaboration
 * Software documentation

@@ -6,6 +6,8 @@ SmartPark is a desktop-based Parking Management System designed to provide a sim
 
 The system was developed as an Object-Oriented Programming coursework project.
 
+Version 1.1.0 introduces persistent MySQL database storage.
+
 ---
 
 ## 2. Functional Requirements
@@ -30,9 +32,9 @@ The system shall allow parking spaces to be added and managed.
 
 The system shall maintain parking-space statuses including:
 
-- AVAILABLE
-- OCCUPIED
-- OUT_OF_SERVICE
+* `AVAILABLE`
+* `OCCUPIED`
+* `OUT_OF_SERVICE`
 
 ### FR-06 Parking Session Creation
 
@@ -78,6 +80,22 @@ The system shall calculate the average duration of completed parking sessions.
 
 The system shall provide parking-session counts for selected dates and recent activity.
 
+### FR-17 Persistent Storage
+
+The system shall store application data using a MySQL database.
+
+### FR-18 Database Retrieval
+
+The system shall retrieve stored vehicles, parking spaces, parking zones and parking sessions from MySQL.
+
+### FR-19 Database Session Updates
+
+The system shall persist parking-session state changes, including session completion.
+
+### FR-20 Database Parking-Space Updates
+
+The system shall persist parking-space status changes.
+
 ---
 
 ## 3. Non-Functional Requirements
@@ -94,9 +112,17 @@ Invalid operations should be rejected through validation and exception handling.
 
 The application should separate user-interface, controller, business-logic, repository and model responsibilities.
 
+### Persistence
+
+Application data should remain available between application runs through MySQL database storage.
+
+### Security
+
+Database credentials should not be stored directly in the source code.
+
 ### Portability
 
-The application should run on systems capable of running the required Java version.
+The application should run on systems capable of running the required Java version and configured MySQL environment.
 
 ### Version Control
 
@@ -108,11 +134,10 @@ The source code should be maintained using Git with a structured branching workf
 
 Possible future enhancements include:
 
-- Persistent database storage
-- MySQL integration
-- User authentication
-- Parking fees and billing
-- Advanced reports
-- Search and filtering
-- Exporting analytics
-- Additional vehicle categories
+* User authentication
+* Parking fees and billing
+* Advanced reports
+* Search and filtering improvements
+* Exporting analytics
+* Additional vehicle categories
+* Additional parking analytics

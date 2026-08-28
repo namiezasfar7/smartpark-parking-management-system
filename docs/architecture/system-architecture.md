@@ -33,6 +33,12 @@ The main structure is:
 +---------------------------+
 |           Models          |
 |       Domain Objects      |
++-------------+-------------+
+              |
+              v
++---------------------------+
+|           MySQL           |
+|     Persistent Storage    |
 +---------------------------+
 ```
 
@@ -59,8 +65,18 @@ Represents an individual parking space.
 Main information includes:
 
 * Space ID
+* Zone ID
 * Vehicle type
 * Parking-space status
+
+### ParkingZone
+
+Represents a parking zone within the parking facility.
+
+Main information includes:
+
+* Zone ID
+* Zone name
 
 ### ParkingSession
 
@@ -81,17 +97,71 @@ Main information includes:
 
 Repositories provide storage and retrieval operations for domain objects.
 
+Repository interfaces provide an abstraction between the service layer and the underlying storage implementation.
+
 Examples include:
 
 * `VehicleRepository`
 * `ParkingSpaceRepository`
+* `ParkingZoneRepository`
 * `ParkingSessionRepository`
 
-The service layer communicates with repositories instead of directly managing the underlying storage implementation.
+SmartPark supports repository implementations for application data management.
+
+The MySQL implementation is located under:
+
+```text
+com.smartpark.repository.mysql
+```
+
+The main MySQL repositories are:
+
+* `MySQLVehicleRepository`
+* `MySQLParkingSpaceRepository`
+* `MySQLParkingZoneRepository`
+* `MySQLParkingSessionRepository`
 
 ---
 
-## 4. Service Layer
+## 4. Database Layer
+
+SmartPark v1.1.0 introduces persistent MySQL database storage.
+
+The application connects to MySQL through JDBC.
+
+Database connectivity is centralized through:
+
+```text
+com.smartpark.util.DatabaseConnection
+```
+
+The database connection uses:
+
+```text
+Host: localhost
+Port: 3306
+Database: smartpark
+Username: root
+```
+
+The database password is obtained from:
+
+```text
+SMARTPARK_DB_PASSWORD
+```
+
+This prevents the database password from being hard-coded in the source code.
+
+The main database tables are:
+
+* `vehicles`
+* `parking_spaces`
+* `parking_zones`
+* `parking_sessions`
+
+---
+
+## 5. Service Layer
 
 The service layer contains application business logic.
 
@@ -136,7 +206,7 @@ Responsible for:
 
 ---
 
-## 5. Controller Layer
+## 6. Controller Layer
 
 Controllers connect the Swing user interface to the service layer.
 
@@ -146,15 +216,21 @@ This keeps UI code separate from business logic and ensures that business rules 
 
 ---
 
-## 6. Utility Layer
+## 7. Utility Layer
 
-`ValidationUtil` provides reusable validation methods.
+The utility layer provides reusable application functionality.
 
-Validation is centralized so that common validation rules do not have to be duplicated throughout the application.
+### ValidationUtil
+
+Provides centralized validation methods for common application inputs.
+
+### DatabaseConnection
+
+Provides JDBC connections to the SmartPark MySQL database.
 
 ---
 
-## 7. Exception Layer
+## 8. Exception Layer
 
 Custom exceptions are used for specific invalid business operations.
 
@@ -168,7 +244,7 @@ These allow the application to distinguish between different failure conditions 
 
 ---
 
-## 8. User Interface
+## 9. User Interface
 
 The application uses Java Swing to provide the graphical interface.
 
@@ -180,11 +256,61 @@ The main application areas include:
 * Sessions
 * Analytics
 
-The UI provides forms, tables, buttons, status information, and user feedback.
+The UI provides forms, tables, buttons, status information, filtering controls and user feedback.
+
+The parking interface also provides visual differentiation for occupied parking spaces.
 
 ---
 
-## 9. Design Principles
+## 10. Data Flow
+
+A typical operation follows this structure:
+
+```text
+User
+ |
+ v
+Swing UI
+ |
+ v
+Controller
+ |
+ v
+Service
+ |
+ v
+Repository
+ |
+ v
+MySQL
+```
+
+For example, when a vehicle is registered:
+
+```text
+VehiclePanel
+     |
+     v
+VehicleController
+     |
+     v
+VehicleService
+     |
+     v
+VehicleRepository
+     |
+     v
+MySQLVehicleRepository
+     |
+     v
+MySQL
+```
+
+This structure keeps database-specific code outside the UI and service layers.
+
+---
+
+## 11. Design Principles
 
 The project demonstrates the following object-oriented and software design principles:
 
@@ -196,5 +322,6 @@ The project demonstrates the following object-oriented and software design princ
 * Exception handling
 * Dependency injection through constructors
 * Repository abstraction
+* Persistent data management
 
 These principles help keep the application modular, maintainable, and easier to extend.
