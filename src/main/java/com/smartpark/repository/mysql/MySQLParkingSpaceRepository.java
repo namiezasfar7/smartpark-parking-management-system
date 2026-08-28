@@ -17,16 +17,21 @@ import java.util.List;
 //MYSQL PARKING SPACE REPOSITORY CLASS
 public class MySQLParkingSpaceRepository implements ParkingSpaceRepository {
 
-    //DECLARE METHODS
     //SAVE PARKING SPACE
     @Override
     public void save(ParkingSpace parkingSpace) {
 
-        String sql = "INSERT INTO parking_spaces (space_id, zone_id, vehicle_type, status) VALUES (?, ?, ?, ?)";
+        if (parkingSpace == null) {
+            return;
+        }
 
-        try (Connection connection = DatabaseConnection.getConnection()) {
+        String sql =
+                "INSERT INTO parking_spaces " +
+                        "(space_id, zone_id, vehicle_type, status) " +
+                        "VALUES (?, ?, ?, ?)";
 
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, parkingSpace.getSpaceId());
             statement.setString(2, parkingSpace.getZoneId());
@@ -37,7 +42,7 @@ public class MySQLParkingSpaceRepository implements ParkingSpaceRepository {
 
         }
         catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to save parking space.", e);
         }
     }
 
@@ -45,11 +50,16 @@ public class MySQLParkingSpaceRepository implements ParkingSpaceRepository {
     @Override
     public ParkingSpace findBySpaceId(String spaceId) {
 
-        String sql = "SELECT * FROM parking_spaces WHERE space_id = ?";
+        if (spaceId == null || spaceId.trim().isEmpty()) {
+            return null;
+        }
 
-        try (Connection connection = DatabaseConnection.getConnection()) {
+        String sql =
+                "SELECT * FROM parking_spaces " +
+                        "WHERE space_id = ?";
 
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, spaceId);
 
@@ -57,12 +67,28 @@ public class MySQLParkingSpaceRepository implements ParkingSpaceRepository {
 
             if (resultSet.next()) {
 
-                String id = resultSet.getString("space_id");
-                String zoneId = resultSet.getString("zone_id");
+                String id =
+                        resultSet.getString("space_id");
 
-                VehicleType vehicleType = VehicleType.valueOf(resultSet.getString("vehicle_type"));
-                ParkingSpaceStatus status = ParkingSpaceStatus.valueOf(resultSet.getString("status"));
-                ParkingSpace parkingSpace = new ParkingSpace(id, zoneId, vehicleType);
+                String zoneId =
+                        resultSet.getString("zone_id");
+
+                VehicleType vehicleType =
+                        VehicleType.valueOf(
+                                resultSet.getString("vehicle_type")
+                        );
+
+                ParkingSpaceStatus status =
+                        ParkingSpaceStatus.valueOf(
+                                resultSet.getString("status")
+                        );
+
+                ParkingSpace parkingSpace =
+                        new ParkingSpace(
+                                id,
+                                zoneId,
+                                vehicleType
+                        );
 
                 parkingSpace.setStatus(status);
 
@@ -71,7 +97,7 @@ public class MySQLParkingSpaceRepository implements ParkingSpaceRepository {
 
         }
         catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to find parking space.", e);
         }
 
         return null;
@@ -79,27 +105,41 @@ public class MySQLParkingSpaceRepository implements ParkingSpaceRepository {
 
     //GET ALL PARKING SPACES
     @Override
-    public List <ParkingSpace> findAll() {
+    public List<ParkingSpace> findAll() {
 
-        List <ParkingSpace> parkingSpaces = new ArrayList<>();
+        List<ParkingSpace> parkingSpaces =
+                new ArrayList<>();
 
         String sql = "SELECT * FROM parking_spaces";
 
-        try (Connection connection = DatabaseConnection.getConnection()) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
 
-            PreparedStatement statement = connection.prepareStatement(sql);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            //LOOP THROUGH RESULTS
             while (resultSet.next()) {
 
-                String id = resultSet.getString("space_id");
-                String zoneId = resultSet.getString("zone_id");
+                String id =
+                        resultSet.getString("space_id");
 
-                VehicleType vehicleType = VehicleType.valueOf(resultSet.getString("vehicle_type"));
-                ParkingSpaceStatus status = ParkingSpaceStatus.valueOf(resultSet.getString("status"));
-                ParkingSpace parkingSpace = new ParkingSpace(id, zoneId, vehicleType);
+                String zoneId =
+                        resultSet.getString("zone_id");
+
+                VehicleType vehicleType =
+                        VehicleType.valueOf(
+                                resultSet.getString("vehicle_type")
+                        );
+
+                ParkingSpaceStatus status =
+                        ParkingSpaceStatus.valueOf(
+                                resultSet.getString("status")
+                        );
+
+                ParkingSpace parkingSpace =
+                        new ParkingSpace(
+                                id,
+                                zoneId,
+                                vehicleType
+                        );
 
                 parkingSpace.setStatus(status);
 
@@ -108,9 +148,49 @@ public class MySQLParkingSpaceRepository implements ParkingSpaceRepository {
 
         }
         catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(
+                    "Failed to retrieve parking spaces.",
+                    e
+            );
         }
 
         return parkingSpaces;
+    }
+
+    //UPDATE PARKING SPACE STATUS
+    @Override
+    public void updateStatus(
+            String spaceId,
+            ParkingSpaceStatus status
+    ) {
+
+        if (spaceId == null || spaceId.trim().isEmpty()) {
+            return;
+        }
+
+        if (status == null) {
+            return;
+        }
+
+        String sql =
+                "UPDATE parking_spaces " +
+                        "SET status = ? " +
+                        "WHERE space_id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, status.name());
+            statement.setString(2, spaceId);
+
+            statement.executeUpdate();
+
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(
+                    "Failed to update parking space status.",
+                    e
+            );
+        }
     }
 }

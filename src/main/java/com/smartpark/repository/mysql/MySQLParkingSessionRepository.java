@@ -20,101 +20,157 @@ import java.util.ArrayList;
 import java.util.List;
 
 //MYSQL PARKING SESSION REPOSITORY CLASS
-public class MySQLParkingSessionRepository implements ParkingSessionRepository {
+public class MySQLParkingSessionRepository
+        implements ParkingSessionRepository {
 
     //DECLARE ATTRIBUTES
-    private VehicleRepository vehicleRepository;
-    private ParkingSpaceRepository parkingSpaceRepository;
+    private final VehicleRepository vehicleRepository;
+    private final ParkingSpaceRepository parkingSpaceRepository;
 
     //DATE/TIME FORMATTER
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern(
+                    "yyyy-MM-dd HH:mm:ss"
+            );
 
     //DECLARE CONSTRUCTOR
-    public MySQLParkingSessionRepository(VehicleRepository vehicleRepository, ParkingSpaceRepository parkingSpaceRepository) {
-        this.vehicleRepository = vehicleRepository;
-        this.parkingSpaceRepository = parkingSpaceRepository;
+    public MySQLParkingSessionRepository(
+            VehicleRepository vehicleRepository,
+            ParkingSpaceRepository parkingSpaceRepository
+    ) {
+
+        this.vehicleRepository =
+                vehicleRepository;
+
+        this.parkingSpaceRepository =
+                parkingSpaceRepository;
     }
 
     //SAVE PARKING SESSION
     @Override
     public void save(ParkingSession parkingSession) {
 
-        String sql = "INSERT INTO parking_sessions " +
-                "(session_id, registration_number, space_id, zone_id, entry_time, exit_time, status) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        if (parkingSession == null) {
+            return;
+        }
 
-        try (Connection connection = DatabaseConnection.getConnection()) {
+        String sql =
+                "INSERT INTO parking_sessions " +
+                        "(session_id, registration_number, space_id, zone_id, " +
+                        "entry_time, exit_time, status) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection =
+                     DatabaseConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
 
-            statement.setString(1, parkingSession.getSessionId());
-            statement.setString(2, parkingSession.getVehicle().getRegistrationNumber());
-            statement.setString(3, parkingSession.getParkingSpace().getSpaceId());
-            statement.setString(4, parkingSession.getParkingSpace().getZoneId());
+            statement.setString(
+                    1,
+                    parkingSession.getSessionId()
+            );
 
-            statement.setTimestamp(5, Timestamp.valueOf(parkingSession.getEntryTime()));
+            statement.setString(
+                    2,
+                    parkingSession.getVehicle()
+                            .getRegistrationNumber()
+            );
+
+            statement.setString(
+                    3,
+                    parkingSession.getParkingSpace()
+                            .getSpaceId()
+            );
+
+            statement.setString(
+                    4,
+                    parkingSession.getParkingSpace()
+                            .getZoneId()
+            );
+
+            statement.setTimestamp(
+                    5,
+                    Timestamp.valueOf(
+                            parkingSession.getEntryTime()
+                    )
+            );
 
             if (parkingSession.getExitTime() != null) {
-                statement.setTimestamp(6, Timestamp.valueOf(parkingSession.getExitTime()));
+
+                statement.setTimestamp(
+                        6,
+                        Timestamp.valueOf(
+                                parkingSession.getExitTime()
+                        )
+                );
 
             }
             else {
-                statement.setNull(6, java.sql.Types.TIMESTAMP);
+
+                statement.setNull(
+                        6,
+                        java.sql.Types.TIMESTAMP
+                );
             }
 
-            statement.setString(7, parkingSession.getStatus().name());
+            statement.setString(
+                    7,
+                    parkingSession.getStatus().name()
+            );
 
             statement.executeUpdate();
 
         }
         catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(
+                    "Failed to save parking session.",
+                    e
+            );
         }
     }
 
     //FIND PARKING SESSION
     @Override
-    public ParkingSession findBySessionId(String sessionId) {
+    public ParkingSession findBySessionId(
+            String sessionId
+    ) {
 
-        String sql = "SELECT * FROM parking_sessions WHERE session_id = ?";
+        if (sessionId == null ||
+                sessionId.trim().isEmpty()) {
 
-        try (Connection connection = DatabaseConnection.getConnection()) {
+            return null;
+        }
 
-            PreparedStatement statement = connection.prepareStatement(sql);
+        String sql =
+                "SELECT * FROM parking_sessions " +
+                        "WHERE session_id = ?";
 
-            statement.setString(1, sessionId);
+        try (Connection connection =
+                     DatabaseConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
 
-            ResultSet resultSet = statement.executeQuery();
+            statement.setString(
+                    1,
+                    sessionId
+            );
+
+            ResultSet resultSet =
+                    statement.executeQuery();
 
             if (resultSet.next()) {
 
-                String id = resultSet.getString("session_id");
-                String registrationNumber = resultSet.getString("registration_number");
-                String spaceId = resultSet.getString("space_id");
-                String entryTime = resultSet.getTimestamp("entry_time").toLocalDateTime().format(DATE_TIME_FORMATTER);
-
-                String exitTime = null;
-
-                Timestamp exitTimestamp = resultSet.getTimestamp("exit_time");
-
-                if (exitTimestamp != null) {
-                    exitTime = exitTimestamp.toLocalDateTime().format(DATE_TIME_FORMATTER);
-                }
-
-                ParkingSessionStatus status = ParkingSessionStatus.valueOf(resultSet.getString("status"));
-                Vehicle vehicle = vehicleRepository.findByRegistrationNumber(registrationNumber);
-                ParkingSpace parkingSpace = parkingSpaceRepository.findBySpaceId(spaceId);
-                ParkingSession parkingSession = new ParkingSession(id, vehicle, parkingSpace, entryTime);
-
-                parkingSession.setExitTime(exitTime);
-                parkingSession.setStatus(status);
-
-                return parkingSession;
+                return buildParkingSession(
+                        resultSet
+                );
             }
 
         }
         catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(
+                    "Failed to find parking session.",
+                    e
+            );
         }
 
         return null;
@@ -122,51 +178,184 @@ public class MySQLParkingSessionRepository implements ParkingSessionRepository {
 
     //GET ALL PARKING SESSIONS
     @Override
-    public List <ParkingSession> findAll() {
+    public List<ParkingSession> findAll() {
 
-        List <ParkingSession> parkingSessions =
+        List<ParkingSession> parkingSessions =
                 new ArrayList<>();
 
-        String sql = "SELECT * FROM parking_sessions";
+        String sql =
+                "SELECT * FROM parking_sessions " +
+                        "ORDER BY entry_time DESC";
 
-        try (Connection connection = DatabaseConnection.getConnection()) {
+        try (Connection connection =
+                     DatabaseConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql);
+             ResultSet resultSet =
+                     statement.executeQuery()) {
 
-            PreparedStatement statement = connection.prepareStatement(sql);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            //LOOP THROUGH RESULTS
             while (resultSet.next()) {
 
-                String id = resultSet.getString("session_id");
-                String registrationNumber = resultSet.getString("registration_number");
-                String spaceId = resultSet.getString("space_id");
-                String entryTime = resultSet.getTimestamp("entry_time").toLocalDateTime().format(DATE_TIME_FORMATTER);
+                ParkingSession parkingSession =
+                        buildParkingSession(
+                                resultSet
+                        );
 
-                String exitTime = null;
-
-                Timestamp exitTimestamp = resultSet.getTimestamp("exit_time");
-
-                if (exitTimestamp != null) {
-                    exitTime = exitTimestamp.toLocalDateTime().format(DATE_TIME_FORMATTER);
+                if (parkingSession != null) {
+                    parkingSessions.add(
+                            parkingSession
+                    );
                 }
-
-                ParkingSessionStatus status = ParkingSessionStatus.valueOf(resultSet.getString("status"));
-                Vehicle vehicle = vehicleRepository.findByRegistrationNumber(registrationNumber);
-                ParkingSpace parkingSpace = parkingSpaceRepository.findBySpaceId(spaceId);
-                ParkingSession parkingSession = new ParkingSession(id, vehicle, parkingSpace, entryTime);
-
-                parkingSession.setExitTime(exitTime);
-                parkingSession.setStatus(status);
-
-                parkingSessions.add(parkingSession);
             }
 
         }
         catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(
+                    "Failed to retrieve parking sessions.",
+                    e
+            );
         }
 
         return parkingSessions;
+    }
+
+    //UPDATE PARKING SESSION
+    @Override
+    public void update(ParkingSession parkingSession) {
+
+        if (parkingSession == null) {
+            return;
+        }
+
+        String sql =
+                "UPDATE parking_sessions " +
+                        "SET exit_time = ?, status = ? " +
+                        "WHERE session_id = ?";
+
+        try (Connection connection =
+                     DatabaseConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            if (parkingSession.getExitTime() != null) {
+
+                statement.setTimestamp(
+                        1,
+                        Timestamp.valueOf(
+                                parkingSession.getExitTime()
+                        )
+                );
+
+            }
+            else {
+
+                statement.setNull(
+                        1,
+                        java.sql.Types.TIMESTAMP
+                );
+            }
+
+            statement.setString(
+                    2,
+                    parkingSession.getStatus().name()
+            );
+
+            statement.setString(
+                    3,
+                    parkingSession.getSessionId()
+            );
+
+            statement.executeUpdate();
+
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(
+                    "Failed to update parking session.",
+                    e
+            );
+        }
+    }
+
+    //BUILD PARKING SESSION
+    private ParkingSession buildParkingSession(
+            ResultSet resultSet
+    ) throws SQLException {
+
+        String id =
+                resultSet.getString("session_id");
+
+        String registrationNumber =
+                resultSet.getString(
+                        "registration_number"
+                );
+
+        String spaceId =
+                resultSet.getString("space_id");
+
+        Timestamp entryTimestamp =
+                resultSet.getTimestamp("entry_time");
+
+        String entryTime = null;
+
+        if (entryTimestamp != null) {
+
+            entryTime =
+                    entryTimestamp
+                            .toLocalDateTime()
+                            .format(
+                                    DATE_TIME_FORMATTER
+                            );
+        }
+
+        String exitTime = null;
+
+        Timestamp exitTimestamp =
+                resultSet.getTimestamp("exit_time");
+
+        if (exitTimestamp != null) {
+
+            exitTime =
+                    exitTimestamp
+                            .toLocalDateTime()
+                            .format(
+                                    DATE_TIME_FORMATTER
+                            );
+        }
+
+        String statusValue =
+                resultSet.getString("status");
+
+        ParkingSessionStatus status =
+                ParkingSessionStatus.valueOf(
+                        statusValue
+                );
+
+        Vehicle vehicle =
+                vehicleRepository
+                        .findByRegistrationNumber(
+                                registrationNumber
+                        );
+
+        ParkingSpace parkingSpace =
+                parkingSpaceRepository
+                        .findBySpaceId(spaceId);
+
+        ParkingSession parkingSession =
+                new ParkingSession(
+                        id,
+                        vehicle,
+                        parkingSpace,
+                        entryTime
+                );
+
+        parkingSession.setExitTime(
+                exitTime
+        );
+
+        parkingSession.setStatus(
+                status
+        );
+
+        return parkingSession;
     }
 }
