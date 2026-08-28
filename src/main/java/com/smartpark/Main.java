@@ -70,13 +70,24 @@ public class Main {
     //CREATE INITIAL PARKING SPACES
     private static void createInitialParkingSpaces(ParkingSpaceRepository repository) {
 
-        repository.save(new ParkingSpace("P-001", "GF", VehicleType.CAR));
-        repository.save(new ParkingSpace("P-002", "GF", VehicleType.CAR));
-        repository.save(new ParkingSpace("P-003", "GF", VehicleType.CAR));
-        repository.save(new ParkingSpace("P-004", "GF", VehicleType.CAR));
-        repository.save(new ParkingSpace("P-005", "GF", VehicleType.CAR));
-        repository.save(new ParkingSpace("P-006", "GF", VehicleType.CAR));
-        repository.save(new ParkingSpace("P-007", "GF", VehicleType.CAR));
-        repository.save(new ParkingSpace("P-008", "GF", VehicleType.CAR));
+        //GROUND FLOOR - 8 SPACES
+        for (int i = 1; i <= 8; i++) {
+            repository.save(new ParkingSpace(String.format("P-%03d", i), "GF", VehicleType.CAR));
+        }
+
+        //LEVEL 1 - 8 SPACES
+        for (int i = 9; i <= 16; i++) {
+            repository.save(new ParkingSpace(String.format("P-%03d", i), "L1", VehicleType.CAR));
+        }
+
+        //LEVEL 2 - 8 SPACES
+        for (int i = 17; i <= 24; i++) {
+            repository.save(new ParkingSpace(String.format("P-%03d", i), "L2", VehicleType.CAR));
+        }
+
+        //LEVEL 3 - 8 SPACES
+        for (int i = 25; i <= 32; i++) {
+            repository.save(new ParkingSpace(String.format("P-%03d", i), "L3", VehicleType.CAR));
+        }
     }
 }
