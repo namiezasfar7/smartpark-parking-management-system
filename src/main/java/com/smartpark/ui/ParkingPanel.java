@@ -30,6 +30,7 @@ public class ParkingPanel extends JPanel {
     private JPanel workspacePanel;
 
     private final Map <String, JPanel> spacePanels = new HashMap<>();
+    private boolean allZonesSelected = true;
 
     //DECLARE CONSTRUCTOR
     public ParkingPanel(ParkingController parkingController) {
@@ -77,7 +78,11 @@ public class ParkingPanel extends JPanel {
         zoneComboBox.setPreferredSize(new Dimension(180, 38));
 
         //WHEN ZONE CHANGES, SHOW ONLY SPACES FROM THAT ZONE
-        zoneComboBox.addActionListener(e -> refreshParkingSpaces());
+        zoneComboBox.addActionListener(e -> {
+
+            allZonesSelected = "All Zones".equals(zoneComboBox.getSelectedItem());
+            refreshParkingSpaces();
+        });
 
         zonePanel.add(zoneLabel);
         zonePanel.add(zoneComboBox);
@@ -147,9 +152,7 @@ public class ParkingPanel extends JPanel {
 
             workspacePanel.setLayout(new GridLayout(0, 4, 16, 16));
 
-            String selectedZone = zoneComboBox == null
-                    ? "All Zones"
-                    : (String) zoneComboBox.getSelectedItem();
+            String selectedZone = zoneComboBox == null ? "All Zones" : (String) zoneComboBox.getSelectedItem();
 
             //LOOP UNTIL CONDITION IS TRUE
             for (ParkingSpace parkingSpace : parkingSpaces) {
@@ -171,7 +174,7 @@ public class ParkingPanel extends JPanel {
                     spaceId = "Unknown";
                 }
 
-                JPanel card = createParkingSpaceCard(spaceId);
+                JPanel card = createParkingSpaceCard(spaceId, selectedZone);
 
                 //CHECK CONDITION
                 if (card == null) {
@@ -230,7 +233,7 @@ public class ParkingPanel extends JPanel {
     }
 
     //CREATE PARKING SPACE CARD
-    private JPanel createParkingSpaceCard(String spaceId) {
+    private JPanel createParkingSpaceCard(String spaceId, String selectedZone) {
 
         JPanel card = new JPanel(new BorderLayout()) {
 
@@ -291,6 +294,12 @@ public class ParkingPanel extends JPanel {
 
         JLabel statusLabel = new JLabel("UNKNOWN");
         statusLabel.setFont(UITheme.bold(14));
+
+        //HIDE STATUS TEXT WHEN ALL ZONES ARE SELECTED
+        if ("All Zones".equals(selectedZone)) {
+            statusLabel.setVisible(false);
+        }
+
         statusPanel.add(statusLabel, BorderLayout.WEST);
 
         //ADD COMPONENTS
