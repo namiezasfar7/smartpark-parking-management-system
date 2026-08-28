@@ -70,6 +70,9 @@ public class MainFrame extends JFrame {
         //FRAME SETTINGS
         setTitle("SmartPark - Parking Management System");
 
+        ImageIcon icon = new ImageIcon(getClass().getResource("/icons/smartpark-icon.png"));
+        setIconImage(icon.getImage());
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //STARTUP WINDOW SIZE
@@ -162,8 +165,12 @@ public class MainFrame extends JFrame {
         //LOGO
         JLabel logoLabel = new JLabel("SmartPark");
         logoLabel.setForeground(UITheme.TEXT_COLOR);
-        logoLabel.setFont(UITheme.bold(30));
-        logoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        logoLabel.setFont(UITheme.bold(44));
+        logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        //GIVE LOGO ENOUGH WIDTH
+        logoLabel.setMaximumSize(new Dimension(260, 45));
 
         sidebarContent.add(logoLabel);
         sidebarContent.add(Box.createRigidArea(new Dimension(0, 50)));
@@ -216,7 +223,7 @@ public class MainFrame extends JFrame {
         button.setContentAreaFilled(false);
         button.setOpaque(false);
 
-        button.setAlignmentX(Component.LEFT_ALIGNMENT);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setPreferredSize(new Dimension(260, 58));
         button.setMinimumSize(new Dimension(260, 58));
         button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 58));

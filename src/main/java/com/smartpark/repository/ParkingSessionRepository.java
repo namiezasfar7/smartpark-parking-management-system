@@ -11,6 +11,9 @@ public interface ParkingSessionRepository {
     //SAVE PARKING SESSION
     void save(ParkingSession parkingSession);
 
+    //UPDATE PARKING SPACE
+    void update(ParkingSession parkingSession);
+
     //FIND PARKING SESSION
     ParkingSession findBySessionId(String sessionId);
 

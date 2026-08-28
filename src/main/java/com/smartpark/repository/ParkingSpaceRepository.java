@@ -2,12 +2,13 @@ package com.smartpark.repository;
 
 //IMPORTS
 import com.smartpark.model.ParkingSpace;
+import com.smartpark.model.ParkingSpaceStatus;
+
 import java.util.List;
 
 //PARKING SPACE REPOSITORY INTERFACE
 public interface ParkingSpaceRepository {
 
-    //DECLARE METHODS
     //SAVE PARKING SPACE
     void save(ParkingSpace parkingSpace);
 
@@ -15,5 +16,8 @@ public interface ParkingSpaceRepository {
     ParkingSpace findBySpaceId(String spaceId);
 
     //GET ALL PARKING SPACES
-    List <ParkingSpace> findAll();
+    List<ParkingSpace> findAll();
+
+    //UPDATE PARKING SPACE STATUS
+    void updateStatus(String spaceId, ParkingSpaceStatus status);
 }
