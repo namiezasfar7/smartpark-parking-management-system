@@ -15,56 +15,87 @@ public class ParkingService {
     private final ParkingSpaceRepository parkingSpaceRepository;
 
     //DECLARE CONSTRUCTOR
-    public ParkingService(ParkingSpaceRepository parkingSpaceRepository) {
-        this.parkingSpaceRepository = parkingSpaceRepository;
+    public ParkingService(
+            ParkingSpaceRepository parkingSpaceRepository
+    ) {
+
+        this.parkingSpaceRepository =
+                parkingSpaceRepository;
     }
 
-    //DECLARE METHODS
     //ADD PARKING SPACE
     public void addParkingSpace(ParkingSpace parkingSpace) {
 
-        //VALIDATE PARKING SPACE
-        ValidationUtil.validateParkingSpace(parkingSpace);
+        ValidationUtil.validateParkingSpace(
+                parkingSpace
+        );
 
-        //CHECK IF PARKING SPACE ALREADY EXISTS
-        ParkingSpace existingParkingSpace = parkingSpaceRepository.findBySpaceId(parkingSpace.getSpaceId());
+        ParkingSpace existingParkingSpace =
+                parkingSpaceRepository.findBySpaceId(
+                        parkingSpace.getSpaceId()
+                );
 
         if (existingParkingSpace != null) {
-            throw new IllegalArgumentException("Parking space already exists: " + parkingSpace.getSpaceId());
+
+            throw new IllegalArgumentException(
+                    "Parking space already exists: " +
+                            parkingSpace.getSpaceId()
+            );
         }
 
-        parkingSpaceRepository.save(parkingSpace);
+        parkingSpaceRepository.save(
+                parkingSpace
+        );
     }
 
     //FIND PARKING SPACE
-    public ParkingSpace findParkingSpace(String spaceId) {
+    public ParkingSpace findParkingSpace(
+            String spaceId
+    ) {
 
-        //VALIDATE SPACE ID
-        ValidationUtil.validateSpaceId(spaceId);
+        ValidationUtil.validateSpaceId(
+                spaceId
+        );
 
-        return parkingSpaceRepository.findBySpaceId(spaceId);
+        return parkingSpaceRepository.findBySpaceId(
+                spaceId
+        );
     }
 
     //GET ALL PARKING SPACES
-    public List <ParkingSpace> getAllParkingSpaces() {
+    public List<ParkingSpace> getAllParkingSpaces() {
+
         return parkingSpaceRepository.findAll();
     }
 
     //UPDATE PARKING SPACE STATUS
-    public void updateParkingSpaceStatus(String spaceId, ParkingSpaceStatus status) {
+    public void updateParkingSpaceStatus(
+            String spaceId,
+            ParkingSpaceStatus status
+    ) {
 
-        //VALIDATE INPUT
-        ValidationUtil.validateSpaceId(spaceId);
-        ValidationUtil.validateParkingSpaceStatus(status);
+        ValidationUtil.validateSpaceId(
+                spaceId
+        );
 
-        ParkingSpace parkingSpace = findParkingSpace(spaceId);
+        ValidationUtil.validateParkingSpaceStatus(
+                status
+        );
 
-        //CHECK IF PARKING SPACE EXISTS
+        ParkingSpace parkingSpace =
+                findParkingSpace(spaceId);
+
         if (parkingSpace == null) {
-            throw new IllegalArgumentException("Parking space not found: " + spaceId);
+
+            throw new IllegalArgumentException(
+                    "Parking space not found: " +
+                            spaceId
+            );
         }
 
-        //UPDATE STATUS
-        parkingSpace.setStatus(status);
+        parkingSpaceRepository.updateStatus(
+                spaceId,
+                status
+        );
     }
 }

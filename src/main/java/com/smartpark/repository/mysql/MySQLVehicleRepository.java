@@ -21,11 +21,17 @@ public class MySQLVehicleRepository implements VehicleRepository {
     @Override
     public void save(Vehicle vehicle) {
 
-        String sql = "INSERT INTO vehicles (registration_number, owner_name, vehicle_type) VALUES (?, ?, ?)";
+        if (vehicle == null) {
+            return;
+        }
 
-        try (Connection connection = DatabaseConnection.getConnection()) {
+        String sql =
+                "INSERT INTO vehicles " +
+                        "(registration_number, owner_name, vehicle_type) " +
+                        "VALUES (?, ?, ?)";
 
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, vehicle.getRegistrationNumber());
             statement.setString(2, vehicle.getOwnerName());
@@ -35,7 +41,7 @@ public class MySQLVehicleRepository implements VehicleRepository {
 
         }
         catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to save vehicle.", e);
         }
     }
 
@@ -43,17 +49,44 @@ public class MySQLVehicleRepository implements VehicleRepository {
     @Override
     public Vehicle findByRegistrationNumber(String registrationNumber) {
 
-        String sql = "SELECT * FROM vehicles WHERE registration_number = ?";
+        if (registrationNumber == null || registrationNumber.trim().isEmpty()) {
+            return null;
+        }
 
-        try (Connection connection = DatabaseConnection.getConnection()) {
+        String sql =
+                "SELECT * FROM vehicles " +
+                        "WHERE registration_number = ?";
 
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, registrationNumber);
 
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+
+                String registration =
+                        resultSet.getString("registration_number");
+
+                String ownerName =
+                        resultSet.getString("owner_name");
+
+                VehicleType vehicleType =
+                        VehicleType.valueOf(
+                                resultSet.getString("vehicle_type")
+                        );
+
+                return new Vehicle(
+                        registration,
+                        ownerName,
+                        vehicleType
+                );
+            }
+
         }
         catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to find vehicle.", e);
         }
 
         return null;
@@ -61,32 +94,42 @@ public class MySQLVehicleRepository implements VehicleRepository {
 
     //GET ALL VEHICLES
     @Override
-    public List <Vehicle> findAll() {
+    public List<Vehicle> findAll() {
 
         List<Vehicle> vehicles = new ArrayList<>();
 
         String sql = "SELECT * FROM vehicles";
 
-        try (Connection connection = DatabaseConnection.getConnection()) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
 
-            PreparedStatement statement = connection.prepareStatement(sql);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            //LOOP THROUGH RESULTS
             while (resultSet.next()) {
 
-                String registration = resultSet.getString("registration_number");
-                String ownerName = resultSet.getString("owner_name");
-                VehicleType vehicleType = VehicleType.valueOf(resultSet.getString("vehicle_type"));
+                String registration =
+                        resultSet.getString("registration_number");
 
-                Vehicle vehicle = new Vehicle(registration, ownerName, vehicleType);
+                String ownerName =
+                        resultSet.getString("owner_name");
+
+                VehicleType vehicleType =
+                        VehicleType.valueOf(
+                                resultSet.getString("vehicle_type")
+                        );
+
+                Vehicle vehicle =
+                        new Vehicle(
+                                registration,
+                                ownerName,
+                                vehicleType
+                        );
 
                 vehicles.add(vehicle);
             }
+
         }
         catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to retrieve vehicles.", e);
         }
 
         return vehicles;
