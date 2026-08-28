@@ -30,6 +30,7 @@ public class ParkingPanel extends JPanel {
     private JPanel workspacePanel;
 
     private final Map <String, JPanel> spacePanels = new HashMap<>();
+    private boolean allZonesSelected = true;
 
     //DECLARE CONSTRUCTOR
     public ParkingPanel(ParkingController parkingController) {
@@ -69,12 +70,19 @@ public class ParkingPanel extends JPanel {
         zoneLabel.setForeground(UITheme.SECONDARY_TEXT_COLOR);
         zoneLabel.setFont(UITheme.regular(14));
 
-        zoneComboBox = new RoundedComboBox<>(new String[]{"Ground", "Level 01", "Level 02", "Level 03"});
+        zoneComboBox = new RoundedComboBox<>(new String[]{"All Zones", "Ground Floor", "Level 1", "Level 2", "Level 3"});
         zoneComboBox.setFont(UITheme.regular(14));
         zoneComboBox.setForeground(UITheme.TEXT_COLOR);
         zoneComboBox.setBackground(UITheme.BUTTON_COLOR);
         zoneComboBox.setFocusable(false);
         zoneComboBox.setPreferredSize(new Dimension(180, 38));
+
+        //WHEN ZONE CHANGES, SHOW ONLY SPACES FROM THAT ZONE
+        zoneComboBox.addActionListener(e -> {
+
+            allZonesSelected = "All Zones".equals(zoneComboBox.getSelectedItem());
+            refreshParkingSpaces();
+        });
 
         zonePanel.add(zoneLabel);
         zonePanel.add(zoneComboBox);
@@ -144,11 +152,18 @@ public class ParkingPanel extends JPanel {
 
             workspacePanel.setLayout(new GridLayout(0, 4, 16, 16));
 
+            String selectedZone = zoneComboBox == null ? "All Zones" : (String) zoneComboBox.getSelectedItem();
+
             //LOOP UNTIL CONDITION IS TRUE
             for (ParkingSpace parkingSpace : parkingSpaces) {
 
                 //CHECK CONDITION
                 if (parkingSpace == null) {
+                    continue;
+                }
+
+                //FILTER BY SELECTED ZONE
+                if (!isParkingSpaceInSelectedZone(parkingSpace, selectedZone)) {
                     continue;
                 }
 
@@ -159,7 +174,7 @@ public class ParkingPanel extends JPanel {
                     spaceId = "Unknown";
                 }
 
-                JPanel card = createParkingSpaceCard(spaceId);
+                JPanel card = createParkingSpaceCard(spaceId, selectedZone);
 
                 //CHECK CONDITION
                 if (card == null) {
@@ -184,8 +199,41 @@ public class ParkingPanel extends JPanel {
         repaint();
     }
 
+
+    //CHECK WHETHER A PARKING SPACE BELONGS TO THE SELECTED ZONE
+    private boolean isParkingSpaceInSelectedZone(ParkingSpace parkingSpace, String selectedZone) {
+
+        if (parkingSpace == null || selectedZone == null || "All Zones".equals(selectedZone)) {
+            return true;
+        }
+
+        String zoneId = parkingSpace.getZoneId();
+
+        if (zoneId == null) {
+            return false;
+        }
+
+        switch (selectedZone) {
+
+            case "Ground Floor":
+                return "GF".equalsIgnoreCase(zoneId);
+
+            case "Level 1":
+                return "L1".equalsIgnoreCase(zoneId);
+
+            case "Level 2":
+                return "L2".equalsIgnoreCase(zoneId);
+
+            case "Level 3":
+                return "L3".equalsIgnoreCase(zoneId);
+
+            default:
+                return true;
+        }
+    }
+
     //CREATE PARKING SPACE CARD
-    private JPanel createParkingSpaceCard(String spaceId) {
+    private JPanel createParkingSpaceCard(String spaceId, String selectedZone) {
 
         JPanel card = new JPanel(new BorderLayout()) {
 
@@ -246,6 +294,12 @@ public class ParkingPanel extends JPanel {
 
         JLabel statusLabel = new JLabel("UNKNOWN");
         statusLabel.setFont(UITheme.bold(14));
+
+        //HIDE STATUS TEXT WHEN ALL ZONES ARE SELECTED
+        if ("All Zones".equals(selectedZone)) {
+            statusLabel.setVisible(false);
+        }
+
         statusPanel.add(statusLabel, BorderLayout.WEST);
 
         //ADD COMPONENTS

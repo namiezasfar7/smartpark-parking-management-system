@@ -68,7 +68,6 @@ public class SessionPanel extends JPanel {
 
     //CONSTANTS
     private static final String NO_AVAILABLE_SPACES = "No available spaces";
-    private static final String[] ZONES = {"Ground", "Level 01", "Level 02", "Level 03"};
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     //DECLARE CONSTRUCTOR
@@ -87,6 +86,7 @@ public class SessionPanel extends JPanel {
         setupSessionPanel();
 
         //REFRESH
+        refreshParkingZoneComboBox();
         refreshParkingSpaceComboBox();
         refreshActiveSessions();
     }
@@ -141,7 +141,7 @@ public class SessionPanel extends JPanel {
         formPanel.setLayout(new GridBagLayout());
         formPanel.setBackground(UITheme.CARD_COLOR);
         formPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedPanelBorder(UITheme.BORDER_COLOR, 18),
-                                                               new EmptyBorder(14, 24, 18, 24))
+                new EmptyBorder(14, 24, 18, 24))
         );
 
         //GRID BAG
@@ -179,7 +179,6 @@ public class SessionPanel extends JPanel {
         zoneLabel = createFormLabel("Zone");
 
         zoneComboBox = new RoundedComboBox<>();
-        zoneComboBox.setModel(new DefaultComboBoxModel<>(ZONES));
 
         styleComboBox(zoneComboBox);
 
@@ -326,10 +325,64 @@ public class SessionPanel extends JPanel {
         return label;
     }
 
+    //REFRESH PARKING ZONES
+    public void refreshParkingZoneComboBox() {
+
+        if (zoneComboBox == null || parkingController == null) {
+            return;
+        }
+
+        String previousSelection = (String) zoneComboBox.getSelectedItem();
+
+        zoneComboBox.removeAllItems();
+
+        List<ParkingSpace> parkingSpaces = parkingController.getAllParkingSpaces();
+
+        if (parkingSpaces != null) {
+
+            for (ParkingSpace parkingSpace : parkingSpaces) {
+
+                if (parkingSpace == null || parkingSpace.getStatus() != ParkingSpaceStatus.AVAILABLE) {
+                    continue;
+                }
+
+                String zoneId = parkingSpace.getZoneId();
+
+                if (zoneId == null || zoneId.trim().isEmpty()) {
+                    continue;
+                }
+
+                String zoneName = getZoneDisplayName(zoneId);
+                boolean alreadyAdded = false;
+
+                for (int i = 0; i < zoneComboBox.getItemCount(); i++) {
+                    if (zoneName.equals(zoneComboBox.getItemAt(i))) {
+                        alreadyAdded = true;
+                        break;
+                    }
+                }
+
+                if (!alreadyAdded) {
+                    zoneComboBox.addItem(zoneName);
+                }
+            }
+        }
+
+        if (previousSelection != null) {
+            zoneComboBox.setSelectedItem(previousSelection);
+        }
+
+        if (zoneComboBox.getSelectedIndex() == -1 && zoneComboBox.getItemCount() > 0) {
+            zoneComboBox.setSelectedIndex(0);
+        }
+
+        zoneComboBox.revalidate();
+        zoneComboBox.repaint();
+    }
+
     //REFRESH PARKING SPACES
     public void refreshParkingSpaceComboBox() {
 
-        //CHECK CONDITION
         if (parkingSpaceComboBox == null) {
             return;
         }
@@ -338,69 +391,46 @@ public class SessionPanel extends JPanel {
 
         parkingSpaceComboBox.removeAllItems();
 
-        String selectedZone = zoneComboBox == null ? "Ground" : (String) zoneComboBox.getSelectedItem();
+        String selectedZoneName = zoneComboBox == null ? null : (String) zoneComboBox.getSelectedItem();
+        String selectedZoneId = getZoneId(selectedZoneName);
 
-        List <ParkingSpace> parkingSpaces = null;
+        List<ParkingSpace> parkingSpaces = parkingController == null
+                ? null
+                : parkingController.getAllParkingSpaces();
 
-        //CHECK CONDITION
-        if (parkingController != null) {
-            parkingSpaces = parkingController.getAllParkingSpaces();
-        }
-
-        //CHECK CONDITIION
         if (parkingSpaces != null) {
 
-            //LOOP UNTIL CONDITION IS TRUE
             for (ParkingSpace parkingSpace : parkingSpaces) {
 
-                //CHECK CONDITION
-                if (parkingSpace == null) {
-                    continue;
-                }
-
-                //CHECK CONDITION
-                if (parkingSpace.getStatus() != ParkingSpaceStatus.AVAILABLE) {
+                if (parkingSpace == null || parkingSpace.getStatus() != ParkingSpaceStatus.AVAILABLE) {
                     continue;
                 }
 
                 String spaceId = parkingSpace.getSpaceId();
 
-                //CHECK CONDITION
                 if (spaceId == null || spaceId.trim().isEmpty()) {
                     continue;
                 }
 
-                //ONLY ADD SPACES FROM SELECTED ZONE
-                if (isSpaceInZone(spaceId, selectedZone)) {
+                if (selectedZoneId != null
+                        && parkingSpace.getZoneId() != null
+                        && selectedZoneId.equalsIgnoreCase(parkingSpace.getZoneId())) {
                     parkingSpaceComboBox.addItem(spaceId);
                 }
             }
         }
 
-        //NO SPACES
         if (parkingSpaceComboBox.getItemCount() == 0) {
-
             parkingSpaceComboBox.addItem(NO_AVAILABLE_SPACES);
             parkingSpaceComboBox.setEnabled(false);
         }
         else {
             parkingSpaceComboBox.setEnabled(true);
 
-            //RESTORE PREVIOUS SELECTION
             if (previousSelection != null) {
-
-                //LOOP UNTIL CONDITION IS TRUE
-                for (int i = 0; i < parkingSpaceComboBox.getItemCount(); i++) {
-
-                    //CHECK CONDITION
-                    if (previousSelection.equals(parkingSpaceComboBox.getItemAt(i))) {
-                        parkingSpaceComboBox.setSelectedIndex(i);
-                        break;
-                    }
-                }
+                parkingSpaceComboBox.setSelectedItem(previousSelection);
             }
 
-            //DEFAULT TO FIRST SPACE
             if (parkingSpaceComboBox.getSelectedIndex() == -1) {
                 parkingSpaceComboBox.setSelectedIndex(0);
             }
@@ -410,39 +440,45 @@ public class SessionPanel extends JPanel {
         parkingSpaceComboBox.repaint();
     }
 
-    //CHECK SPACE ZONE
-    private boolean isSpaceInZone(String spaceId, String zone) {
+    //GET FRIENDLY ZONE NAME
+    private String getZoneDisplayName(String zoneId) {
 
-        //CHECK CONDITION
-        if (spaceId == null || zone == null) {
-            return false;
+        if (zoneId == null) {
+            return "Unknown";
         }
 
-        try {
-            String numberText = spaceId.replace("P-", "").trim();
-
-            int number = Integer.parseInt(numberText);
-
-            switch (zone) {
-
-                case "Ground":
-                    return number >= 1 && number <= 8;
-
-                case "Level 01":
-                    return number >= 9 && number <= 16;
-
-                case "Level 02":
-                    return number >= 17 && number <= 24;
-
-                case "Level 03":
-                    return number >= 25 && number <= 32;
-
-                default:
-                    return false;
-            }
+        switch (zoneId.toUpperCase()) {
+            case "GF":
+                return "Ground";
+            case "L1":
+                return "Level 01";
+            case "L2":
+                return "Level 02";
+            case "L3":
+                return "Level 03";
+            default:
+                return zoneId;
         }
-        catch (NumberFormatException e) {
-            return false;
+    }
+
+    //GET ZONE ID
+    private String getZoneId(String zoneName) {
+
+        if (zoneName == null) {
+            return null;
+        }
+
+        switch (zoneName) {
+            case "Ground":
+                return "GF";
+            case "Level 01":
+                return "L1";
+            case "Level 02":
+                return "L2";
+            case "Level 03":
+                return "L3";
+            default:
+                return zoneName;
         }
     }
 
@@ -457,6 +493,7 @@ public class SessionPanel extends JPanel {
         String registration = vehicleRegistrationField.getText().trim().toUpperCase();
 
         String selectedSpace = (String) parkingSpaceComboBox.getSelectedItem();
+        String selectedZone = zoneComboBox == null ? null : (String) zoneComboBox.getSelectedItem();
 
         //EMPTY REGISTRATION
         if (registration.isEmpty()) {
@@ -464,6 +501,14 @@ public class SessionPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Please enter a vehicle registration.", "Missing Vehicle", JOptionPane.WARNING_MESSAGE);
 
             vehicleRegistrationField.requestFocus();
+            return;
+        }
+
+        //NO ZONE
+        if (selectedZone == null) {
+
+            JOptionPane.showMessageDialog(this, "Please select an available parking zone.", "No Zone Selected", JOptionPane.WARNING_MESSAGE);
+
             return;
         }
 
@@ -490,6 +535,19 @@ public class SessionPanel extends JPanel {
 
             JOptionPane.showMessageDialog(this, "The selected parking space could not be found.", "Parking Space Error", JOptionPane.ERROR_MESSAGE);
 
+            refreshParkingSpaceComboBox();
+
+            return;
+        }
+
+        //CHECK SPACE BELONGS TO SELECTED ZONE
+        String selectedZoneId = getZoneId(selectedZone);
+
+        if (parkingSpace.getZoneId() == null || !selectedZoneId.equalsIgnoreCase(parkingSpace.getZoneId())) {
+
+            JOptionPane.showMessageDialog(this, "The selected parking space does not belong to the selected zone.", "Zone Mismatch", JOptionPane.WARNING_MESSAGE);
+
+            refreshParkingZoneComboBox();
             refreshParkingSpaceComboBox();
 
             return;
@@ -567,7 +625,7 @@ public class SessionPanel extends JPanel {
         activeSessionsPanel.setLayout(new BorderLayout(0, 0));
         activeSessionsPanel.setBackground(UITheme.CARD_COLOR);
         activeSessionsPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedPanelBorder(UITheme.BORDER_COLOR, 18),
-                                                                         new EmptyBorder(0, 0, 0, 0))
+                new EmptyBorder(0, 0, 0, 0))
         );
 
         //TITLE
@@ -582,6 +640,7 @@ public class SessionPanel extends JPanel {
         String[] columns = {
                 "Session ID",
                 "Vehicle",
+                "Zone",
                 "Parking Space",
                 "Entry Time",
                 "Status"
@@ -639,9 +698,10 @@ public class SessionPanel extends JPanel {
         //COLUMN WIDTHS
         sessionsTable.getColumnModel().getColumn(0).setPreferredWidth(120);
         sessionsTable.getColumnModel().getColumn(1).setPreferredWidth(120);
-        sessionsTable.getColumnModel().getColumn(2).setPreferredWidth(130);
-        sessionsTable.getColumnModel().getColumn(3).setPreferredWidth(180);
-        sessionsTable.getColumnModel().getColumn(4).setPreferredWidth(100);
+        sessionsTable.getColumnModel().getColumn(2).setPreferredWidth(100);
+        sessionsTable.getColumnModel().getColumn(3).setPreferredWidth(130);
+        sessionsTable.getColumnModel().getColumn(4).setPreferredWidth(180);
+        sessionsTable.getColumnModel().getColumn(5).setPreferredWidth(100);
 
         //SCROLL PANE
         sessionsScrollPane = new JScrollPane(sessionsTable);
@@ -716,12 +776,13 @@ public class SessionPanel extends JPanel {
 
             String vehicleRegistration = vehicle == null ? "-" : vehicle.getRegistrationNumber();
             String parkingSpaceId = parkingSpace == null ? "-" : parkingSpace.getSpaceId();
+            String zone = parkingSpace == null ? "-" : getZoneDisplayName(parkingSpace.getZoneId());
 
             String entryTime = session.getEntryTime();
 
             String status = session.getStatus() == null ? "-" : session.getStatus().toString();
 
-            sessionsTableModel.addRow(new Object[] {sessionId, vehicleRegistration, parkingSpaceId, entryTime, status});
+            sessionsTableModel.addRow(new Object[] {sessionId, vehicleRegistration, zone, parkingSpaceId, entryTime, status});
         }
 
         if (sessionsTable != null) {
@@ -778,6 +839,7 @@ public class SessionPanel extends JPanel {
         parkingSessionController.completeSession(sessionId);
 
         refreshActiveSessions();
+        refreshParkingZoneComboBox();
         refreshParkingSpaceComboBox();
 
         JOptionPane.showMessageDialog(this, "Parking session completed successfully.", "Session Completed", JOptionPane.INFORMATION_MESSAGE);
@@ -786,6 +848,7 @@ public class SessionPanel extends JPanel {
     //REFRESH
     public void refresh() {
 
+        refreshParkingZoneComboBox();
         refreshParkingSpaceComboBox();
         refreshActiveSessions();
 
