@@ -125,7 +125,7 @@ The main MySQL repositories are:
 
 ## 4. Database Layer
 
-SmartPark v1.1.0 introduces persistent MySQL database storage.
+SmartPark `v1.1.0` introduced persistent MySQL database storage.
 
 The application connects to MySQL through JDBC.
 
@@ -163,7 +163,7 @@ The main database tables are:
 
 ## 5. Service Layer
 
-The service layer contains application business logic.
+The service layer contains the application's business logic.
 
 ### VehicleService
 
@@ -256,7 +256,7 @@ The main application areas include:
 * Sessions
 * Analytics
 
-The UI provides forms, tables, buttons, status information, filtering controls and user feedback.
+The UI provides forms, tables, buttons, status information, filtering controls, and user feedback.
 
 The parking interface also provides visual differentiation for occupied parking spaces.
 
@@ -310,7 +310,175 @@ This structure keeps database-specific code outside the UI and service layers.
 
 ---
 
-## 11. Design Principles
+## 11. Authentication and Login
+
+Version `1.2.0` introduces a login screen that appears before the main SmartPark application.
+
+The login flow is:
+
+```text
+User
+ |
+ v
+Login Screen
+ |
+ v
+Credential Validation
+ |
+ +---- Invalid ----> Error Message
+ |
+ v
+Successful Login
+ |
+ v
+MainFrame
+ |
+ v
+SmartPark Application
+```
+
+The login screen validates the administrator username and password before allowing access to the main application.
+
+The configured administrator credentials for the current release are:
+
+```text
+Username: Admin
+Password: admin05
+```
+
+Invalid credentials prevent the user from accessing the main application.
+
+After successful authentication, the `MainFrame` is displayed and the user can access the main SmartPark functionality.
+
+The login functionality is implemented as part of the user-interface and application startup flow.
+
+---
+
+## 12. Version Evolution
+
+SmartPark was developed incrementally through multiple versions.
+
+### Version 1.0.0
+
+The initial version provided the core parking-management functionality using:
+
+```text
+Java Swing
+     |
+Services
+     |
+In-Memory Repositories
+     |
+Application Memory
+```
+
+This version established the main domain models, services, controllers, and graphical interface.
+
+### Version 1.1.0
+
+Version `1.1.0` introduced persistent database storage:
+
+```text
+Java Swing
+     |
+Controllers
+     |
+Services
+     |
+Repository Interfaces
+     |
+MySQL Repositories
+     |
+MySQL Database
+```
+
+This allowed application data to persist between application runs.
+
+### Version 1.2.0
+
+Version `1.2.0` builds upon the existing architecture by introducing authentication before application access:
+
+```text
+Login
+  |
+  v
+MainFrame
+  |
+  v
+Controllers
+  |
+  v
+Services
+  |
+  v
+Repositories
+  |
+  v
+MySQL
+```
+
+The existing layered architecture remains unchanged while the login functionality is added to the application startup flow.
+
+---
+
+## 13. Updated Data Flow
+
+A typical authenticated operation follows:
+
+```text
+User
+ |
+ v
+Login
+ |
+ v
+Main Application
+ |
+ v
+Swing UI
+ |
+ v
+Controller
+ |
+ v
+Service
+ |
+ v
+Repository
+ |
+ v
+MySQL
+```
+
+For example, registering a vehicle after successful login follows:
+
+```text
+Login
+  |
+  v
+VehiclePanel
+  |
+  v
+VehicleController
+  |
+  v
+VehicleService
+  |
+  v
+VehicleRepository
+  |
+  v
+MySQLVehicleRepository
+  |
+  v
+MySQL
+```
+
+This maintains separation between authentication, user-interface operations, business logic, and database access.
+
+---
+
+## 14. Design Principles
 
 The project demonstrates the following object-oriented and software design principles:
 
@@ -323,5 +491,6 @@ The project demonstrates the following object-oriented and software design princ
 * Dependency injection through constructors
 * Repository abstraction
 * Persistent data management
+* Authentication and access control
 
 These principles help keep the application modular, maintainable, and easier to extend.
