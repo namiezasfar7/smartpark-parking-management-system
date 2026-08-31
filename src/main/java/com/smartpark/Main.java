@@ -2,6 +2,7 @@ package com.smartpark;
 
 //IMPORTS
 import com.smartpark.config.Application;
+import com.smartpark.ui.LoginFrame;
 import com.smartpark.ui.MainFrame;
 import com.smartpark.util.DatabaseConnection;
 
@@ -38,21 +39,33 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
 
             //CREATE APPLICATION
-            Application application =
-                    new Application();
+            Application application = new Application();
 
-            //CREATE MAIN FRAME
-            MainFrame mainFrame =
-                    new MainFrame(
-                            application.getVehicleController(),
-                            application.getParkingController(),
-                            application.getParkingSessionController(),
-                            application.getDashboardController(),
-                            application.getAnalyticsService()
-                    );
+            //SHOW LOGIN SCREEN
+            showLogin(application);
+        });
+    }
 
-            //SHOW APPLICATION
+    //SHOW LOGIN SCREEN
+    private static void showLogin(Application application) {
+
+        LoginFrame loginFrame = new LoginFrame(username -> {
+
+            //CREATE MAIN FRAME AFTER SUCCESSFUL LOGIN
+            MainFrame mainFrame = new MainFrame(
+                    application.getVehicleController(),
+                    application.getParkingController(),
+                    application.getParkingSessionController(),
+                    application.getDashboardController(),
+                    application.getAnalyticsService(),
+                    username,
+                    () -> showLogin(application)
+            );
+
+            //SHOW MAIN APPLICATION
             mainFrame.setVisible(true);
         });
+
+        loginFrame.setVisible(true);
     }
 }
