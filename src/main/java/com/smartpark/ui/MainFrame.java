@@ -6,11 +6,11 @@ import com.smartpark.controller.ParkingController;
 import com.smartpark.controller.ParkingSessionController;
 import com.smartpark.controller.VehicleController;
 import com.smartpark.service.AnalyticsService;
+import com.smartpark.ui.components.RoundedButton;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-
 
 //MAIN FRAME CLASS
 public class MainFrame extends JFrame {
@@ -22,6 +22,10 @@ public class MainFrame extends JFrame {
     private final ParkingSessionController parkingSessionController;
     private final DashboardController dashboardController;
     private final AnalyticsService analyticsService;
+
+    //LOGIN DETAILS
+    private final String loggedInUsername;
+    private final Runnable signOutAction;
 
     //MAIN PANELS
     private JPanel mainPanel;
@@ -58,7 +62,9 @@ public class MainFrame extends JFrame {
             ParkingController parkingController,
             ParkingSessionController parkingSessionController,
             DashboardController dashboardController,
-            AnalyticsService analyticsService
+            AnalyticsService analyticsService,
+            String loggedInUsername,
+            Runnable signOutAction
     ) {
 
         this.vehicleController = vehicleController;
@@ -66,6 +72,8 @@ public class MainFrame extends JFrame {
         this.parkingSessionController = parkingSessionController;
         this.dashboardController = dashboardController;
         this.analyticsService = analyticsService;
+        this.loggedInUsername = loggedInUsername;
+        this.signOutAction = signOutAction;
 
         //FRAME SETTINGS
         setTitle("SmartPark - Parking Management System");
@@ -77,7 +85,6 @@ public class MainFrame extends JFrame {
 
         //STARTUP WINDOW SIZE
         setSize(1200, 750);
-
         setMinimumSize(new Dimension(1200, 750));
 
         //CENTER WINDOW ON SCREEN
@@ -89,25 +96,21 @@ public class MainFrame extends JFrame {
         setupMainFrame();
     }
 
-    //DECLARE METHODS
     //SETUP MAIN FRAME
     private void setupMainFrame() {
 
         //MAIN PANEL
         mainPanel = new JPanel(new BorderLayout());
-
         mainPanel.setBackground(UITheme.BACKGROUND_COLOR);
 
         //SIDEBAR
         sidebarPanel = createSidebar();
-
         mainPanel.add(sidebarPanel, BorderLayout.WEST);
 
         //CONTENT AREA
         cardLayout = new CardLayout();
 
         contentPanel = new JPanel(cardLayout);
-
         contentPanel.setBackground(UITheme.BACKGROUND_COLOR);
 
         //CREATE PAGE PANELS
@@ -134,7 +137,10 @@ public class MainFrame extends JFrame {
     private void createPagePanels() {
 
         //DASHBOARD
-        dashboardPanel = new DashboardPanel(dashboardController);
+        dashboardPanel = new DashboardPanel(
+                dashboardController,
+                loggedInUsername
+        );
 
         //PARKING
         parkingPanel = new ParkingPanel(parkingController);
@@ -143,7 +149,11 @@ public class MainFrame extends JFrame {
         vehiclePanel = new VehiclePanel(vehicleController);
 
         //SESSIONS
-        sessionPanel = new SessionPanel(vehicleController, parkingController, parkingSessionController);
+        sessionPanel = new SessionPanel(
+                vehicleController,
+                parkingController,
+                parkingSessionController
+        );
 
         //ANALYTICS
         analyticsPanel = new AnalyticsPanel(analyticsService);
@@ -168,8 +178,6 @@ public class MainFrame extends JFrame {
         logoLabel.setFont(UITheme.bold(44));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        //GIVE LOGO ENOUGH WIDTH
         logoLabel.setMaximumSize(new Dimension(260, 45));
 
         sidebarContent.add(logoLabel);
@@ -207,6 +215,25 @@ public class MainFrame extends JFrame {
         //ADD SIDEBAR CONTENT
         sidebar.add(sidebarContent, BorderLayout.NORTH);
 
+        //SIGN OUT BUTTON PANEL
+        JPanel signOutPanel = new JPanel();
+        signOutPanel.setBackground(UITheme.SIDEBAR_COLOR);
+        signOutPanel.setBorder(new EmptyBorder(0, 29, 28, 29));
+
+        RoundedButton signOutButton = new RoundedButton();
+        signOutButton.setText("Sign Out");
+        signOutButton.setFont(UITheme.regular(16));
+        signOutButton.setButtonColor(UITheme.BUTTON_COLOR);
+        signOutButton.setPreferredSize(new Dimension(260, 52));
+        signOutButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 52));
+
+        signOutButton.addActionListener(e -> signOut());
+
+        signOutPanel.add(signOutButton);
+
+        //ADD SIGN OUT BUTTON
+        sidebar.add(signOutPanel, BorderLayout.SOUTH);
+
         return sidebar;
     }
 
@@ -214,6 +241,7 @@ public class MainFrame extends JFrame {
     private JButton createNavigationButton(String text) {
 
         RoundedNavigationButton button = new RoundedNavigationButton(text);
+
         button.setFont(UITheme.regular(16));
         button.setForeground(UITheme.TEXT_COLOR);
         button.setBackground(UITheme.BUTTON_COLOR);
@@ -279,32 +307,26 @@ public class MainFrame extends JFrame {
         switch (page) {
 
             case DASHBOARD_PAGE:
-
                 setSelectedButton(dashboardButton);
                 break;
 
             case PARKING_PAGE:
-
                 setSelectedButton(parkingButton);
                 break;
 
             case VEHICLES_PAGE:
-
                 setSelectedButton(vehiclesButton);
                 break;
 
             case SESSIONS_PAGE:
-
                 setSelectedButton(sessionsButton);
                 break;
 
             case ANALYTICS_PAGE:
-
                 setSelectedButton(analyticsButton);
                 break;
 
             default:
-
                 break;
         }
 
@@ -348,6 +370,16 @@ public class MainFrame extends JFrame {
         button.repaint();
     }
 
+    //SIGN OUT
+    private void signOut() {
+
+        //CLOSE MAIN APPLICATION WINDOW
+        dispose();
+
+        //RETURN TO LOGIN SCREEN
+        signOutAction.run();
+    }
+
     //REFRESH ALL
     public void refreshAll() {
 
@@ -369,7 +401,6 @@ public class MainFrame extends JFrame {
         //REFRESH ANALYTICS
         if (analyticsPanel != null) {
             analyticsPanel.revalidate();
-
             analyticsPanel.repaint();
         }
 
@@ -393,24 +424,22 @@ public class MainFrame extends JFrame {
             setContentAreaFilled(false);
             setOpaque(false);
 
-            addMouseListener(
-                    new java.awt.event.MouseAdapter() {
+            addMouseListener(new java.awt.event.MouseAdapter() {
 
-                        @Override
-                        public void mouseEntered(java.awt.event.MouseEvent e) {
+                @Override
+                public void mouseEntered(java.awt.event.MouseEvent e) {
 
-                            mouseOver = true;
-                            repaint();
-                        }
+                    mouseOver = true;
+                    repaint();
+                }
 
-                        @Override
-                        public void mouseExited(java.awt.event.MouseEvent e) {
+                @Override
+                public void mouseExited(java.awt.event.MouseEvent e) {
 
-                            mouseOver = false;
-                            repaint();
-                        }
-                    }
-            );
+                    mouseOver = false;
+                    repaint();
+                }
+            });
         }
 
         //DECLARE METHODS
@@ -420,8 +449,15 @@ public class MainFrame extends JFrame {
             Graphics2D g2 = (Graphics2D) g.create();
 
             //ANTIALIASING
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g2.setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON
+            );
+
+            g2.setRenderingHint(
+                    RenderingHints.KEY_RENDERING,
+                    RenderingHints.VALUE_RENDER_QUALITY
+            );
 
             //DIMENSIONS
             int width = getWidth();
