@@ -96,6 +96,26 @@ The system shall persist parking-session state changes, including session comple
 
 The system shall persist parking-space status changes.
 
+### FR-21 User Login
+
+The system shall provide a login screen before allowing access to the main application.
+
+### FR-22 Login Validation
+
+The system shall validate the entered username and password.
+
+### FR-23 Login Credentials
+
+The system shall allow access using the configured administrator credentials.
+
+### FR-24 Invalid Login Handling
+
+The system shall reject invalid login credentials and provide appropriate feedback to the user.
+
+### FR-25 Application Access Control
+
+The system shall display the main SmartPark application only after successful authentication.
+
 ---
 
 ## 3. Non-Functional Requirements
@@ -127,6 +147,10 @@ The application should run on systems capable of running the required Java versi
 ### Version Control
 
 The source code should be maintained using Git with a structured branching workflow.
+
+### Security
+
+The login screen shall prevent unauthorized access to the main application by requiring valid credentials before displaying the system interface.
 
 ---
 

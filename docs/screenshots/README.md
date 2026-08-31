@@ -1,12 +1,16 @@
 ## Screenshots
 
+### Login Page
+
+![SmartPark Dashboard](docs/screenshots/login-page.png)
+
 ### Dashboard
 
 ![SmartPark Dashboard](docs/screenshots/dashboard.png)
 
 ### Vehicle Management
 
-![Vehicle Management](docs/screenshots/vehicle.png)
+![Vehicle Management](docs/screenshots/vehicles.png)
 
 ### Parking Management
 
@@ -14,7 +18,7 @@
 
 ### Session Management
 
-![Session Management](docs/screenshots/session.png)
+![Session Management](docs/screenshots/sessions.png)
 
 ### Analytics
 

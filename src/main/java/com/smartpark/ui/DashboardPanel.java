@@ -13,7 +13,10 @@ public class DashboardPanel extends JPanel {
 
     //DECLARE ATTRIBUTES
     private JPanel dashboardPanel;
+    private JPanel headerPanel;
+
     private JLabel dashboardLabel;
+    private JLabel greetingLabel;
 
     private JPanel spacesCard;
     private JPanel availableCard;
@@ -37,15 +40,24 @@ public class DashboardPanel extends JPanel {
     //CONTROLLER
     private DashboardController dashboardController;
 
+    //SIGNED IN USER
+    private final String loggedInUsername;
+
     //DECLARE CONSTRUCTOR
-    public DashboardPanel(DashboardController dashboardController) {
+    public DashboardPanel(
+            DashboardController dashboardController,
+            String loggedInUsername
+    ) {
 
         this.dashboardController = dashboardController;
+        this.loggedInUsername = loggedInUsername;
 
         //INITIALIZE COMPONENTS
         dashboardPanel = new JPanel();
+        headerPanel = new JPanel(new BorderLayout());
 
         dashboardLabel = new JLabel();
+        greetingLabel = new JLabel();
 
         //USE ROUNDED CARDS
         spacesCard = new RoundedCard();
@@ -91,6 +103,19 @@ public class DashboardPanel extends JPanel {
         dashboardLabel.setForeground(UITheme.TEXT_COLOR);
         dashboardLabel.setFont(UITheme.bold(28));
         dashboardLabel.setBorder(new EmptyBorder(0, 0, 20, 0));
+
+        //GREETING
+        greetingLabel.setText("Greetings, " + loggedInUsername);
+        greetingLabel.setForeground(UITheme.SECONDARY_TEXT_COLOR);
+        greetingLabel.setFont(UITheme.regular(16));
+        greetingLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        greetingLabel.setBorder(new EmptyBorder(7, 0, 20, 0));
+
+        //HEADER PANEL
+        headerPanel.removeAll();
+        headerPanel.setBackground(UITheme.BACKGROUND_COLOR);
+        headerPanel.add(dashboardLabel, BorderLayout.WEST);
+        headerPanel.add(greetingLabel, BorderLayout.EAST);
 
         //WORKSPACE
         workspacePanel.removeAll();
@@ -150,7 +175,7 @@ public class DashboardPanel extends JPanel {
         //BUILD DASHBOARD
         dashboardPanel.removeAll();
 
-        dashboardPanel.add(dashboardLabel, BorderLayout.NORTH);
+        dashboardPanel.add(headerPanel, BorderLayout.NORTH);
         dashboardPanel.add(workspacePanel, BorderLayout.CENTER);
 
         dashboardPanel.revalidate();
@@ -163,7 +188,14 @@ public class DashboardPanel extends JPanel {
     }
 
     //SETUP CARD
-    private void setupCard(JPanel card, JLabel titleLabel, JLabel valueLabel, String title, String value, Color cardColor) {
+    private void setupCard(
+            JPanel card,
+            JLabel titleLabel,
+            JLabel valueLabel,
+            String title,
+            String value,
+            Color cardColor
+    ) {
 
         //CARD
         card.setOpaque(false);
@@ -209,7 +241,11 @@ public class DashboardPanel extends JPanel {
             super.paintComponent(g);
 
             Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            g2.setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON
+            );
 
             //ROUNDED BACKGROUND
             g2.setColor(getBackground());

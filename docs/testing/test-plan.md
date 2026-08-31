@@ -17,7 +17,23 @@ Testing focuses on vehicle management, parking-space management, parking session
 
 ---
 
-## 3. Database Tests
+## 3. Login Tests
+
+| Test | Expected Result |
+| ---- | --------------- |
+| Enter valid username and password | Login is successful |
+| Enter incorrect username | Login is rejected |
+| Enter incorrect password | Login is rejected |
+| Enter both incorrect credentials | Login is rejected |
+| Leave username empty | Login is rejected |
+| Leave password empty | Login is rejected |
+| Leave both fields empty | Login is rejected |
+| Successful login | Main SmartPark application is displayed |
+| Failed login | User remains on the login screen |
+
+---
+
+## 4. Database Tests
 
 | Test | Expected Result |
 | ---- | --------------- |
@@ -36,7 +52,7 @@ Testing focuses on vehicle management, parking-space management, parking session
 
 ---
 
-## 4. Vehicle Tests
+## 5. Vehicle Tests
 
 | Test | Expected Result |
 | ---- | --------------- |
@@ -50,7 +66,7 @@ Testing focuses on vehicle management, parking-space management, parking session
 
 ---
 
-## 5. Parking Space Tests
+## 6. Parking Space Tests
 
 | Test | Expected Result |
 | ---- | --------------- |
@@ -66,7 +82,7 @@ Testing focuses on vehicle management, parking-space management, parking session
 
 ---
 
-## 6. Parking Session Tests
+## 7. Parking Session Tests
 
 | Test | Expected Result |
 | ---- | --------------- |
@@ -83,7 +99,7 @@ Testing focuses on vehicle management, parking-space management, parking session
 
 ---
 
-## 7. Analytics Tests
+## 8. Analytics Tests
 
 | Test | Expected Result |
 | ---- | --------------- |
@@ -100,7 +116,7 @@ Testing focuses on vehicle management, parking-space management, parking session
 
 ---
 
-## 8. User Interface Tests
+## 9. User Interface Tests
 
 The main UI workflows should be manually verified.
 
@@ -138,12 +154,17 @@ The main UI workflows should be manually verified.
 
 ---
 
-## 9. Final Verification
+## 10. Final Verification
 
 Before release:
 
 * [ ] Project compiles
 * [ ] Application launches
+* * [ ] Login screen appears before the main application
+* [ ] Valid credentials allow access
+* [ ] Invalid credentials are rejected
+* [ ] Empty credentials are rejected
+* [ ] Main application opens after successful login
 * [ ] MySQL connection works
 * [ ] Database tables exist
 * [ ] Vehicle registration works

@@ -6,7 +6,7 @@ The SmartPark project was developed as an Object-Oriented Programming coursework
 
 The initial objective was to create a desktop Parking Management System using Java and Java Swing.
 
-The project was organized into separate packages for models, repositories, services, controllers, UI components, utilities and exceptions.
+The project was organized into separate packages for models, repositories, services, controllers, UI components, utilities, and exceptions.
 
 ---
 
@@ -23,7 +23,7 @@ The main models developed were:
 
 Supporting enumerations were also introduced for vehicle and parking/session statuses.
 
-The models were designed using encapsulated private attributes with appropriate constructors, getters and setters.
+The models were designed using encapsulated private attributes with appropriate constructors, getters, and setters.
 
 ---
 
@@ -47,7 +47,7 @@ Validation was reviewed during development so that the validation rules matched 
 
 ## 4. Parking Space Management
 
-Parking-space management was implemented through the parking-space model, repository, service, controller and UI.
+Parking-space management was implemented through the parking-space model, repository, service, controller, and UI.
 
 Parking spaces support multiple statuses:
 
@@ -57,7 +57,12 @@ Parking spaces support multiple statuses:
 
 New parking spaces initially begin in the available state.
 
-The parking service provides functionality for adding spaces, finding spaces, retrieving all spaces and updating their statuses.
+The parking service provides functionality for:
+
+* Adding spaces
+* Finding spaces
+* Retrieving all spaces
+* Updating parking-space statuses
 
 Zone-based filtering was also implemented in the parking interface.
 
@@ -127,6 +132,8 @@ Examples include:
 * `ParkingSpaceUnavailableException`
 * `VehicleNotFoundException`
 
+These exceptions allow the application to handle invalid business operations and provide appropriate feedback to the user.
+
 ---
 
 ## 8. Analytics
@@ -164,7 +171,7 @@ The main sections include:
 
 The interface was styled consistently using a shared UI theme.
 
-Tables are used to display registered vehicles, parking spaces and sessions.
+Tables are used to display registered vehicles, parking spaces, and sessions.
 
 UI inconsistencies identified during development were corrected.
 
@@ -174,24 +181,20 @@ The parking interface was also improved so that occupied spaces have clearer vis
 
 ## 10. MySQL Database Integration
 
-For version 1.1.0, persistent MySQL database integration was introduced.
+For version `1.1.0`, persistent MySQL database integration was introduced.
 
-The application now includes MySQL repository implementations for:
+The application includes MySQL repository implementations for:
 
 * Vehicles
 * Parking spaces
 * Parking zones
 * Parking sessions
 
-The database connection is handled through:
-
-```text
-DatabaseConnection
-```
+The database connection is handled through `DatabaseConnection`.
 
 The application connects to the `smartpark` MySQL database using JDBC.
 
-The database password is obtained from:
+The database password is obtained from the following environment variable:
 
 ```text
 SMARTPARK_DB_PASSWORD
@@ -222,7 +225,7 @@ The database was also reset during development to verify that application data c
 
 Several bugs and inconsistencies identified during development were corrected.
 
-The v1.1.0 update includes:
+The `v1.1.0` update includes:
 
 * Database-related fixes
 * UI consistency fixes
@@ -258,15 +261,17 @@ The first stable release was designated:
 v1.0.0
 ```
 
-Version 1.0.0 represented the completed initial implementation of SmartPark.
+Version `1.0.0` represented the completed initial implementation of SmartPark.
+
+The initial release provided the core parking-management functionality using Java Swing and in-memory repositories.
 
 ---
 
 ## 15. Version 1.1.0
 
-Version 1.1.0 introduces improvements to the initial implementation.
+Version `1.1.0` introduced improvements to the initial implementation.
 
-The main changes are:
+The main changes were:
 
 * MySQL database integration
 * Persistent storage
@@ -277,13 +282,83 @@ The main changes are:
 * Improved occupied parking-space presentation
 * Updated project documentation
 
-Version 1.1.0 is intended as a minor feature release following the initial `v1.0.0` release.
+Version `1.1.0` was released as a minor feature release following the initial `v1.0.0` release.
 
 ---
 
-## 16. Release Preparation
+## 16. Version 1.2.0
 
-Before the v1.1.0 release:
+Version `1.2.0` introduces a login system as an additional security and usability feature.
+
+The main addition is a login page with a clean Java Swing interface.
+
+The login functionality includes:
+
+* Username input
+* Password input
+* Username and password validation
+* Rejection of invalid credentials
+* Access control before opening the main application
+
+The login screen is displayed before the main SmartPark application.
+
+Users must provide the configured administrator credentials before accessing the main application.
+
+The configured credentials for this release are:
+
+```text
+Username: Admin
+Password: admin05
+```
+
+After successful authentication, the main SmartPark interface is displayed.
+
+The login functionality was integrated with the existing application without changing the main parking-management architecture.
+
+---
+
+## 17. Login Testing
+
+The login functionality was tested using both valid and invalid inputs.
+
+The following scenarios were verified:
+
+1. Entering the correct username and password allows access to SmartPark.
+2. Entering an incorrect username prevents access.
+3. Entering an incorrect password prevents access.
+4. Entering both incorrect credentials prevents access.
+5. Entering an empty username prevents access.
+6. Entering an empty password prevents access.
+7. Entering both fields empty prevents access.
+8. Successful authentication opens the main SmartPark application.
+9. Failed authentication keeps the user on the login screen.
+
+These tests ensure that users cannot access the main application through an unsuccessful login attempt.
+
+---
+
+## 18. Version 1.2.0 Release Preparation
+
+Before releasing `v1.2.0`:
+
+1. The login functionality was tested.
+2. Valid and invalid credentials were tested.
+3. Empty credential fields were tested.
+4. Successful authentication was verified.
+5. Failed authentication was verified.
+6. The main application was verified to open after successful login.
+7. Existing parking-management functionality was checked.
+8. The project was compiled successfully.
+9. Documentation was updated.
+10. The project version was updated to `1.2.0`.
+
+The release is prepared for merging from `develop` into `main`.
+
+---
+
+## 19. Release Preparation
+
+Before releasing a stable version:
 
 1. The application was compiled.
 2. Database connectivity was tested.
@@ -291,8 +366,9 @@ Before the v1.1.0 release:
 4. Parking-space status changes were verified.
 5. Session completion was tested.
 6. Database records were inspected.
-7. UI inconsistencies were corrected.
-8. Documentation was updated.
-9. The project version was updated to `1.1.0`.
-
-The release is prepared for merging from `develop` into `main`.
+7. Login functionality was tested.
+8. UI inconsistencies were corrected.
+9. Documentation was updated.
+10. The project version was updated.
+11. The `develop` branch was prepared for release.
+12. The final changes were prepared for merging into `main`.
